@@ -1,0 +1,2 @@
+export type { Point, DiagramType, DiagramMetadata, DiagramNode, DiagramEdge, DiagramContainer, DiagramModel, DiagramOperation, StoredModel, VersionEntry, ProjectInfo, ValidationResult, FixResult, RecallResult, NotationName, NotationShape, NotationStyleTemplates, NotationColourPalette, NotationLayoutConventions, NotationDefinition, } from './diagram.js';
+//# sourceMappingURL=index.d.ts.map

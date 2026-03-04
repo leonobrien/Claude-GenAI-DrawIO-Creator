@@ -1,0 +1,252 @@
+/**
+ * UML notation — Unified Modelling Language diagram shapes.
+ *
+ * Uses native draw.io UML shapes (shape=uml*, swimlane, shape=folder, etc.)
+ * rather than external stencil libraries. Covers class, sequence, component,
+ * use case, and activity diagram elements.
+ */
+
+import type { NotationDefinition } from '../types/index.js';
+
+export const umlNotation: NotationDefinition = {
+  name: 'uml',
+  displayName: 'UML 2.x',
+  stencilPrefix: 'shape=uml',
+  description: 'UML 2.x diagrams using native draw.io UML shapes for class, sequence, component, use case, and activity diagrams.',
+  shapes: [
+    // Class diagram
+    {
+      name: 'Class',
+      style: 'swimlane;fontStyle=1;align=center;startSize=26;html=1;',
+      defaultWidth: 160,
+      defaultHeight: 100,
+      category: 'class',
+    },
+    {
+      name: 'Interface',
+      style: 'swimlane;fontStyle=1;align=center;startSize=26;html=1;fillColor=#E6E6E6;',
+      defaultWidth: 160,
+      defaultHeight: 80,
+      category: 'class',
+    },
+    {
+      name: 'Abstract Class',
+      style: 'swimlane;fontStyle=3;align=center;startSize=26;html=1;',
+      defaultWidth: 160,
+      defaultHeight: 100,
+      category: 'class',
+    },
+    {
+      name: 'Enumeration',
+      style: 'swimlane;fontStyle=1;align=center;startSize=26;html=1;fillColor=#FFFFCC;',
+      defaultWidth: 160,
+      defaultHeight: 80,
+      category: 'class',
+    },
+
+    // Component diagram
+    {
+      name: 'Component',
+      style: 'shape=component;align=left;spacingLeft=36;html=1;whiteSpace=wrap;',
+      defaultWidth: 120,
+      defaultHeight: 60,
+      category: 'component',
+    },
+    {
+      name: 'Package',
+      style: 'shape=folder;fontStyle=1;tabWidth=110;tabHeight=20;tabPosition=left;html=1;whiteSpace=wrap;verticalAlign=top;',
+      defaultWidth: 200,
+      defaultHeight: 150,
+      category: 'component',
+    },
+    {
+      name: 'Provided Interface',
+      style: 'ellipse;html=1;fontSize=11;align=center;whiteSpace=wrap;',
+      defaultWidth: 20,
+      defaultHeight: 20,
+      category: 'component',
+    },
+    {
+      name: 'Required Interface',
+      style: 'shape=requires;html=1;fontSize=11;align=center;',
+      defaultWidth: 20,
+      defaultHeight: 20,
+      category: 'component',
+    },
+    {
+      name: 'Node',
+      style: 'shape=cube;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=10;darkOpacity=0.05;darkOpacity2=0.1;',
+      defaultWidth: 120,
+      defaultHeight: 80,
+      category: 'deployment',
+    },
+    {
+      name: 'Artifact',
+      style: 'shape=note2;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=25;',
+      defaultWidth: 100,
+      defaultHeight: 70,
+      category: 'deployment',
+    },
+
+    // Use case diagram
+    {
+      name: 'Actor',
+      style: 'shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=1;outlineConnect=0;',
+      defaultWidth: 30,
+      defaultHeight: 55,
+      category: 'usecase',
+    },
+    {
+      name: 'Use Case',
+      style: 'ellipse;whiteSpace=wrap;html=1;',
+      defaultWidth: 140,
+      defaultHeight: 70,
+      category: 'usecase',
+    },
+    {
+      name: 'System Boundary',
+      style: 'shape=umlFrame;whiteSpace=wrap;html=1;width=110;height=20;boundedLbl=1;verticalAlign=top;align=left;spacingLeft=5;',
+      defaultWidth: 300,
+      defaultHeight: 250,
+      category: 'usecase',
+    },
+
+    // Sequence diagram
+    {
+      name: 'Lifeline',
+      style: 'shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=1;dropTarget=0;collapsible=0;recursiveResize=0;outlineConnect=0;portConstraint=eastwest;newEdgeStyle={"curved":0,"rounded":0};',
+      defaultWidth: 100,
+      defaultHeight: 300,
+      category: 'sequence',
+    },
+    {
+      name: 'Activation',
+      style: 'html=1;points=[];perimeter=orthogonalPerimeter;outlineConnect=0;targetShapes=umlLifeline;portConstraint=eastwest;newEdgeStyle={"curved":0,"rounded":0};',
+      defaultWidth: 10,
+      defaultHeight: 40,
+      category: 'sequence',
+    },
+    {
+      name: 'Interaction Frame',
+      style: 'shape=umlFrame;whiteSpace=wrap;html=1;width=80;height=20;boundedLbl=1;verticalAlign=top;align=left;spacingLeft=5;',
+      defaultWidth: 400,
+      defaultHeight: 300,
+      category: 'sequence',
+    },
+
+    // Activity diagram
+    {
+      name: 'Action',
+      style: 'rounded=1;whiteSpace=wrap;html=1;arcSize=40;',
+      defaultWidth: 120,
+      defaultHeight: 40,
+      category: 'activity',
+    },
+    {
+      name: 'Decision',
+      style: 'rhombus;whiteSpace=wrap;html=1;',
+      defaultWidth: 40,
+      defaultHeight: 40,
+      category: 'activity',
+    },
+    {
+      name: 'Initial Node',
+      style: 'ellipse;html=1;shape=mxgraph.flowchart.start_2;fontSize=12;fillColor=#000000;fontColor=#FFFFFF;',
+      defaultWidth: 30,
+      defaultHeight: 30,
+      category: 'activity',
+    },
+    {
+      name: 'Final Node',
+      style: 'ellipse;html=1;shape=doubleCircle;whiteSpace=wrap;aspect=fixed;fillColor=#000000;strokeColor=#FFFFFF;',
+      defaultWidth: 30,
+      defaultHeight: 30,
+      category: 'activity',
+    },
+    {
+      name: 'Fork/Join',
+      style: 'line;strokeWidth=6;fillColor=none;align=left;verticalAlign=middle;spacingTop=-1;spacingLeft=3;spacingRight=10;rotatable=0;labelPosition=left;points=[];portConstraint=eastwest;strokeColor=inherit;',
+      defaultWidth: 200,
+      defaultHeight: 10,
+      category: 'activity',
+    },
+    {
+      name: 'Swimlane',
+      style: 'swimlane;startSize=23;html=1;childLayout=stackLayout;horizontal=1;horizontalStack=0;resizeParent=1;resizeLast=0;collapsible=0;marginBottom=0;swimlaneLine=1;fontStyle=0;fillColor=none;',
+      defaultWidth: 200,
+      defaultHeight: 400,
+      category: 'activity',
+    },
+    {
+      name: 'Note',
+      style: 'shape=note;whiteSpace=wrap;html=1;backgroundOutline=1;size=15;',
+      defaultWidth: 100,
+      defaultHeight: 70,
+      category: 'common',
+    },
+  ],
+  styleTemplates: {
+    vertex: 'rounded=1;whiteSpace=wrap;html=1;',
+    edge: 'endArrow=open;endFill=0;html=1;',
+    container: 'shape=umlFrame;whiteSpace=wrap;html=1;width=110;height=20;boundedLbl=1;verticalAlign=top;align=left;spacingLeft=5;',
+    labelEdge: 'endArrow=open;endFill=0;html=1;fontSize=10;',
+  },
+  colours: {
+    class: { fillColor: '#dae8fc', strokeColor: '#6c8ebf' },
+    component: { fillColor: '#d5e8d4', strokeColor: '#82b366' },
+    usecase: { fillColor: '#fff2cc', strokeColor: '#d6b656' },
+    sequence: { fillColor: '#dae8fc', strokeColor: '#6c8ebf' },
+    activity: { fillColor: '#f5f5f5', strokeColor: '#666666' },
+    deployment: { fillColor: '#e1d5e7', strokeColor: '#9673a6' },
+    common: { fillColor: '#fff2cc', strokeColor: '#d6b656' },
+  },
+  layout: {
+    preferredFlow: 'top-down',
+    usesContainers: true,
+    suggestedGap: 40,
+    hints: [
+      'Class diagrams: arrange classes in inheritance hierarchies top-down',
+      'Sequence diagrams: place lifelines left-to-right in call order',
+      'Component diagrams: group components in packages',
+      'Use case diagrams: place actors on the left, system boundary in centre',
+      'Activity diagrams: use swimlanes for different actors/roles',
+      'Use open arrowheads (endFill=0) for UML dependency and association arrows',
+      'Use solid arrowheads for directed associations and navigability',
+    ],
+  },
+  fewShotExample: [
+    '<mxCell id="2" value="&lt;&lt;interface&gt;&gt;&#xa;IService" style="swimlane;fontStyle=1;align=center;startSize=40;html=1;" vertex="1" parent="1">',
+    '  <mxGeometry x="200" y="40" width="160" height="80" as="geometry"/>',
+    '</mxCell>',
+    '<mxCell id="3" value="+ execute(): void" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontStyle=0;" vertex="1" parent="2">',
+    '  <mxGeometry y="40" width="160" height="26" as="geometry"/>',
+    '</mxCell>',
+    '<mxCell id="4" value="ServiceImpl" style="swimlane;fontStyle=1;align=center;startSize=26;html=1;" vertex="1" parent="1">',
+    '  <mxGeometry x="200" y="200" width="160" height="100" as="geometry"/>',
+    '</mxCell>',
+    '<mxCell id="5" value="- name: String" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontStyle=0;" vertex="1" parent="4">',
+    '  <mxGeometry y="26" width="160" height="26" as="geometry"/>',
+    '</mxCell>',
+    '<mxCell id="6" value="" style="line;strokeWidth=1;fillColor=none;align=left;verticalAlign=middle;spacingTop=-1;spacingLeft=3;spacingRight=10;rotatable=0;labelPosition=left;points=[];portConstraint=eastwest;strokeColor=inherit;" vertex="1" parent="4">',
+    '  <mxGeometry y="52" width="160" height="8" as="geometry"/>',
+    '</mxCell>',
+    '<mxCell id="7" value="+ execute(): void" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontStyle=0;" vertex="1" parent="4">',
+    '  <mxGeometry y="60" width="160" height="26" as="geometry"/>',
+    '</mxCell>',
+    '<mxCell id="8" style="endArrow=block;endFill=0;html=1;dashed=1;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;" edge="1" parent="1" source="4" target="2">',
+    '  <mxGeometry relative="1" as="geometry"/>',
+    '</mxCell>',
+  ].join('\n'),
+  promptRules: [
+    'Use swimlane style for UML classes with compartments (attributes, operations separated by line elements)',
+    'Use shape=umlActor for actors in use case diagrams',
+    'Use shape=umlFrame for system boundaries and interaction frames',
+    'Use shape=umlLifeline with perimeter=lifelinePerimeter for sequence diagram lifelines',
+    'Use shape=component for UML components',
+    'Use shape=folder for packages',
+    'Use endArrow=block;endFill=0;dashed=1; for interface realisation (implements)',
+    'Use endArrow=block;endFill=0; for generalisation (extends)',
+    'Use endArrow=open;endFill=0;dashed=1; for dependency',
+    'Use endArrow=diamond;endFill=0; for aggregation, endFill=1; for composition',
+  ],
+};

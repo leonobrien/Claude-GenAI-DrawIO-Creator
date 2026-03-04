@@ -1,0 +1,130 @@
+/**
+ * Generic notation — standard draw.io shapes.
+ *
+ * Uses the built-in draw.io shape library: rectangles, diamonds,
+ * cylinders, ellipses, and clouds.
+ */
+export const genericNotation = {
+    name: 'generic',
+    displayName: 'Generic',
+    stencilPrefix: '',
+    description: 'Standard draw.io shapes suitable for flowcharts, org charts, and general-purpose diagrams.',
+    shapes: [
+        {
+            name: 'Rectangle',
+            style: 'rounded=0;whiteSpace=wrap;html=1;',
+            defaultWidth: 120,
+            defaultHeight: 60,
+            category: 'basic',
+        },
+        {
+            name: 'Rounded Rectangle',
+            style: 'rounded=1;whiteSpace=wrap;html=1;',
+            defaultWidth: 120,
+            defaultHeight: 60,
+            category: 'basic',
+        },
+        {
+            name: 'Diamond',
+            style: 'rhombus;whiteSpace=wrap;html=1;',
+            defaultWidth: 80,
+            defaultHeight: 80,
+            category: 'basic',
+        },
+        {
+            name: 'Cylinder',
+            style: 'shape=cylinder3;whiteSpace=wrap;html=1;size=15;',
+            defaultWidth: 60,
+            defaultHeight: 80,
+            category: 'storage',
+        },
+        {
+            name: 'Ellipse',
+            style: 'ellipse;whiteSpace=wrap;html=1;',
+            defaultWidth: 120,
+            defaultHeight: 80,
+            category: 'basic',
+        },
+        {
+            name: 'Cloud',
+            style: 'ellipse;shape=cloud;whiteSpace=wrap;html=1;',
+            defaultWidth: 120,
+            defaultHeight: 80,
+            category: 'infrastructure',
+        },
+        {
+            name: 'Document',
+            style: 'shape=document;whiteSpace=wrap;html=1;',
+            defaultWidth: 120,
+            defaultHeight: 80,
+            category: 'basic',
+        },
+        {
+            name: 'Hexagon',
+            style: 'shape=hexagon;perimeter=hexagonPerimeter2;whiteSpace=wrap;html=1;',
+            defaultWidth: 120,
+            defaultHeight: 80,
+            category: 'basic',
+        },
+        {
+            name: 'Parallelogram',
+            style: 'shape=parallelogram;perimeter=parallelogramPerimeter;whiteSpace=wrap;html=1;',
+            defaultWidth: 120,
+            defaultHeight: 60,
+            category: 'basic',
+        },
+        {
+            name: 'Triangle',
+            style: 'triangle;whiteSpace=wrap;html=1;',
+            defaultWidth: 60,
+            defaultHeight: 80,
+            category: 'basic',
+        },
+    ],
+    styleTemplates: {
+        vertex: 'rounded=1;whiteSpace=wrap;html=1;',
+        edge: 'endArrow=classic;html=1;',
+        container: 'rounded=1;whiteSpace=wrap;html=1;dashed=1;',
+    },
+    colours: {
+        primary: { fillColor: '#dae8fc', strokeColor: '#6c8ebf' },
+        secondary: { fillColor: '#d5e8d4', strokeColor: '#82b366' },
+        accent: { fillColor: '#fff2cc', strokeColor: '#d6b656' },
+        danger: { fillColor: '#f8cecc', strokeColor: '#b85450' },
+        neutral: { fillColor: '#f5f5f5', strokeColor: '#666666' },
+        highlight: { fillColor: '#e1d5e7', strokeColor: '#9673a6' },
+    },
+    layout: {
+        preferredFlow: 'top-down',
+        usesContainers: false,
+        suggestedGap: 50,
+        hints: [
+            'Use top-down or left-right flow for readability',
+            'Align decision diamonds on the main flow axis',
+            'Group related nodes visually even without containers',
+        ],
+    },
+    fewShotExample: [
+        '<mxCell id="2" value="Start" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">',
+        '  <mxGeometry x="40" y="200" width="120" height="60" as="geometry"/>',
+        '</mxCell>',
+        '<mxCell id="3" value="Process" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">',
+        '  <mxGeometry x="240" y="200" width="120" height="60" as="geometry"/>',
+        '</mxCell>',
+        '<mxCell id="4" value="End" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;" vertex="1" parent="1">',
+        '  <mxGeometry x="440" y="200" width="120" height="60" as="geometry"/>',
+        '</mxCell>',
+        '<mxCell id="5" style="endArrow=classic;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="2" target="3">',
+        '  <mxGeometry relative="1" as="geometry"/>',
+        '</mxCell>',
+        '<mxCell id="6" style="endArrow=classic;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="3" target="4">',
+        '  <mxGeometry relative="1" as="geometry"/>',
+        '</mxCell>',
+    ].join('\n'),
+    promptRules: [
+        'Use standard draw.io shapes — no external stencil libraries required',
+        'Choose shape type to match semantics: cylinders for databases, diamonds for decisions, ellipses for start/end',
+        'Apply colour coding consistently: green for start, red for end, blue for processing, yellow for decisions',
+    ],
+};
+//# sourceMappingURL=generic.js.map

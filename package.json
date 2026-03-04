@@ -1,0 +1,31 @@
+{
+  "name": "drawio-skill",
+  "version": "0.1.0",
+  "description": "Claude Code skill for programmatic draw.io diagram generation, revision, and management",
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:single": "vitest run -t",
+    "lint": "eslint src/ tests/",
+    "lint:fix": "eslint src/ tests/ --fix",
+    "format": "prettier --write 'src/**/*.ts' 'tests/**/*.ts'",
+    "clean": "rm -rf dist"
+  },
+  "keywords": ["drawio", "diagram", "claude-code", "skill"],
+  "license": "MIT",
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "eslint": "^9.0.0",
+    "prettier": "^3.0.0",
+    "typescript": "^5.7.0",
+    "vitest": "^3.0.0"
+  },
+  "dependencies": {
+    "@qdrant/js-client-rest": "^1.13.0",
+    "fast-xml-parser": "^5.1.0"
+  }
+}
