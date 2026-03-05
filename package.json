@@ -6,22 +6,28 @@
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
-    "build": "tsc",
-    "test": "vitest run",
-    "test:watch": "vitest",
-    "test:single": "vitest run -t",
-    "lint": "eslint src/ tests/",
-    "lint:fix": "eslint src/ tests/ --fix",
-    "format": "prettier --write 'src/**/*.ts' 'tests/**/*.ts'",
-    "clean": "rm -rf dist"
+    "audit:security": "eslint 'src/**/*.ts' --plugin secure-coding --rule 'secure-coding/all: error'",
+    "audit:complexity": "eslintcc src/ --max-rank C",
+    "audit:all": "npm run audit:security && npm run audit:complexity && npm audit",
+    "check:types": "tsc --noEmit",
+    "audit:strict": "npm run check:types && npm run audit:all"
   },
-  "keywords": ["drawio", "diagram", "claude-code", "skill"],
+  "keywords": [
+    "drawio",
+    "diagram",
+    "claude-code",
+    "skill"
+  ],
   "license": "MIT",
   "devDependencies": {
     "@types/node": "^22.0.0",
-    "eslint": "^9.0.0",
+    "eslint": "^9.39.3",
+    "eslint-plugin-secure-coding": "^3.1.3",
+    "eslint-plugin-security": "^4.0.0",
+    "eslintcc": "^0.8.3",
     "prettier": "^3.0.0",
     "typescript": "^5.7.0",
+    "typescript-eslint": "^8.56.1",
     "vitest": "^3.0.0"
   },
   "dependencies": {

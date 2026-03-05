@@ -29,5 +29,9 @@ Thumbs.db
 # If you want to exclude specific projects, add:
 # projects/scratch/
 # projects/test-*/
+# Claude Code local settings (but keep skills/)
+.claude/settings.local.json
+.claude/plans/
+.claude/projects/
 storage/
 node_modules/

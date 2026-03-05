@@ -260,7 +260,7 @@ export const awsNotation: NotationDefinition = {
     // Security
     {
       name: 'IAM',
-      style: awsResourceIcon('iam', COLOUR.security),
+      style: awsResourceIcon('identity_and_access_management', COLOUR.security),
       defaultWidth: 78,
       defaultHeight: 78,
       category: 'security',
@@ -283,7 +283,7 @@ export const awsNotation: NotationDefinition = {
     // Management
     {
       name: 'CloudWatch',
-      style: awsResourceIcon('cloudwatch', COLOUR.management),
+      style: awsResourceIcon('cloudwatch_2', COLOUR.management),
       defaultWidth: 78,
       defaultHeight: 78,
       category: 'management',

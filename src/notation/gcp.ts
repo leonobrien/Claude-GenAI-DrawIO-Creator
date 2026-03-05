@@ -65,7 +65,7 @@ export const gcpNotation: NotationDefinition = {
     },
     {
       name: 'GKE',
-      style: gcpIcon('google_kubernetes_engine', COLOUR.compute),
+      style: gcpIcon('container_engine', COLOUR.compute),
       defaultWidth: 50,
       defaultHeight: 50,
       category: 'compute',
@@ -88,7 +88,7 @@ export const gcpNotation: NotationDefinition = {
     },
     {
       name: 'Filestore',
-      style: gcpIcon('filestore', COLOUR.storage),
+      style: gcpIcon('cloud_filestore', COLOUR.storage),
       defaultWidth: 50,
       defaultHeight: 50,
       category: 'storage',
@@ -208,7 +208,7 @@ export const gcpNotation: NotationDefinition = {
     },
     {
       name: 'API Gateway',
-      style: gcpIcon('api_gateway', COLOUR.integration),
+      style: gcpIcon('gateway', COLOUR.integration),
       defaultWidth: 50,
       defaultHeight: 50,
       category: 'integration',
@@ -224,14 +224,14 @@ export const gcpNotation: NotationDefinition = {
     // AI/ML
     {
       name: 'Vertex AI',
-      style: gcpIcon('vertex_ai', COLOUR.ai),
+      style: gcpIcon('cloud_machine_learning', COLOUR.ai),
       defaultWidth: 50,
       defaultHeight: 50,
       category: 'ai',
     },
     {
       name: 'Cloud AI Platform',
-      style: gcpIcon('cloud_ai_platform', COLOUR.ai),
+      style: gcpIcon('cloud_machine_learning', COLOUR.ai),
       defaultWidth: 50,
       defaultHeight: 50,
       category: 'ai',
@@ -247,14 +247,14 @@ export const gcpNotation: NotationDefinition = {
     },
     {
       name: 'Cloud KMS',
-      style: gcpIcon('cloud_key_management_service', COLOUR.security),
+      style: gcpIcon('key_management_service', COLOUR.security),
       defaultWidth: 50,
       defaultHeight: 50,
       category: 'security',
     },
     {
       name: 'Secret Manager',
-      style: gcpIcon('secret_manager', COLOUR.security),
+      style: gcpIcon('key', COLOUR.security),
       defaultWidth: 50,
       defaultHeight: 50,
       category: 'security',
@@ -270,7 +270,7 @@ export const gcpNotation: NotationDefinition = {
     },
     {
       name: 'Cloud Logging',
-      style: gcpIcon('cloud_logging', COLOUR.management),
+      style: gcpIcon('logging', COLOUR.management),
       defaultWidth: 50,
       defaultHeight: 50,
       category: 'management',
@@ -312,7 +312,7 @@ export const gcpNotation: NotationDefinition = {
     `<mxCell id="3" value="Load Balancer" style="${gcpIcon('cloud_load_balancing', COLOUR.networking)}" vertex="1" parent="2">`,
     '  <mxGeometry x="50" y="170" width="50" height="50" as="geometry"/>',
     '</mxCell>',
-    `<mxCell id="4" value="GKE" style="${gcpIcon('google_kubernetes_engine', COLOUR.compute)}" vertex="1" parent="2">`,
+    `<mxCell id="4" value="GKE" style="${gcpIcon('container_engine', COLOUR.compute)}" vertex="1" parent="2">`,
     '  <mxGeometry x="280" y="170" width="50" height="50" as="geometry"/>',
     '</mxCell>',
     `<mxCell id="5" value="Cloud SQL" style="${gcpIcon('cloud_sql', COLOUR.database)}" vertex="1" parent="2">`,

@@ -95,7 +95,7 @@ export const archimateNotation: NotationDefinition = {
     },
     {
       name: 'System Software',
-      style: 'shape=mxgraph.archimate3.systemSoftware;archiType=technology;whiteSpace=wrap;html=1;',
+      style: 'shape=mxgraph.archimate3.sysSw;archiType=technology;whiteSpace=wrap;html=1;',
       defaultWidth: 120,
       defaultHeight: 60,
       category: 'technology',

@@ -5,6 +5,7 @@ import {
   listNotations,
   isValidNotation,
   resolveNotationFromShapeLibrary,
+  resolveShape,
 } from '../../src/notation/registry.js';
 
 describe('NotationRegistry', () => {
@@ -166,6 +167,88 @@ describe('NotationRegistry', () => {
     it('handles case-insensitively', () => {
       expect(resolveNotationFromShapeLibrary('AWS')).toBe('aws');
       expect(resolveNotationFromShapeLibrary('Azure')).toBe('azure');
+    });
+  });
+
+  describe('resolveShape', () => {
+    it('returns exact match', () => {
+      const shape = resolveShape('aws', 'Lambda');
+      expect(shape).not.toBeNull();
+      expect(shape!.name).toBe('Lambda');
+    });
+
+    it('returns case-insensitive match', () => {
+      const shape = resolveShape('aws', 'lambda');
+      expect(shape).not.toBeNull();
+      expect(shape!.name).toBe('Lambda');
+    });
+
+    it('returns partial match when query is substring of name', () => {
+      const shape = resolveShape('aws', 'Beanstalk');
+      expect(shape).not.toBeNull();
+      expect(shape!.name).toBe('Elastic Beanstalk');
+    });
+
+    it('returns partial match when name is substring of query', () => {
+      const shape = resolveShape('aws', 'Lambda Function');
+      expect(shape).not.toBeNull();
+      expect(shape!.name).toBe('Lambda');
+    });
+
+    it('prefers shortest match on partial', () => {
+      const shape = resolveShape('aws', 'ecs');
+      expect(shape).not.toBeNull();
+      expect(shape!.name).toBe('ECS');
+    });
+
+    it('prefers category-scoped match', () => {
+      const shape = resolveShape('aws', 'Service', 'containers');
+      expect(shape).not.toBeNull();
+      expect(shape!.name).toBe('ECS Service');
+    });
+
+    it('returns null for non-existent shape', () => {
+      expect(resolveShape('aws', 'ZZZNoSuchShapeZZZ')).toBeNull();
+    });
+
+    it('returns null for empty string', () => {
+      expect(resolveShape('aws', '')).toBeNull();
+    });
+
+    it('returns null for invalid notation', () => {
+      expect(resolveShape('terraform' as any, 'Lambda')).toBeNull();
+    });
+
+    it('resolves generic shapes', () => {
+      const shape = resolveShape('generic', 'Rectangle');
+      expect(shape).not.toBeNull();
+      expect(shape!.name).toBe('Rectangle');
+    });
+
+    it('resolves azure shapes', () => {
+      const shape = resolveShape('azure', 'Virtual Machine');
+      expect(shape).not.toBeNull();
+      expect(shape!.name).toBe('Virtual Machine');
+    });
+
+    it('resolves archimate shapes', () => {
+      const shape = resolveShape('archimate', 'Business Actor');
+      expect(shape).not.toBeNull();
+      expect(shape!.name).toBe('Business Actor');
+    });
+
+    it('resolves cisco shapes', () => {
+      const shape = resolveShape('cisco', 'Router');
+      expect(shape).not.toBeNull();
+      expect(shape!.name).toBe('Router');
+    });
+
+    it('returned shape has all required fields', () => {
+      const shape = resolveShape('aws', 'Lambda');
+      expect(shape).not.toBeNull();
+      expect(shape!.style).toBeTruthy();
+      expect(shape!.defaultWidth).toBeGreaterThan(0);
+      expect(shape!.defaultHeight).toBeGreaterThan(0);
     });
   });
 

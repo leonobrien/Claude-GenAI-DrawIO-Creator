@@ -25,7 +25,7 @@ export { QdrantClient } from './vector/qdrant-client.js';
 export { RecallEngine } from './vector/recall-engine.js';
 export { StubEmbeddingProvider } from './vector/embedding-provider.js';
 export { buildIndexPayload, payloadToEmbeddingText } from './vector/diagram-indexer.js';
-export { getNotation, findNotation, listNotations, isValidNotation, resolveNotationFromShapeLibrary, genericNotation, awsNotation, azureNotation, gcpNotation, ciscoNotation, archimateNotation, umlNotation, bpmnNotation, } from './notation/index.js';
+export { getNotation, findNotation, listNotations, isValidNotation, resolveNotationFromShapeLibrary, resolveShape, genericNotation, awsNotation, azureNotation, gcpNotation, ciscoNotation, archimateNotation, umlNotation, bpmnNotation, } from './notation/index.js';
 export { StateManager } from './state/state-manager.js';
 export type { DiagramModel, DiagramNode, DiagramEdge, DiagramContainer, DiagramMetadata, DiagramOperation, StoredModel, VersionEntry, ProjectInfo, ValidationResult, FixResult, RecallResult, Point, DiagramType, NotationName, NotationShape, NotationStyleTemplates, NotationColourPalette, NotationLayoutConventions, NotationDefinition, } from './types/index.js';
 export type { EmbeddingProvider } from './vector/embedding-provider.js';

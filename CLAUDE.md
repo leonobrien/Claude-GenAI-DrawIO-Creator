@@ -49,10 +49,10 @@ Five modules under `src/`, each with a barrel `index.ts`:
 
 ### Notation (`src/notation/`)
 - **Generic** — Default notation with standard draw.io shapes (rectangle, diamond, cylinder, ellipse, cloud)
-- **AWS** — 31 AWS service shapes using full `mxgraph.aws4.resourceIcon` styles with category fill colours and 78×78 sizing
-- **Azure** — 21 Azure service shapes using `image=img/lib/azure2/<category>/<Service>.svg` SVG references
+- **AWS** — 36 AWS service shapes using full `mxgraph.aws4.resourceIcon` styles with category fill colours and 78×78 sizing
+- **Azure** — 20 Azure service shapes using `image=img/lib/azure2/<category>/<Service>.svg` SVG references
 - **GCP** — 32 Google Cloud shapes using `shape=mxgraph.gcp2.<service>` stencils
-- **Cisco** — 20 Cisco network shapes using `shape=mxgraph.cisco19.rect;prIcon=mxgraph.cisco19.<icon>;` composite pattern
+- **Cisco** — 20 Cisco network shapes using `shape=mxgraph.cisco19.rect;prIcon=<icon>;` composite pattern (prIcon uses bare icon name, NOT full stencil path)
 - **ArchiMate** — 15 ArchiMate 3.x shapes per layer using `shape=mxgraph.archimate3.<element>;archiType=<type>;`
 - **UML** — 23 UML 2.x shapes for class, sequence, component, use case, and activity diagrams using native draw.io shapes
 - **BPMN** — 30 BPMN 2.0 shapes for events, tasks, gateways, pools, and data objects using `mxgraph.bpmn` stencils

@@ -24,6 +24,18 @@ When the user requests a diagram:
 5. **Validate** — run `validateAndFixXml()` for structural correctness, `validateSemantics()` with notation for semantic + conformance checking
 6. **Store & Export** — use `ProjectManager`, `ModelStore`, `VersionManager`, and `ExportManager` to persist and export the diagram
 
+## Shape Validation
+
+Before writing a diagram script, verify that all needed shapes exist in the notation catalogue:
+
+1. **Check shapes** — call `resolveShape(notationName, shapeName)` for each shape you plan to use. It performs fuzzy matching (exact → case-insensitive → partial/substring).
+2. **When a shape is missing** (returns `null`), ask the user via `AskUserQuestion` in the outer conversation:
+   - **(a) Add the shape** — use the `Edit` tool to add the shape definition to the notation file (e.g. `src/notation/aws.ts`), then rebuild
+   - **(b) Use a generic fallback** — use a standard draw.io style (rectangle, ellipse, etc.) with a descriptive label
+3. **Always use `resolveShape()`** instead of `.find()!` in generated scripts — it returns `null` safely instead of crashing on missing shapes.
+
+**Stencil fidelity:** All notation shape identifiers (prIcon, resIcon, shape names) are validated against draw.io's authoritative stencil libraries via `tests/notation/stencil-fidelity.test.ts`. When adding new shapes, ensure their stencil identifiers exist in draw.io — the test will catch invalid identifiers that would render as plain rectangles.
+
 ## Script Template
 
 Write and execute a TypeScript script using `npx tsx`:
@@ -32,7 +44,7 @@ Write and execute a TypeScript script using `npx tsx`:
 import {
   buildDiagramXml, wrapWithMxFile, validateAndFixXml, validateSemantics,
   ProjectManager, ModelStore, VersionManager, ExportManager,
-  getNotation,
+  getNotation, resolveShape,
 } from '!`pwd`/src/index.js';
 import { randomUUID } from 'node:crypto';
 import { mkdirSync } from 'node:fs';
@@ -54,8 +66,9 @@ await projects.ensureExists(PROJECT_ID, 'Project description');
 
 // --- Optional: select a notation for cloud/enterprise diagrams ---
 // const notation = getNotation('aws');  // or 'azure', 'gcp', 'cisco', 'archimate', 'uml', 'bpmn', 'generic'
-// Use notation.shapes to find styles, e.g.:
-// const ec2 = notation.shapes.find(s => s.name === 'EC2 Instance')!;
+// Use resolveShape() to safely look up shapes with fuzzy matching:
+// const ec2 = resolveShape('aws', 'EC2 Instance');
+// if (!ec2) throw new Error('Shape not found: EC2 Instance');
 
 const model: DiagramModel = {
   containers: [
@@ -153,8 +166,8 @@ The skill supports eight diagram notations with pre-defined shape catalogues:
 | Notation | Use case | Stencil prefix |
 |----------|----------|----------------|
 | `generic` | Flowcharts, org charts, general diagrams | (standard draw.io) |
-| `aws` | AWS architecture diagrams (31 shapes) | `mxgraph.aws4` |
-| `azure` | Azure architecture diagrams (21 shapes) | `img/lib/azure2` |
+| `aws` | AWS architecture diagrams (36 shapes) | `mxgraph.aws4` |
+| `azure` | Azure architecture diagrams (20 shapes) | `img/lib/azure2` |
 | `gcp` | Google Cloud architecture diagrams (32 shapes) | `mxgraph.gcp2` |
 | `cisco` | Cisco network infrastructure diagrams (20 shapes) | `mxgraph.cisco19` |
 | `archimate` | Enterprise architecture (ArchiMate 3.x) | `mxgraph.archimate3` |
@@ -164,7 +177,7 @@ The skill supports eight diagram notations with pre-defined shape catalogues:
 ### Using Notations
 
 ```typescript
-import { getNotation, listNotations } from '!`pwd`/src/index.js';
+import { getNotation, resolveShape, listNotations } from '!`pwd`/src/index.js';
 
 // Get a specific notation
 const aws = getNotation('aws');
@@ -172,12 +185,18 @@ const aws = getNotation('aws');
 // Browse available shapes
 aws.shapes.forEach(s => console.log(`${s.name} (${s.category}): ${s.style}`));
 
-// Use a shape from the catalogue
-const lambda = aws.shapes.find(s => s.name === 'Lambda')!;
+// Safely resolve a shape (fuzzy matching: exact → case-insensitive → partial)
+const lambda = resolveShape('aws', 'Lambda');
+if (!lambda) throw new Error('Shape not found: Lambda');
 const node = {
   id: '2', label: 'My Function', style: lambda.style,
   x: 100, y: 100, width: lambda.defaultWidth, height: lambda.defaultHeight,
 };
+
+// Fuzzy matching examples:
+// resolveShape('aws', 'lambda')       → Lambda (case-insensitive)
+// resolveShape('aws', 'Beanstalk')    → Elastic Beanstalk (partial)
+// resolveShape('aws', 'NonExistent')  → null (safe, no crash)
 
 // List all notations
 listNotations().forEach(n => console.log(`${n.name}: ${n.displayName}`));

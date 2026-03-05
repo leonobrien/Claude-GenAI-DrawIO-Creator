@@ -2,6 +2,20 @@
 
 A TypeScript library for programmatic generation, revision, and management of [draw.io](https://www.drawio.com/) diagrams. Built as a Claude Code skill, it converts structured diagram models into fully editable `.drawio` files — no external MCP servers required.
 
+## Attribution
+
+This project is inspired by and builds upon the following work:
+
+**next-ai-draw-io** by Dayuan Jiang
+https://github.com/DayuanJiang/next-ai-draw-io
+
+A Next.js web application that integrates Claude 3.7 (via Amazon Bedrock) with an embedded draw.io editor. This project adapts the core XML generation, validation, and revision logic from this reference implementation into a standalone Claude Code skill, removing the dependency on a web application and MCP server infrastructure.
+
+Refer to [ATTRIBUTION.md](./ATTRIBUTION.md) for full details.
+
+## A note on why not using MCP
+The project is intended to be used directly within Claude Code and Skills feature is perfectly suited to local execution of such logic. The benefit of using Skills and the avoidance of having to use MCP - they are overused, fragile, poorly developed in most cases, and adds multiple framework layers that add no value when undertaking local development with Claude Code. In short, they have become just as pain inducing as javascript.
+
 ## Installation
 
 ### As a Claude Code Skill

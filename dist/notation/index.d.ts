@@ -6,5 +6,5 @@ export { ciscoNotation } from './cisco.js';
 export { archimateNotation } from './archimate.js';
 export { umlNotation } from './uml.js';
 export { bpmnNotation } from './bpmn.js';
-export { getNotation, findNotation, listNotations, isValidNotation, resolveNotationFromShapeLibrary, } from './registry.js';
+export { getNotation, findNotation, listNotations, isValidNotation, resolveNotationFromShapeLibrary, resolveShape, } from './registry.js';
 //# sourceMappingURL=index.d.ts.map

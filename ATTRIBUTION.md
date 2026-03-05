@@ -11,7 +11,7 @@ arXiv:2601.05162v1 [cs.GR], 8 January 2026
 
 The paper introduces a framework for transforming natural language descriptions into fully editable draw.io diagrams using Large Language Models. Key contributions adopted in this project include the specialised system prompt design, XML validation and correction pipeline, and the iterative revision loop with version history.
 
-A copy of the paper is stored at `resources/2601.05162v1.pdf`.
+The paper is published at [GenAI-DrawIO-Creator A Framework for Automated Diagram Generation](https://arxiv.org/html/2601.05162v1) or available as PDF here [resources/2601.05162v1.pdf](resources/2601.05162v1.pdf).
 
 ## Reference Implementation
 

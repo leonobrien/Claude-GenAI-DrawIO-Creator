@@ -10,8 +10,10 @@ const CISCO_POINTS = 'points=[[0.5,0,0],[0.5,1,0],[0,0.5,0],[1,0.5,0]];';
 const CISCO_BASE = `sketch=0;${CISCO_POINTS}verticalLabelPosition=bottom;html=1;verticalAlign=top;aspect=fixed;align=center;outlineConnect=0;`;
 /** Helper to build a Cisco icon style. */
 function ciscoIcon(prIcon) {
-    return `${CISCO_BASE}shape=mxgraph.cisco19.rect;prIcon=mxgraph.cisco19.${prIcon};fillColor=#FAFAFA;strokeColor=#005073;`;
+    return `${CISCO_BASE}shape=mxgraph.cisco19.rect;prIcon=${prIcon};fillColor=#FAFAFA;strokeColor=#005073;`;
 }
+/** Style for WAN/cloud shapes that have no cisco19 prIcon equivalent. */
+const CLOUD_STYLE = `${CISCO_BASE}ellipse;shape=cloud;fillColor=#FAFAFA;strokeColor=#005073;`;
 export const ciscoNotation = {
     name: 'cisco',
     displayName: 'Cisco Network',
@@ -28,14 +30,14 @@ export const ciscoNotation = {
         },
         {
             name: 'Switch',
-            style: ciscoIcon('switch'),
+            style: ciscoIcon('l2_switch'),
             defaultWidth: 50,
             defaultHeight: 50,
             category: 'switching',
         },
         {
             name: 'Multilayer Switch',
-            style: ciscoIcon('multilayer_switch'),
+            style: ciscoIcon('l3_switch'),
             defaultWidth: 50,
             defaultHeight: 50,
             category: 'switching',
@@ -43,6 +45,13 @@ export const ciscoNotation = {
         {
             name: 'L3 Switch',
             style: ciscoIcon('l3_switch'),
+            defaultWidth: 50,
+            defaultHeight: 50,
+            category: 'switching',
+        },
+        {
+            name: 'Workgroup Switch',
+            style: ciscoIcon('workgroup_switch'),
             defaultWidth: 50,
             defaultHeight: 50,
             category: 'switching',
@@ -64,14 +73,14 @@ export const ciscoNotation = {
         },
         {
             name: 'VPN Gateway',
-            style: ciscoIcon('vpn_gateway'),
+            style: ciscoIcon('virtual_private_network'),
             defaultWidth: 50,
             defaultHeight: 50,
             category: 'security',
         },
         {
             name: 'IDS/IPS',
-            style: ciscoIcon('ids_ips'),
+            style: ciscoIcon('ips_ids'),
             defaultWidth: 50,
             defaultHeight: 50,
             category: 'security',
@@ -79,14 +88,14 @@ export const ciscoNotation = {
         // Wireless
         {
             name: 'Access Point',
-            style: ciscoIcon('access_point'),
+            style: ciscoIcon('dual_mode_access_point'),
             defaultWidth: 50,
             defaultHeight: 50,
             category: 'wireless',
         },
         {
             name: 'Wireless Controller',
-            style: ciscoIcon('wireless_controller'),
+            style: ciscoIcon('wireless_lan_controller'),
             defaultWidth: 50,
             defaultHeight: 50,
             category: 'wireless',
@@ -94,35 +103,28 @@ export const ciscoNotation = {
         // Servers & Endpoints
         {
             name: 'Server',
-            style: ciscoIcon('server'),
+            style: ciscoIcon('ucs_c_series_server'),
             defaultWidth: 50,
             defaultHeight: 50,
             category: 'servers',
         },
         {
-            name: 'UCS',
-            style: ciscoIcon('ucs'),
+            name: 'Blade Server',
+            style: ciscoIcon('blade_server'),
             defaultWidth: 50,
             defaultHeight: 50,
             category: 'servers',
         },
         {
             name: 'Desktop',
-            style: ciscoIcon('desktop'),
-            defaultWidth: 50,
-            defaultHeight: 50,
-            category: 'endpoints',
-        },
-        {
-            name: 'Laptop',
-            style: ciscoIcon('laptop'),
+            style: ciscoIcon('monitor'),
             defaultWidth: 50,
             defaultHeight: 50,
             category: 'endpoints',
         },
         {
             name: 'IP Phone',
-            style: ciscoIcon('ip_phone'),
+            style: ciscoIcon('h323'),
             defaultWidth: 50,
             defaultHeight: 50,
             category: 'endpoints',
@@ -130,22 +132,22 @@ export const ciscoNotation = {
         // WAN & Connectivity
         {
             name: 'Cloud',
-            style: ciscoIcon('cloud'),
-            defaultWidth: 50,
-            defaultHeight: 50,
+            style: CLOUD_STYLE,
+            defaultWidth: 90,
+            defaultHeight: 60,
             category: 'wan',
         },
         {
             name: 'Internet',
-            style: ciscoIcon('internet'),
-            defaultWidth: 50,
-            defaultHeight: 50,
+            style: CLOUD_STYLE,
+            defaultWidth: 90,
+            defaultHeight: 60,
             category: 'wan',
         },
         // Data Centre
         {
             name: 'Nexus 5000',
-            style: ciscoIcon('nexus_5000'),
+            style: ciscoIcon('nexus_5k'),
             defaultWidth: 50,
             defaultHeight: 50,
             category: 'datacentre',
@@ -159,7 +161,7 @@ export const ciscoNotation = {
         },
         {
             name: 'UCS Manager',
-            style: ciscoIcon('ucs_manager'),
+            style: ciscoIcon('ucs_express'),
             defaultWidth: 50,
             defaultHeight: 50,
             category: 'datacentre',
@@ -198,16 +200,16 @@ export const ciscoNotation = {
         '<mxCell id="2" value="Data Centre" style="rounded=1;whiteSpace=wrap;html=1;dashed=1;dashPattern=5 5;fillColor=none;strokeColor=#005073;verticalAlign=top;fontStyle=1;fontSize=12;" vertex="1" connectable="0" parent="1">',
         '  <mxGeometry x="40" y="40" width="700" height="400" as="geometry"/>',
         '</mxCell>',
-        `<mxCell id="3" value="Internet" style="${ciscoIcon('internet')}" vertex="1" parent="1">`,
-        '  <mxGeometry x="340" y="40" width="50" height="50" as="geometry"/>',
+        `<mxCell id="3" value="Internet" style="${CLOUD_STYLE}" vertex="1" parent="1">`,
+        '  <mxGeometry x="320" y="40" width="90" height="60" as="geometry"/>',
         '</mxCell>',
         `<mxCell id="4" value="Firewall" style="${ciscoIcon('firewall')}" vertex="1" parent="2">`,
         '  <mxGeometry x="305" y="50" width="50" height="50" as="geometry"/>',
         '</mxCell>',
-        `<mxCell id="5" value="Core Switch" style="${ciscoIcon('multilayer_switch')}" vertex="1" parent="2">`,
+        `<mxCell id="5" value="Core Switch" style="${ciscoIcon('l3_switch')}" vertex="1" parent="2">`,
         '  <mxGeometry x="305" y="170" width="50" height="50" as="geometry"/>',
         '</mxCell>',
-        `<mxCell id="6" value="Server" style="${ciscoIcon('server')}" vertex="1" parent="2">`,
+        `<mxCell id="6" value="Server" style="${ciscoIcon('ucs_c_series_server')}" vertex="1" parent="2">`,
         '  <mxGeometry x="305" y="290" width="50" height="50" as="geometry"/>',
         '</mxCell>',
         '<mxCell id="7" style="endArrow=classic;html=1;strokeColor=#005073;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="3" target="4">',
@@ -221,7 +223,7 @@ export const ciscoNotation = {
         '</mxCell>',
     ].join('\n'),
     promptRules: [
-        'Use shape=mxgraph.cisco19.rect;prIcon=mxgraph.cisco19.<icon>; for all Cisco network icons',
+        'Use shape=mxgraph.cisco19.rect;prIcon=<icon>; for all Cisco network icons (prIcon uses the bare icon name, NOT the full stencil path)',
         'Apply base style with fillColor=#FAFAFA and strokeColor=#005073',
         'Organise network tiers top-down: internet → firewall → core → distribution → access → endpoints',
         'Group devices by site, building, or network zone using dashed containers',

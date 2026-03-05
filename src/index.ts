@@ -36,6 +36,7 @@ export {
   listNotations,
   isValidNotation,
   resolveNotationFromShapeLibrary,
+  resolveShape,
   genericNotation,
   awsNotation,
   azureNotation,

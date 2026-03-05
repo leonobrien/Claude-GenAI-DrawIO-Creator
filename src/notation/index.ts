@@ -12,4 +12,5 @@ export {
   listNotations,
   isValidNotation,
   resolveNotationFromShapeLibrary,
+  resolveShape,
 } from './registry.js';
