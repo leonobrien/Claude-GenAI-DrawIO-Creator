@@ -65,7 +65,16 @@ export class StateManager {
     }
 
     const content = await readFile(this.statePath, 'utf-8');
-    this.state = JSON.parse(content) as SkillState;
+    try {
+      this.state = JSON.parse(content) as SkillState;
+    } catch {
+      this.state = {
+        ...INITIAL_STATE,
+        lastUpdated: new Date().toISOString(),
+        completedOperations: [],
+        pendingOperations: [],
+      };
+    }
     return this.state;
   }
 

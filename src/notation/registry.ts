@@ -57,11 +57,14 @@ const SHAPE_LIBRARY_MAP: ReadonlyMap<string, NotationName> = new Map([
  * Returns the notation definition for the given name.
  * Defaults to 'generic' if the name is not recognised.
  */
+// Safe fallback — generic is always registered in the NOTATIONS map above.
+const GENERIC_NOTATION = NOTATIONS.get('generic') as NotationDefinition;
+
 export function getNotation(name?: NotationName): NotationDefinition {
   if (!name) {
-    return NOTATIONS.get('generic')!;
+    return GENERIC_NOTATION;
   }
-  return NOTATIONS.get(name) ?? NOTATIONS.get('generic')!;
+  return NOTATIONS.get(name) ?? GENERIC_NOTATION;
 }
 
 /**

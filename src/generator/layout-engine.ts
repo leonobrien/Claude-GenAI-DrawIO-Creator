@@ -5,7 +5,7 @@
  * minimum spacing. Supports horizontal and vertical flow directions.
  */
 
-import type { DiagramModel, DiagramNode, DiagramContainer, Point } from '../types/index.js';
+import type { DiagramModel, Point } from '../types/index.js';
 
 export interface LayoutConstraints {
   /** Maximum x coordinate (default: 800) */

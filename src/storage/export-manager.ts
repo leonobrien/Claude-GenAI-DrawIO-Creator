@@ -3,9 +3,25 @@
  */
 
 import { writeFile } from 'node:fs/promises';
+import { resolve } from 'node:path';
 import { VersionManager } from './version-manager.js';
 
 export type ExportFormat = 'drawio' | 'xml';
+
+export interface ExportVersionOptions {
+  project: string;
+  modelId: string;
+  versionNumber: number;
+  outputPath: string;
+  format?: ExportFormat;
+}
+
+function assertSafeOutputPath(outputPath: string): void {
+  const resolved = resolve(outputPath);
+  if (resolved.includes('\0')) {
+    throw new Error('Invalid output path: contains null bytes');
+  }
+}
 
 export class ExportManager {
   private readonly versionManager: VersionManager;
@@ -29,14 +45,16 @@ export class ExportManager {
     outputPath: string,
     format: ExportFormat = 'drawio',
   ): Promise<string | null> {
+    assertSafeOutputPath(outputPath);
+
     const version = await this.versionManager.loadLatest(project, modelId);
     if (!version) {
       return null;
     }
 
-    const finalPath = outputPath.endsWith(`.${format}`)
-      ? outputPath
-      : `${outputPath}.${format}`;
+    const finalPath = resolve(
+      outputPath.endsWith(`.${format}`) ? outputPath : `${outputPath}.${format}`,
+    );
 
     await writeFile(finalPath, version.xml, 'utf-8');
     return finalPath;
@@ -45,21 +63,18 @@ export class ExportManager {
   /**
    * Exports a specific version of a model to a file.
    */
-  async exportVersionToFile(
-    project: string,
-    modelId: string,
-    versionNumber: number,
-    outputPath: string,
-    format: ExportFormat = 'drawio',
-  ): Promise<string | null> {
+  async exportVersionToFile(opts: ExportVersionOptions): Promise<string | null> {
+    const { project, modelId, versionNumber, outputPath, format = 'drawio' } = opts;
+    assertSafeOutputPath(outputPath);
+
     const version = await this.versionManager.loadVersion(project, modelId, versionNumber);
     if (!version) {
       return null;
     }
 
-    const finalPath = outputPath.endsWith(`.${format}`)
-      ? outputPath
-      : `${outputPath}.${format}`;
+    const finalPath = resolve(
+      outputPath.endsWith(`.${format}`) ? outputPath : `${outputPath}.${format}`,
+    );
 
     await writeFile(finalPath, version.xml, 'utf-8');
     return finalPath;

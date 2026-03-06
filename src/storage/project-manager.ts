@@ -9,6 +9,22 @@ import { join } from 'node:path';
 import { existsSync } from 'node:fs';
 import type { ProjectInfo } from '../types/index.js';
 
+const SAFE_NAME_PATTERN = /^[a-zA-Z0-9][a-zA-Z0-9._-]*$/;
+
+function assertSafeName(value: string, label: string): void {
+  if (!SAFE_NAME_PATTERN.test(value)) {
+    throw new Error(`Invalid ${label}: must match ${SAFE_NAME_PATTERN.source}`);
+  }
+}
+
+function safeJsonParse<T>(content: string, context: string): T {
+  try {
+    return JSON.parse(content) as T;
+  } catch (err) {
+    throw new Error(`Failed to parse ${context}: ${err instanceof Error ? err.message : String(err)}`);
+  }
+}
+
 export class ProjectManager {
   private readonly storageRoot: string;
 
@@ -21,6 +37,7 @@ export class ProjectManager {
   }
 
   private projectDir(name: string): string {
+    assertSafeName(name, 'project name');
     return join(this.projectsDir(), name);
   }
 
@@ -59,7 +76,7 @@ export class ProjectManager {
       return null;
     }
     const content = await readFile(infoPath, 'utf-8');
-    return JSON.parse(content) as ProjectInfo;
+    return safeJsonParse<ProjectInfo>(content, `project ${name}`);
   }
 
   /**
@@ -110,6 +127,9 @@ export class ProjectManager {
       return existing;
     }
     const created = await this.create(name, description);
-    return created!;
+    if (!created) {
+      throw new Error(`Failed to create project "${name}"`);
+    }
+    return created;
   }
 }

@@ -7,7 +7,6 @@
 
 import type { RecallResult, StoredModel } from '../types/index.js';
 import type { EmbeddingProvider } from './embedding-provider.js';
-import type { IndexablePayload } from './diagram-indexer.js';
 import { buildIndexPayload, payloadToEmbeddingText } from './diagram-indexer.js';
 import { QdrantClient } from './qdrant-client.js';
 
@@ -41,7 +40,7 @@ export class RecallEngine {
     await this.qdrant.upsert({
       id: model.id,
       vector,
-      payload: payload as unknown as Record<string, unknown>,
+      payload: { ...payload },
     });
   }
 
@@ -57,12 +56,12 @@ export class RecallEngine {
     const results = await this.qdrant.search(vector, limit);
 
     return results.map((r) => {
-      const payload = r.payload as unknown as IndexablePayload;
+      const p = r.payload;
       return {
-        modelId: payload.model_id,
-        project: payload.project,
-        name: payload.name,
-        description: payload.description,
+        modelId: String(p.model_id ?? ''),
+        project: String(p.project ?? ''),
+        name: String(p.name ?? ''),
+        description: String(p.description ?? ''),
         score: r.score,
       };
     });

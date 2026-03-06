@@ -10,6 +10,23 @@ import { join } from 'node:path';
 import { existsSync } from 'node:fs';
 import type { VersionEntry } from '../types/index.js';
 
+const SAFE_NAME_PATTERN = /^[a-zA-Z0-9][a-zA-Z0-9._-]*$/;
+const MAX_LIST_ITEMS = 1000;
+
+function assertSafeName(value: string, label: string): void {
+  if (!SAFE_NAME_PATTERN.test(value)) {
+    throw new Error(`Invalid ${label}: must match ${SAFE_NAME_PATTERN.source}`);
+  }
+}
+
+function safeJsonParse<T>(content: string, context: string): T {
+  try {
+    return JSON.parse(content) as T;
+  } catch (err) {
+    throw new Error(`Failed to parse ${context}: ${err instanceof Error ? err.message : String(err)}`);
+  }
+}
+
 export class VersionManager {
   private readonly storageRoot: string;
 
@@ -18,6 +35,8 @@ export class VersionManager {
   }
 
   private versionsDir(project: string, modelId: string): string {
+    assertSafeName(project, 'project name');
+    assertSafeName(modelId, 'model id');
     return join(this.storageRoot, 'projects', project, 'models', `${modelId}.versions`);
   }
 
@@ -85,8 +104,8 @@ export class VersionManager {
     const xml = await readFile(xmlPath, 'utf-8');
 
     if (existsSync(metaPath)) {
-      const meta = JSON.parse(await readFile(metaPath, 'utf-8'));
-      return { ...meta, xml };
+      const meta = safeJsonParse<Omit<VersionEntry, 'xml'>>(await readFile(metaPath, 'utf-8'), `version ${version} metadata`);
+      return { version: meta.version, timestamp: meta.timestamp, description: meta.description, xml };
     }
 
     return {
@@ -124,12 +143,16 @@ export class VersionManager {
     }
 
     const files = await readdir(dir);
-    const metaFiles = files.filter((f) => f.endsWith('.meta.json')).sort();
+    const metaFiles = files.filter((f) => f.endsWith('.meta.json')).sort().slice(0, MAX_LIST_ITEMS);
 
     const entries: Omit<VersionEntry, 'xml'>[] = [];
     for (const file of metaFiles) {
-      const content = await readFile(join(dir, file), 'utf-8');
-      entries.push(JSON.parse(content));
+      try {
+        const content = await readFile(join(dir, file), 'utf-8');
+        entries.push(safeJsonParse<Omit<VersionEntry, 'xml'>>(content, `version metadata ${file}`));
+      } catch {
+        // Skip malformed metadata files
+      }
     }
 
     return entries;

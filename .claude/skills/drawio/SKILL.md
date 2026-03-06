@@ -214,11 +214,15 @@ Each notation provides: shapes with default dimensions, style templates (vertex/
 
 ## Edge Routing Rules
 
-1. Never let multiple edges share the same path — use different exitY/entryY values
-2. For bidirectional connections, use opposite sides
-3. Always specify exitX, exitY, entryX, entryY explicitly
+1. **Connect to shapes, not fixed points** — by default, edges should connect to the shape perimeter (omit `exitX/exitY/entryX/entryY`). This allows draw.io to dynamically re-route edges when shapes are moved. Only pin edges to specific connection points when precise routing is required (e.g. sequence diagram activation bars, specific port positions)
+2. Never let multiple edges share the same path — use different exit/entry sides or offsets
+3. For bidirectional connections, use opposite sides
 4. Route edges around intermediate shapes with 20–30px clearance
 5. Use waypoints for L-shaped or U-shaped routing
+6. **Region containment** — when a diagram has distinct visual regions (UML `alt`/`opt`/`loop` fragments, BPMN pools/lanes, ArchiMate layers, container boundaries), every edge that belongs to a region must be visually confined to it:
+   - If the edge's source and target elements are both within the region, a connected edge (`source`/`target` attributes) is fine
+   - If either endpoint sits outside the region (e.g. a shared activation bar, a node in another lane), use **absolute `mxPoint` coordinates** (`sourcePoint`/`targetPoint`) to pin the edge within the region's bounds — do NOT connect to elements outside the region, as draw.io will route the edge through the wrong area
+   - Calculate absolute X/Y by summing coordinates through the parent chain: `absolute = frame.x + container.x + element.x + offset`
 
 ## Connection Points Reference
 

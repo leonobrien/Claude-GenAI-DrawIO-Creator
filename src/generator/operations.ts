@@ -91,7 +91,8 @@ function collectCascadeDeleteIds(xml: string, cellId: string): Set<string> {
   const queue = [cellId];
 
   while (queue.length > 0) {
-    const current = queue.pop()!;
+    const current = queue.pop();
+    if (!current) break;
     if (toDelete.has(current)) continue;
     toDelete.add(current);
 
@@ -105,6 +106,58 @@ function collectCascadeDeleteIds(xml: string, cellId: string): Set<string> {
   }
 
   return toDelete;
+}
+
+function applyUpdate(
+  current: string,
+  op: DiagramOperation,
+  cellIndex: Map<string, { fullMatch: string; startIndex: number; endIndex: number }>,
+): { xml: string; message?: string; error?: string } {
+  if (!op.new_xml) {
+    return { xml: current, error: `Update operation for "${op.cell_id}" missing new_xml` };
+  }
+  const existing = cellIndex.get(op.cell_id);
+  if (!existing) {
+    return { xml: current, error: `Cell "${op.cell_id}" not found for update` };
+  }
+  return { xml: current.replace(existing.fullMatch, op.new_xml), message: `Updated cell "${op.cell_id}"` };
+}
+
+function applyAdd(
+  current: string,
+  op: DiagramOperation,
+): { xml: string; message?: string; error?: string } {
+  if (!op.new_xml) {
+    return { xml: current, error: `Add operation for "${op.cell_id}" missing new_xml` };
+  }
+  const rootCloseIndex = current.lastIndexOf('</root>');
+  const xml = rootCloseIndex !== -1
+    ? current.slice(0, rootCloseIndex) + op.new_xml + '\n' + current.slice(rootCloseIndex)
+    : current + '\n' + op.new_xml;
+  return { xml, message: `Added cell "${op.cell_id}"` };
+}
+
+function applyDelete(
+  current: string,
+  op: DiagramOperation,
+  cellIndex: Map<string, { fullMatch: string; startIndex: number; endIndex: number }>,
+): { xml: string; message?: string; error?: string } {
+  const toDelete = collectCascadeDeleteIds(current, op.cell_id);
+  if (toDelete.size === 0 || !cellIndex.has(op.cell_id)) {
+    return { xml: current, error: `Cell "${op.cell_id}" not found for delete` };
+  }
+
+  let xml = current;
+  const freshIndex = buildCellIndex(xml);
+  for (const id of toDelete) {
+    const cell = freshIndex.get(id);
+    if (cell) {
+      xml = xml.replace(cell.fullMatch, '');
+    }
+  }
+
+  xml = xml.replace(/\n{3,}/g, '\n\n');
+  return { xml, message: `Deleted cell "${op.cell_id}" (cascade: ${toDelete.size} elements)` };
 }
 
 /**
@@ -124,65 +177,25 @@ export function applyOperations(xml: string, operations: DiagramOperation[]): Ap
 
   for (const op of operations) {
     const cellIndex = buildCellIndex(current);
+    let result: { xml: string; message?: string; error?: string };
 
     switch (op.operation) {
-      case 'update': {
-        if (!op.new_xml) {
-          errors.push(`Update operation for "${op.cell_id}" missing new_xml`);
-          break;
-        }
-        const existing = cellIndex.get(op.cell_id);
-        if (!existing) {
-          errors.push(`Cell "${op.cell_id}" not found for update`);
-          break;
-        }
-        current = current.replace(existing.fullMatch, op.new_xml);
-        applied.push(`Updated cell "${op.cell_id}"`);
+      case 'update':
+        result = applyUpdate(current, op, cellIndex);
         break;
-      }
-
-      case 'add': {
-        if (!op.new_xml) {
-          errors.push(`Add operation for "${op.cell_id}" missing new_xml`);
-          break;
-        }
-        // Insert before the closing </root> tag, or append at end
-        const rootCloseIndex = current.lastIndexOf('</root>');
-        if (rootCloseIndex !== -1) {
-          current = current.slice(0, rootCloseIndex) + op.new_xml + '\n' + current.slice(rootCloseIndex);
-        } else {
-          current = current + '\n' + op.new_xml;
-        }
-        applied.push(`Added cell "${op.cell_id}"`);
+      case 'add':
+        result = applyAdd(current, op);
         break;
-      }
-
-      case 'delete': {
-        const toDelete = collectCascadeDeleteIds(current, op.cell_id);
-        if (toDelete.size === 0 || !cellIndex.has(op.cell_id)) {
-          errors.push(`Cell "${op.cell_id}" not found for delete`);
-          break;
-        }
-
-        // Rebuild cell index for deletion (order matters)
-        const freshIndex = buildCellIndex(current);
-        for (const id of toDelete) {
-          const cell = freshIndex.get(id);
-          if (cell) {
-            current = current.replace(cell.fullMatch, '');
-          }
-        }
-
-        // Clean up empty lines
-        current = current.replace(/\n{3,}/g, '\n\n');
-
-        applied.push(`Deleted cell "${op.cell_id}" (cascade: ${toDelete.size} elements)`);
+      case 'delete':
+        result = applyDelete(current, op, cellIndex);
         break;
-      }
-
       default:
-        errors.push(`Unknown operation: ${(op as DiagramOperation).operation}`);
+        result = { xml: current, error: `Unknown operation: ${(op as DiagramOperation).operation}` };
     }
+
+    current = result.xml;
+    if (result.message) applied.push(result.message);
+    if (result.error) errors.push(result.error);
   }
 
   return { xml: current.trim(), applied, errors };

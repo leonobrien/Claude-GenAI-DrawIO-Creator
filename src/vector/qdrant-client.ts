@@ -49,6 +49,10 @@ export class QdrantClient {
     return h;
   }
 
+  private collectionPath(): string {
+    return `/collections/${encodeURIComponent(this.config.collectionName)}`;
+  }
+
   private url(path: string): string {
     return `${this.config.url}${path}`;
   }
@@ -59,7 +63,7 @@ export class QdrantClient {
   async ensureCollection(): Promise<void> {
     // Check if collection exists
     const checkRes = await fetch(
-      this.url(`/collections/${this.config.collectionName}`),
+      this.url(this.collectionPath()),
       { headers: this.headers() },
     );
 
@@ -69,7 +73,7 @@ export class QdrantClient {
 
     // Create collection
     const createRes = await fetch(
-      this.url(`/collections/${this.config.collectionName}`),
+      this.url(this.collectionPath()),
       {
         method: 'PUT',
         headers: this.headers(),
@@ -93,7 +97,7 @@ export class QdrantClient {
    */
   async upsert(point: QdrantPoint): Promise<void> {
     const res = await fetch(
-      this.url(`/collections/${this.config.collectionName}/points`),
+      this.url(`${this.collectionPath()}/points`),
       {
         method: 'PUT',
         headers: this.headers(),
@@ -124,7 +128,7 @@ export class QdrantClient {
    */
   async search(vector: number[], limit = 5): Promise<QdrantSearchResult[]> {
     const res = await fetch(
-      this.url(`/collections/${this.config.collectionName}/points/search`),
+      this.url(`${this.collectionPath()}/points/search`),
       {
         method: 'POST',
         headers: this.headers(),
@@ -150,7 +154,7 @@ export class QdrantClient {
    */
   async deletePoint(pointId: string): Promise<void> {
     const res = await fetch(
-      this.url(`/collections/${this.config.collectionName}/points/delete`),
+      this.url(`${this.collectionPath()}/points/delete`),
       {
         method: 'POST',
         headers: this.headers(),

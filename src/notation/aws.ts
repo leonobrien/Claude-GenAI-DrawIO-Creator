@@ -33,11 +33,6 @@ function awsResourceIcon(resIcon: string, fillColor: string): string {
   return `sketch=0;${AWS_POINTS}outlineConnect=0;fontColor=#232F3E;fillColor=${fillColor};strokeColor=#ffffff;dashed=0;verticalLabelPosition=bottom;verticalAlign=top;align=center;html=1;fontSize=12;fontStyle=0;aspect=fixed;shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.${resIcon};`;
 }
 
-/** Style for AWS product icons (smaller, flat). */
-function awsProductIcon(icon: string, fillColor: string): string {
-  return `sketch=0;${AWS_POINTS}outlineConnect=0;fontColor=#232F3E;fillColor=${fillColor};strokeColor=#232F3E;dashed=0;verticalLabelPosition=bottom;verticalAlign=top;align=center;html=1;fontSize=12;fontStyle=0;aspect=fixed;shape=mxgraph.aws4.productIcon;prIcon=mxgraph.aws4.${icon};`;
-}
-
 /** Style for AWS sub-resource shapes (standalone shape, not resourceIcon wrapper). */
 function awsShape(shapeName: string): string {
   return `sketch=0;${AWS_POINTS}outlineConnect=0;fontColor=#232F3E;gradientColor=none;strokeColor=#232F3E;fillColor=#ED7100;html=1;fontSize=12;fontStyle=0;aspect=fixed;shape=mxgraph.aws4.${shapeName};`;
