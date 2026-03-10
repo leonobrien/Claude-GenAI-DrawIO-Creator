@@ -59,6 +59,19 @@ Five modules under `src/`, each with a barrel `index.ts`:
 - **BPMN** — 30 BPMN 2.0 shapes for events, tasks, gateways, pools, and data objects using `mxgraph.bpmn` stencils
 - **Registry** — `getNotation()`, `findNotation()`, `listNotations()`, `isValidNotation()`, `resolveNotationFromShapeLibrary()` for lookup and resolution
 
+### Templates (`src/templates/`)
+- **Registry** — `getTemplate()`, `listTemplates()`, `listTemplatesByNotation()`, `listTemplatesByCategory()`, `searchTemplates()` for template lookup and filtering
+- **8 pre-built templates** covering all notation families:
+  - `three-tier-web-app` — Presentation/Application/Data tiers (generic, aws, azure, gcp)
+  - `microservices` — API Gateway + services + databases + message broker (generic, aws, azure, gcp)
+  - `cicd-pipeline` — Source → Build → Test → Deploy pipeline (generic, aws, azure, gcp)
+  - `hub-spoke-network` — Cisco network: Internet → Firewall → Core → Distribution → Access (cisco, generic)
+  - `bpmn-order-fulfilment` — Order processing with Sales/Warehouse pools and gateways (bpmn)
+  - `uml-class-diagram` — Domain model with inheritance, composition, association (uml)
+  - `archimate-layered` — Business → Application → Technology layers with serving relationships (archimate)
+  - `serverless` — API Gateway → Functions → managed services with monitoring (generic, aws, azure, gcp)
+- Each template accepts optional `TemplateParams` to override default labels
+
 ### VectorBridge (`src/vector/`)
 - **QdrantClient** — Thin REST wrapper (collection CRUD, upsert, search, delete)
 - **DiagramIndexer** — Extracts labels, edge relationships, and metadata from XML for embedding
@@ -78,6 +91,7 @@ Five modules under `src/`, each with a barrel `index.ts`:
 - **Notation-driven edge routing**: Each notation defines an appropriate `edgeStyle` in its `styleTemplates.edge`. Most notations use `orthogonalEdgeStyle` (right-angle routing); AWS/GCP add `curved=1` for smooth curves; generic/Azure add `rounded=1` for softened corners; Cisco uses straight lines (no edgeStyle) for network topologies.
 - **mxGraphModel attributes**: `wrapWithMxFile()` emits 15 standard attributes (dx, dy, grid, gridSize, guides, tooltips, connect, arrows, fold, page, pageScale, pageWidth, pageHeight, math, shadow) with A4 landscape defaults. Accepts optional `MxGraphModelOptions` to override.
 - **Shape pre-flight validation**: `validateShapeRenderable(xml)` checks stencil references against all notation catalogues before the user opens the file, catching shapes that would render as plain rectangles.
+- **Template library**: Pre-built `DiagramModel` templates for 8 common patterns, parameterisable via `TemplateParams`. Covers all notation families (generic, aws, azure, gcp, cisco, bpmn, uml, archimate). Templates are read-only definitions that produce valid `DiagramModel` instances via `build(params?)`.
 
 ## draw.io XML Format
 

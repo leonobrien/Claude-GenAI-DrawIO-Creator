@@ -29,6 +29,7 @@ export { StubEmbeddingProvider } from './vector/embedding-provider.js';
 export { buildIndexPayload, payloadToEmbeddingText } from './vector/diagram-indexer.js';
 export { getNotation, findNotation, listNotations, isValidNotation, resolveNotationFromShapeLibrary, resolveShape, genericNotation, awsNotation, azureNotation, gcpNotation, ciscoNotation, archimateNotation, umlNotation, bpmnNotation, } from './notation/index.js';
 export { StateManager } from './state/state-manager.js';
+export { getTemplate, listTemplates, listTemplatesByNotation, listTemplatesByCategory, searchTemplates, threeTierWebApp, microservices, cicdPipeline, hubSpokeNetwork, bpmnOrderFulfilment, umlClassDiagram, archimateLayered, serverless, } from './templates/index.js';
 export type { DiagramModel, DiagramNode, DiagramEdge, DiagramContainer, DiagramMetadata, DiagramOperation, StoredModel, VersionEntry, ProjectInfo, ValidationResult, FixResult, RecallResult, Point, DiagramType, NotationName, NotationShape, NotationStyleTemplates, NotationColourPalette, NotationLayoutConventions, NotationDefinition, ImageAnalysisOptions, } from './types/index.js';
 export type { EmbeddingProvider } from './vector/embedding-provider.js';
 export type { IndexablePayload } from './vector/diagram-indexer.js';
@@ -40,4 +41,5 @@ export type { SemanticValidationResult } from './parser/semantic-validator.js';
 export type { ShapeValidationResult, ShapeValidationIssue } from './parser/shape-validator.js';
 export type { ValidateAndFixResult } from './parser/index.js';
 export type { SkillState, OperationRecord } from './state/state-manager.js';
+export type { DiagramTemplate, TemplateParams, TemplateCategory } from './templates/index.js';
 //# sourceMappingURL=index.d.ts.map
