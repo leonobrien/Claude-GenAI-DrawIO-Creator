@@ -278,9 +278,9 @@ export const gcpNotation: NotationDefinition = {
   ],
   styleTemplates: {
     vertex: `${GCP_ICON_BASE}fillColor=#4285F4;shape=mxgraph.gcp2.compute_engine;`,
-    edge: 'endArrow=classic;html=1;strokeColor=#4285F4;',
+    edge: 'edgeStyle=orthogonalEdgeStyle;curved=1;endArrow=classic;html=1;strokeColor=#4285F4;',
     container: 'rounded=1;whiteSpace=wrap;html=1;dashed=1;dashPattern=5 5;fillColor=none;strokeColor=#4285F4;verticalAlign=top;fontStyle=1;fontSize=12;',
-    labelEdge: 'endArrow=classic;html=1;strokeColor=#4285F4;fontSize=10;',
+    labelEdge: 'edgeStyle=orthogonalEdgeStyle;curved=1;endArrow=classic;html=1;strokeColor=#4285F4;fontSize=10;',
   },
   colours: {
     compute: { fillColor: '#4285F4', strokeColor: '#4285F4' },

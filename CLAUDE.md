@@ -74,6 +74,7 @@ Five modules under `src/`, each with a barrel `index.ts`:
 - **Cascade delete**: Deleting a cell removes all children (`parent="<id>"`) and all edges referencing it as source or target.
 - **Shallow copy hazard**: `StateManager` explicitly creates new arrays when initialising/resetting state to avoid shared-reference bugs from object spread.
 - **Notation registry**: Read-only, deterministic registry of notation definitions. Each notation provides shapes, style templates, colours, layout conventions, few-shot examples, and prompt rules. `resolveNotationFromShapeLibrary()` bridges the legacy `shapeLibrary` field to `NotationName`.
+- **Notation-driven edge routing**: Each notation defines an appropriate `edgeStyle` in its `styleTemplates.edge`. Most notations use `orthogonalEdgeStyle` (right-angle routing); AWS/GCP add `curved=1` for smooth curves; generic/Azure add `rounded=1` for softened corners; Cisco uses straight lines (no edgeStyle) for network topologies.
 
 ## draw.io XML Format
 

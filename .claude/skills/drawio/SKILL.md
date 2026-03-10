@@ -343,6 +343,23 @@ Each notation provides: shapes with default dimensions, style templates (vertex/
 
 ## Edge Routing Rules
 
+### Routing Styles (notation-driven)
+
+Each notation defines an appropriate `edgeStyle` in its style template. Always use the notation's edge template as the base style for edges:
+
+| Notation | Edge Routing | Style Prefix |
+|----------|-------------|--------------|
+| `generic` | Orthogonal, rounded corners | `edgeStyle=orthogonalEdgeStyle;rounded=1;` |
+| `aws` | Orthogonal, curved | `edgeStyle=orthogonalEdgeStyle;curved=1;` |
+| `azure` | Orthogonal, rounded corners | `edgeStyle=orthogonalEdgeStyle;rounded=1;` |
+| `gcp` | Orthogonal, curved | `edgeStyle=orthogonalEdgeStyle;curved=1;` |
+| `cisco` | Straight (no edgeStyle) | *(direct point-to-point)* |
+| `uml` | Orthogonal | `edgeStyle=orthogonalEdgeStyle;` |
+| `bpmn` | Orthogonal | `edgeStyle=orthogonalEdgeStyle;` |
+| `archimate` | Orthogonal | `edgeStyle=orthogonalEdgeStyle;` |
+
+### Connection Rules
+
 1. **Connect to shapes, not fixed points** — by default, edges should connect to the shape perimeter (omit `exitX/exitY/entryX/entryY`). This allows draw.io to dynamically re-route edges when shapes are moved. Only pin edges to specific connection points when precise routing is required (e.g. sequence diagram activation bars, specific port positions)
 2. Never let multiple edges share the same path — use different exit/entry sides or offsets
 3. For bidirectional connections, use opposite sides
@@ -379,8 +396,11 @@ Each notation provides: shapes with default dimensions, style templates (vertex/
 - Purple: `fillColor=#e1d5e7;strokeColor=#9673a6;`
 - Grey: `fillColor=#f5f5f5;strokeColor=#666666;`
 
-**Edges:**
-- Arrow: `endArrow=classic;html=1;`
+**Edges (use notation edge template as base, then append overrides):**
+- Orthogonal arrow: `edgeStyle=orthogonalEdgeStyle;endArrow=classic;html=1;`
+- Curved orthogonal: `edgeStyle=orthogonalEdgeStyle;curved=1;endArrow=classic;html=1;`
+- Rounded orthogonal: `edgeStyle=orthogonalEdgeStyle;rounded=1;endArrow=classic;html=1;`
+- Straight arrow: `endArrow=classic;html=1;`
 - No arrow (org chart): `endArrow=none;html=1;`
 - Dashed: `dashed=1;`
 

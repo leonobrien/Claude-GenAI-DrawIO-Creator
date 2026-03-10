@@ -264,9 +264,9 @@ export const bpmnNotation: NotationDefinition = {
   ],
   styleTemplates: {
     vertex: bpmnTask('abstract'),
-    edge: 'endArrow=classic;html=1;strokeColor=#000000;',
+    edge: 'edgeStyle=orthogonalEdgeStyle;endArrow=classic;html=1;strokeColor=#000000;',
     container: 'swimlane;startSize=20;html=1;childLayout=stackLayout;horizontal=1;horizontalStack=0;resizeParent=1;resizeLast=0;collapsible=0;marginBottom=0;swimlaneLine=1;fontStyle=1;fillColor=none;',
-    labelEdge: 'endArrow=classic;html=1;strokeColor=#000000;fontSize=10;',
+    labelEdge: 'edgeStyle=orthogonalEdgeStyle;endArrow=classic;html=1;strokeColor=#000000;fontSize=10;',
   },
   colours: {
     events: { fillColor: '#FFFFFF', strokeColor: '#000000' },
