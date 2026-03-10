@@ -2,6 +2,7 @@ export { validateXml } from './xml-validator.js';
 export { fixXml } from './xml-fixer.js';
 export { validateSemantics, validateEdgeReferences, validateExpectedLabels } from './semantic-validator.js';
 export { isMxCellXmlComplete, extractCompleteMxCells } from './completion-checker.js';
+export { validateShapeRenderable, extractStencilRef } from './shape-validator.js';
 import { validateXml } from './xml-validator.js';
 import { fixXml } from './xml-fixer.js';
 /**

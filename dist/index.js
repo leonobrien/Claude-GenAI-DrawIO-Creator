@@ -18,6 +18,7 @@ export { fixXml } from './parser/xml-fixer.js';
 export { validateAndFixXml } from './parser/index.js';
 export { validateSemantics, validateEdgeReferences, validateExpectedLabels, validateNotationConformance } from './parser/semantic-validator.js';
 export { isMxCellXmlComplete, extractCompleteMxCells } from './parser/completion-checker.js';
+export { validateShapeRenderable, extractStencilRef } from './parser/shape-validator.js';
 export { ModelStore } from './storage/model-store.js';
 export { VersionManager } from './storage/version-manager.js';
 export { ProjectManager } from './storage/project-manager.js';

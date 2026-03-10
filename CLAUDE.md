@@ -39,6 +39,7 @@ Five modules under `src/`, each with a barrel `index.ts`:
 - **XmlFixer** — Iterative auto-correction pipeline (max 10 rounds): fixes JSON escaping, CDATA, LLM artifacts, `<Cell>`→`<mxCell>`, bare ampersands, duplicate IDs, etc.
 - **SemanticValidator** — Verifies user-requested labels appear in output, all edge source/target IDs exist, and optionally checks notation conformance (stencil prefix matching)
 - **CompletionChecker** — Detects truncated XML (unclosed tags/attributes) for continuation handling
+- **ShapeValidator** — Runtime pre-flight check: `extractStencilRef()` parses `prIcon=`, `resIcon=`, `shape=mxgraph.*`, `image=img/lib/` from styles; `validateShapeRenderable(xml)` checks all vertex stencil refs against notation catalogues. Invalid refs produce warnings before the user opens the file.
 - **`validateAndFixXml()`** — Combined pipeline: validate → fix → re-validate
 
 ### Storage (`src/storage/`)
@@ -75,6 +76,8 @@ Five modules under `src/`, each with a barrel `index.ts`:
 - **Shallow copy hazard**: `StateManager` explicitly creates new arrays when initialising/resetting state to avoid shared-reference bugs from object spread.
 - **Notation registry**: Read-only, deterministic registry of notation definitions. Each notation provides shapes, style templates, colours, layout conventions, few-shot examples, and prompt rules. `resolveNotationFromShapeLibrary()` bridges the legacy `shapeLibrary` field to `NotationName`.
 - **Notation-driven edge routing**: Each notation defines an appropriate `edgeStyle` in its `styleTemplates.edge`. Most notations use `orthogonalEdgeStyle` (right-angle routing); AWS/GCP add `curved=1` for smooth curves; generic/Azure add `rounded=1` for softened corners; Cisco uses straight lines (no edgeStyle) for network topologies.
+- **mxGraphModel attributes**: `wrapWithMxFile()` emits 15 standard attributes (dx, dy, grid, gridSize, guides, tooltips, connect, arrows, fold, page, pageScale, pageWidth, pageHeight, math, shadow) with A4 landscape defaults. Accepts optional `MxGraphModelOptions` to override.
+- **Shape pre-flight validation**: `validateShapeRenderable(xml)` checks stencil references against all notation catalogues before the user opens the file, catching shapes that would render as plain rectangles.
 
 ## draw.io XML Format
 
