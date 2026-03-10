@@ -187,9 +187,9 @@ export const umlNotation: NotationDefinition = {
   ],
   styleTemplates: {
     vertex: 'rounded=1;whiteSpace=wrap;html=1;',
-    edge: 'endArrow=open;endFill=0;html=1;',
+    edge: 'edgeStyle=orthogonalEdgeStyle;endArrow=open;endFill=0;html=1;',
     container: 'shape=umlFrame;whiteSpace=wrap;html=1;width=110;height=20;boundedLbl=1;verticalAlign=top;align=left;spacingLeft=5;',
-    labelEdge: 'endArrow=open;endFill=0;html=1;fontSize=10;',
+    labelEdge: 'edgeStyle=orthogonalEdgeStyle;endArrow=open;endFill=0;html=1;fontSize=10;',
   },
   colours: {
     class: { fillColor: '#dae8fc', strokeColor: '#6c8ebf' },

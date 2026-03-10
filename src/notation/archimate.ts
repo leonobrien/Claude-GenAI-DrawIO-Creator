@@ -124,9 +124,9 @@ export const archimateNotation: NotationDefinition = {
   ],
   styleTemplates: {
     vertex: 'shape=mxgraph.archimate3.component;archiType=application;whiteSpace=wrap;html=1;',
-    edge: 'endArrow=block;endFill=1;html=1;',
+    edge: 'edgeStyle=orthogonalEdgeStyle;endArrow=block;endFill=1;html=1;',
     container: 'rounded=0;whiteSpace=wrap;html=1;fillColor=none;dashed=1;verticalAlign=top;fontStyle=1;fontSize=12;',
-    labelEdge: 'endArrow=block;endFill=1;html=1;fontSize=10;',
+    labelEdge: 'edgeStyle=orthogonalEdgeStyle;endArrow=block;endFill=1;html=1;fontSize=10;',
   },
   colours: {
     business: { fillColor: '#FFFFB5', strokeColor: '#C4B600' },

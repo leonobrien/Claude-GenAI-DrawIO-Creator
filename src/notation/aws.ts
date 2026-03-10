@@ -318,9 +318,9 @@ export const awsNotation: NotationDefinition = {
   ],
   styleTemplates: {
     vertex: `sketch=0;${AWS_POINTS}outlineConnect=0;fontColor=#232F3E;fillColor=#ED7100;strokeColor=#ffffff;dashed=0;verticalLabelPosition=bottom;verticalAlign=top;align=center;html=1;fontSize=12;fontStyle=0;aspect=fixed;shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.generic;`,
-    edge: 'endArrow=classic;html=1;strokeColor=#232F3E;',
+    edge: 'edgeStyle=orthogonalEdgeStyle;curved=1;endArrow=classic;html=1;strokeColor=#232F3E;',
     container: 'points=[[0,0],[0.25,0],[0.5,0],[0.75,0],[1,0],[1,0.25],[1,0.5],[1,0.75],[1,1],[0.75,1],[0.5,1],[0.25,1],[0,1],[0,0.75],[0,0.5],[0,0.25]];outlineConnect=0;gradientColor=none;html=1;whiteSpace=wrap;fontSize=12;fontStyle=1;shape=mxgraph.aws4.group;grIcon=mxgraph.aws4.group_vpc;strokeColor=#248814;fillColor=none;verticalAlign=top;align=left;spacingLeft=30;dashed=0;',
-    labelEdge: 'endArrow=classic;html=1;strokeColor=#232F3E;fontSize=10;',
+    labelEdge: 'edgeStyle=orthogonalEdgeStyle;curved=1;endArrow=classic;html=1;strokeColor=#232F3E;fontSize=10;',
   },
   colours: {
     compute: { fillColor: '#ED7100', strokeColor: '#ED7100' },

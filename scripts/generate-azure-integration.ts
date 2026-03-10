@@ -298,14 +298,14 @@ const model: DiagramModel = {
       label: 'HTTPS',
       source: '6',
       target: '21',
-      style: 'endArrow=classic;html=1;fontSize=10;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;',
+      style: 'edgeStyle=orthogonalEdgeStyle;rounded=1;endArrow=classic;html=1;strokeColor=#0078D4;fontSize=10;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;',
     },
     // API Management → Logic app (top-left)
     {
       id: '51',
       source: '21',
       target: '30',
-      style: 'endArrow=classic;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;',
+      style: 'edgeStyle=orthogonalEdgeStyle;rounded=1;endArrow=classic;html=1;strokeColor=#0078D4;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;',
     },
     // Logic app (top-right) → SaaS service (HTTPS)
     {
@@ -313,7 +313,7 @@ const model: DiagramModel = {
       label: 'HTTPS',
       source: '31',
       target: '8',
-      style: 'endArrow=classic;html=1;fontSize=10;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;',
+      style: 'edgeStyle=orthogonalEdgeStyle;rounded=1;endArrow=classic;html=1;strokeColor=#0078D4;fontSize=10;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;',
     },
     // Logic app (middle) → Azure services (HTTPS)
     {
@@ -321,7 +321,7 @@ const model: DiagramModel = {
       label: 'HTTPS',
       source: '32',
       target: '9',
-      style: 'endArrow=classic;html=1;fontSize=10;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;',
+      style: 'edgeStyle=orthogonalEdgeStyle;rounded=1;endArrow=classic;html=1;strokeColor=#0078D4;fontSize=10;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;',
     },
     // Message-based service → Event Grid (Messages)
     {
@@ -329,14 +329,14 @@ const model: DiagramModel = {
       label: 'Messages',
       source: '10',
       target: '41',
-      style: 'endArrow=classic;html=1;fontSize=10;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;',
+      style: 'edgeStyle=orthogonalEdgeStyle;rounded=1;endArrow=classic;html=1;strokeColor=#0078D4;fontSize=10;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;',
     },
     // Event Grid → Service Bus
     {
       id: '55',
       source: '41',
       target: '40',
-      style: 'endArrow=classic;html=1;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;',
+      style: 'edgeStyle=orthogonalEdgeStyle;rounded=1;endArrow=classic;html=1;strokeColor=#0078D4;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;',
     },
     // Queues area → Message-based service (Events)
     {
@@ -344,7 +344,7 @@ const model: DiagramModel = {
       label: 'Events',
       source: '41',
       target: '10',
-      style: 'endArrow=classic;html=1;fontSize=10;exitX=1;exitY=0;exitDx=0;exitDy=0;entryX=0;entryY=1;entryDx=0;entryDy=0;',
+      style: 'edgeStyle=orthogonalEdgeStyle;rounded=1;endArrow=classic;html=1;strokeColor=#0078D4;fontSize=10;exitX=1;exitY=0;exitDx=0;exitDy=0;entryX=0;entryY=1;entryDx=0;entryDy=0;',
     },
     // Service Bus → Logic app (Send or pull messages)
     {
@@ -352,7 +352,7 @@ const model: DiagramModel = {
       label: 'Send or pull messages',
       source: '40',
       target: '32',
-      style: 'endArrow=classic;html=1;fontSize=10;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;',
+      style: 'edgeStyle=orthogonalEdgeStyle;rounded=1;endArrow=classic;html=1;strokeColor=#0078D4;fontSize=10;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;',
     },
     // API Gateway → REST or SOAP web service (HTTPS, bottom path)
     {
@@ -360,7 +360,7 @@ const model: DiagramModel = {
       label: 'HTTPS',
       source: '21',
       target: '11',
-      style: 'endArrow=classic;html=1;fontSize=10;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;',
+      style: 'edgeStyle=orthogonalEdgeStyle;rounded=1;endArrow=classic;html=1;strokeColor=#0078D4;fontSize=10;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;',
     },
     // Authentication: Entra ID → Client apps
     {
@@ -368,14 +368,14 @@ const model: DiagramModel = {
       label: 'Authentication',
       source: '7',
       target: '6',
-      style: 'endArrow=classic;html=1;fontSize=10;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;',
+      style: 'edgeStyle=orthogonalEdgeStyle;rounded=1;endArrow=classic;html=1;strokeColor=#0078D4;fontSize=10;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;',
     },
     // Workflow → Queues (downward)
     {
       id: '60',
       source: '32',
       target: '41',
-      style: 'endArrow=classic;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;',
+      style: 'edgeStyle=orthogonalEdgeStyle;rounded=1;endArrow=classic;html=1;strokeColor=#0078D4;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;',
     },
   ],
   metadata: {
