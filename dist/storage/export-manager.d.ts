@@ -3,6 +3,13 @@
  */
 import { VersionManager } from './version-manager.js';
 export type ExportFormat = 'drawio' | 'xml';
+export interface ExportVersionOptions {
+    project: string;
+    modelId: string;
+    versionNumber: number;
+    outputPath: string;
+    format?: ExportFormat;
+}
 export declare class ExportManager {
     private readonly versionManager;
     constructor(versionManager: VersionManager);
@@ -19,7 +26,7 @@ export declare class ExportManager {
     /**
      * Exports a specific version of a model to a file.
      */
-    exportVersionToFile(project: string, modelId: string, versionNumber: number, outputPath: string, format?: ExportFormat): Promise<string | null>;
+    exportVersionToFile(opts: ExportVersionOptions): Promise<string | null>;
     /**
      * Returns the XML content for the latest version without writing to disk.
      */

@@ -7,15 +7,32 @@
 import { readFile, writeFile, readdir, unlink, mkdir } from 'node:fs/promises';
 import { join } from 'node:path';
 import { existsSync } from 'node:fs';
+const SAFE_NAME_PATTERN = /^[a-zA-Z0-9][a-zA-Z0-9._-]*$/;
+const MAX_LIST_ITEMS = 1000;
+function assertSafeName(value, label) {
+    if (!SAFE_NAME_PATTERN.test(value)) {
+        throw new Error(`Invalid ${label}: must match ${SAFE_NAME_PATTERN.source}`);
+    }
+}
+function safeJsonParse(content, context) {
+    try {
+        return JSON.parse(content);
+    }
+    catch (err) {
+        throw new Error(`Failed to parse ${context}: ${err instanceof Error ? err.message : String(err)}`);
+    }
+}
 export class ModelStore {
     storageRoot;
     constructor(storageRoot) {
         this.storageRoot = storageRoot;
     }
     modelsDir(project) {
+        assertSafeName(project, 'project name');
         return join(this.storageRoot, 'projects', project, 'models');
     }
     modelPath(project, id) {
+        assertSafeName(id, 'model id');
         return join(this.modelsDir(project), `${id}.json`);
     }
     /**
@@ -45,7 +62,7 @@ export class ModelStore {
             return null;
         }
         const content = await readFile(filePath, 'utf-8');
-        return JSON.parse(content);
+        return safeJsonParse(content, `model ${id}`);
     }
     /**
      * Lists all models in a project.
@@ -56,11 +73,16 @@ export class ModelStore {
             return [];
         }
         const files = await readdir(dir);
-        const jsonFiles = files.filter((f) => f.endsWith('.json'));
+        const jsonFiles = files.filter((f) => f.endsWith('.json')).slice(0, MAX_LIST_ITEMS);
         const models = [];
         for (const file of jsonFiles) {
-            const content = await readFile(join(dir, file), 'utf-8');
-            models.push(JSON.parse(content));
+            try {
+                const content = await readFile(join(dir, file), 'utf-8');
+                models.push(safeJsonParse(content, `model file ${file}`));
+            }
+            catch {
+                // Skip malformed model files
+            }
         }
         return models.sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime());
     }

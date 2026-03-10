@@ -52,11 +52,13 @@ const SHAPE_LIBRARY_MAP = new Map([
  * Returns the notation definition for the given name.
  * Defaults to 'generic' if the name is not recognised.
  */
+// Safe fallback — generic is always registered in the NOTATIONS map above.
+const GENERIC_NOTATION = NOTATIONS.get('generic');
 export function getNotation(name) {
     if (!name) {
-        return NOTATIONS.get('generic');
+        return GENERIC_NOTATION;
     }
-    return NOTATIONS.get(name) ?? NOTATIONS.get('generic');
+    return NOTATIONS.get(name) ?? GENERIC_NOTATION;
 }
 /**
  * Returns the notation definition if found, or null if not recognised.

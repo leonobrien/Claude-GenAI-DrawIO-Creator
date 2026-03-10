@@ -1,1 +1,1 @@
-{"version":3,"file":"aws.d.ts","sourceRoot":"","sources":["../../src/notation/aws.ts"],"names":[],"mappings":"AAAA;;;;;GAKG;AAEH,OAAO,KAAK,EAAE,kBAAkB,EAAE,MAAM,mBAAmB,CAAC;AAsC5D,eAAO,MAAM,WAAW,EAAE,kBAkVzB,CAAC"}
+{"version":3,"file":"aws.d.ts","sourceRoot":"","sources":["../../src/notation/aws.ts"],"names":[],"mappings":"AAAA;;;;;GAKG;AAEH,OAAO,KAAK,EAAE,kBAAkB,EAAE,MAAM,mBAAmB,CAAC;AAiC5D,eAAO,MAAM,WAAW,EAAE,kBAkVzB,CAAC"}

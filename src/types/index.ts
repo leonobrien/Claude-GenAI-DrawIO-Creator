@@ -19,4 +19,5 @@ export type {
   NotationColourPalette,
   NotationLayoutConventions,
   NotationDefinition,
+  ImageAnalysisOptions,
 } from './diagram.js';

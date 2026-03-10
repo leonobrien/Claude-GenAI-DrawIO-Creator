@@ -31,7 +31,7 @@ export class RecallEngine {
         await this.qdrant.upsert({
             id: model.id,
             vector,
-            payload: payload,
+            payload: { ...payload },
         });
     }
     /**
@@ -45,12 +45,12 @@ export class RecallEngine {
         const vector = await this.embeddings.embed(query);
         const results = await this.qdrant.search(vector, limit);
         return results.map((r) => {
-            const payload = r.payload;
+            const p = r.payload;
             return {
-                modelId: payload.model_id,
-                project: payload.project,
-                name: payload.name,
-                description: payload.description,
+                modelId: String(p.model_id ?? ''),
+                project: String(p.project ?? ''),
+                name: String(p.name ?? ''),
+                description: String(p.description ?? ''),
                 score: r.score,
             };
         });

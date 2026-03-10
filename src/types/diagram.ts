@@ -64,6 +64,16 @@ export interface DiagramMetadata {
   diagramType?: DiagramType;
   shapeLibrary?: string;
   notation?: NotationName;
+  sourceImage?: string;
+}
+
+export interface ImageAnalysisOptions {
+  /** User-specified notation — overrides automatic detection. */
+  notation?: NotationName;
+  /** Hint for expected diagram type (infrastructure, flowchart, etc.). */
+  diagramType?: DiagramType;
+  /** Additional context the user provides about the image. */
+  additionalContext?: string;
 }
 
 export interface DiagramNode {
