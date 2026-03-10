@@ -11,6 +11,7 @@
 export { buildDiagramXml, buildNodeXml, buildEdgeXml, buildContainerXml } from './generator/xml-builder.js';
 export { wrapWithMxFile, unwrapMxFile } from './generator/xml-wrapper.js';
 export { buildSystemPrompt, buildRevisionPrompt } from './generator/prompt-builder.js';
+export { buildImageAnalysisPrompt, buildNotationDetectionGuide } from './generator/image-analyser.js';
 export { validateLayout, applyConstraints, getCentre } from './generator/layout-engine.js';
 export { applyOperations } from './generator/operations.js';
 
@@ -70,6 +71,7 @@ export type {
   NotationColourPalette,
   NotationLayoutConventions,
   NotationDefinition,
+  ImageAnalysisOptions,
 } from './types/index.js';
 
 export type { EmbeddingProvider } from './vector/embedding-provider.js';

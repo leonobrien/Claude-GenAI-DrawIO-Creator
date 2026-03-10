@@ -7,12 +7,29 @@
 import { readFile, writeFile, readdir, mkdir } from 'node:fs/promises';
 import { join } from 'node:path';
 import { existsSync } from 'node:fs';
+const SAFE_NAME_PATTERN = /^[a-zA-Z0-9][a-zA-Z0-9._-]*$/;
+const MAX_LIST_ITEMS = 1000;
+function assertSafeName(value, label) {
+    if (!SAFE_NAME_PATTERN.test(value)) {
+        throw new Error(`Invalid ${label}: must match ${SAFE_NAME_PATTERN.source}`);
+    }
+}
+function safeJsonParse(content, context) {
+    try {
+        return JSON.parse(content);
+    }
+    catch (err) {
+        throw new Error(`Failed to parse ${context}: ${err instanceof Error ? err.message : String(err)}`);
+    }
+}
 export class VersionManager {
     storageRoot;
     constructor(storageRoot) {
         this.storageRoot = storageRoot;
     }
     versionsDir(project, modelId) {
+        assertSafeName(project, 'project name');
+        assertSafeName(modelId, 'model id');
         return join(this.storageRoot, 'projects', project, 'models', `${modelId}.versions`);
     }
     versionPath(project, modelId, version) {
@@ -59,8 +76,8 @@ export class VersionManager {
         }
         const xml = await readFile(xmlPath, 'utf-8');
         if (existsSync(metaPath)) {
-            const meta = JSON.parse(await readFile(metaPath, 'utf-8'));
-            return { ...meta, xml };
+            const meta = safeJsonParse(await readFile(metaPath, 'utf-8'), `version ${version} metadata`);
+            return { version: meta.version, timestamp: meta.timestamp, description: meta.description, xml };
         }
         return {
             version,
@@ -92,11 +109,16 @@ export class VersionManager {
             return [];
         }
         const files = await readdir(dir);
-        const metaFiles = files.filter((f) => f.endsWith('.meta.json')).sort();
+        const metaFiles = files.filter((f) => f.endsWith('.meta.json')).sort().slice(0, MAX_LIST_ITEMS);
         const entries = [];
         for (const file of metaFiles) {
-            const content = await readFile(join(dir, file), 'utf-8');
-            entries.push(JSON.parse(content));
+            try {
+                const content = await readFile(join(dir, file), 'utf-8');
+                entries.push(safeJsonParse(content, `version metadata ${file}`));
+            }
+            catch {
+                // Skip malformed metadata files
+            }
         }
         return entries;
     }

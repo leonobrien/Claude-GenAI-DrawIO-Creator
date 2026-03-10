@@ -1,13 +1,13 @@
 ---
 name: drawio
-description: Generate, revise, and manage draw.io diagrams programmatically. Use when the user asks to create architecture diagrams, flowcharts, org charts, wireframes, or any draw.io/diagrams.net diagram.
+description: Generate, revise, and manage draw.io diagrams programmatically. Use when the user asks to create architecture diagrams, flowcharts, org charts, wireframes, or any draw.io/diagrams.net diagram. Also use when the user pastes or references an image and wants it recreated as a draw.io diagram.
 allowed-tools: Read, Write, Edit, Bash, Glob, Grep
-argument-hint: "<prompt describing the diagram to generate>"
+argument-hint: "<prompt describing the diagram to generate, or reference an image to recreate>"
 ---
 
 # draw.io Diagram Skill
 
-You are an expert diagramming assistant that generates draw.io diagrams from natural language descriptions.
+You are an expert diagramming assistant that generates draw.io diagrams from natural language descriptions and reference images.
 
 ## How It Works
 
@@ -23,6 +23,135 @@ When the user requests a diagram:
 4. **Generate XML** — use `buildDiagramXml()` + `wrapWithMxFile()` to produce the `.drawio` XML
 5. **Validate** — run `validateAndFixXml()` for structural correctness, `validateSemantics()` with notation for semantic + conformance checking
 6. **Store & Export** — use `ProjectManager`, `ModelStore`, `VersionManager`, and `ExportManager` to persist and export the diagram
+
+## Image to Diagram Workflow
+
+When the user pastes an image, provides an image file path, or asks to recreate/reproduce a diagram from a reference image:
+
+1. **Read the image** — use the `Read` tool to view the image file. If the user pasted an image inline, it is already visible in the conversation.
+2. **Determine notation** — if the user specifies a notation (e.g. "use Azure notation"), use that. Otherwise, examine the image for visual cues:
+   - AWS: orange/teal service icons → `azure` notation
+   - Azure: blue flat icons, Azure service names → `azure` notation
+   - GCP: Google Cloud product icons → `gcp` notation
+   - Cisco: teal network device icons → `cisco` notation
+   - BPMN: circle events, rounded tasks, diamond gateways → `bpmn` notation
+   - UML: class boxes with compartments, stick figures → `uml` notation
+   - ArchiMate: layered coloured boxes → `archimate` notation
+   - Otherwise: `generic` notation
+3. **Build the image analysis prompt** — use `buildImageAnalysisPrompt()` to get the system prompt with the notation's shape catalogue
+4. **Analyse the image** — using the analysis prompt as guidance, carefully examine the image and construct a `DiagramModel` JSON that faithfully recreates the diagram:
+   - Identify every component, connection, and container visible in the image
+   - Map each visual element to the closest notation shape using `resolveShape()`
+   - Preserve the spatial layout, flow direction, and groupings
+   - Include all visible labels and text
+5. **CRITICAL: Container child positioning** — children of containers use coordinates **RELATIVE to the container**, not absolute canvas coordinates. A child at `(10, 20)` inside a container at `(200, 100)` renders at absolute `(210, 120)`. Forgetting this causes children to appear far to the right/below their containers.
+6. **Generate XML** — use `buildDiagramXml()` + `wrapWithMxFile()` (same as text-based workflow)
+7. **Validate** — run `validateAndFixXml()` and `validateSemantics()` (same as text-based workflow)
+8. **Store & Export** — persist and export the `.drawio` file (same as text-based workflow)
+
+### Image Analysis Script Template
+
+```typescript
+import {
+  buildDiagramXml, wrapWithMxFile, validateAndFixXml, validateSemantics,
+  buildImageAnalysisPrompt,
+  ProjectManager, ModelStore, VersionManager, ExportManager,
+  getNotation, resolveShape,
+} from '!`pwd`/src/index.js';
+import { randomUUID } from 'node:crypto';
+import { mkdirSync } from 'node:fs';
+import type { DiagramModel, StoredModel } from '!`pwd`/src/types/index.js';
+
+// --- Configuration ---
+const PROJECT_ID = 'my-project';
+const DIAGRAM_NAME = 'image-recreation';
+const STORAGE_ROOT = '!`pwd`/storage';
+const NOTATION = 'azure';  // Detected or user-specified notation
+
+// --- Log the analysis prompt for reference (optional) ---
+const analysisPrompt = buildImageAnalysisPrompt({
+  notation: NOTATION,
+  diagramType: 'infrastructure',
+  additionalContext: 'Recreate the Azure API Management secure baseline architecture',
+});
+console.log('Analysis prompt length:', analysisPrompt.length, 'chars');
+
+// --- Storage setup ---
+mkdirSync(STORAGE_ROOT, { recursive: true });
+const projects = new ProjectManager(STORAGE_ROOT);
+const models = new ModelStore(STORAGE_ROOT);
+const versions = new VersionManager(STORAGE_ROOT);
+const exporter = new ExportManager(versions);
+
+await projects.ensureExists(PROJECT_ID, 'Image recreation project');
+
+// --- Build DiagramModel from image analysis ---
+// Map each visual element to notation shapes using resolveShape()
+const appGw = resolveShape(NOTATION, 'Application Gateway');
+const apiMgmt = resolveShape(NOTATION, 'API Management');
+// ... resolve all shapes needed
+
+const model: DiagramModel = {
+  containers: [
+    // Subnet boundaries, zones, groups identified in the image
+  ],
+  nodes: [
+    // Every component identified in the image, mapped to notation shapes
+    // Use resolved shape styles and default dimensions
+  ],
+  edges: [
+    // Every connection/arrow identified in the image
+  ],
+  metadata: {
+    title: 'Azure API Management - Secure Baseline',
+    diagramType: 'infrastructure',
+    notation: NOTATION,
+    sourceImage: '/path/to/reference-image.png',
+  },
+};
+
+// --- Standard pipeline from here ---
+const bareCells = buildDiagramXml(model);
+const fullXml = wrapWithMxFile(bareCells);
+const result = validateAndFixXml(fullXml);
+
+if (!result.validation.valid) {
+  console.error('Validation errors:', result.validation.errors);
+  process.exit(1);
+}
+
+const semantics = validateSemantics(
+  result.finalXml,
+  model.nodes.map(n => n.label),  // Verify all labels from image appear in output
+  model.metadata.notation,
+);
+if (!semantics.valid) {
+  console.warn('Semantic issues:', semantics.issues);
+}
+
+const modelId = randomUUID();
+const storedModel: StoredModel = {
+  id: modelId,
+  name: DIAGRAM_NAME,
+  project: PROJECT_ID,
+  currentVersion: 1,
+  createdAt: new Date().toISOString(),
+  updatedAt: new Date().toISOString(),
+  tags: ['image-recreation'],
+  prompt: 'Recreated from reference image',
+  description: model.metadata.title ?? DIAGRAM_NAME,
+};
+
+await models.save(storedModel);
+await versions.saveVersion(PROJECT_ID, modelId, result.finalXml, 'Image recreation');
+
+const exportDir = `${STORAGE_ROOT}/projects/${PROJECT_ID}/exports`;
+mkdirSync(exportDir, { recursive: true });
+const exportPath = `${exportDir}/${DIAGRAM_NAME}.drawio`;
+await exporter.exportToFile(PROJECT_ID, modelId, exportPath);
+
+console.log(`Exported to: ${exportPath}`);
+```
 
 ## Shape Validation
 

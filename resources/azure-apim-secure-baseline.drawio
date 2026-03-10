@@ -1,0 +1,39 @@
+<mxfile><diagram name="Azure APIM Secure Baseline" id="page-1"><mxGraphModel><root><mxCell id="0"/><mxCell id="1" parent="0"/><mxCell id="2" value="Application Gateway
+subnet" style="rounded=1;whiteSpace=wrap;html=1;dashed=1;dashPattern=5 5;fillColor=none;strokeColor=#0078D4;verticalAlign=bottom;fontStyle=0;fontSize=11;align=center;" vertex="1" connectable="0" parent="1"><mxGeometry x="150" y="80" width="190" height="230" as="geometry"/></mxCell>
+<mxCell id="3" value="API Management
+subnet" style="rounded=1;whiteSpace=wrap;html=1;dashed=1;dashPattern=5 5;fillColor=none;strokeColor=#0078D4;verticalAlign=bottom;fontStyle=0;fontSize=11;align=center;" vertex="1" connectable="0" parent="1"><mxGeometry x="360" y="80" width="170" height="230" as="geometry"/></mxCell>
+<mxCell id="4" value="Private endpoint
+subnet" style="rounded=1;whiteSpace=wrap;html=1;dashed=1;dashPattern=5 5;fillColor=none;strokeColor=#0078D4;verticalAlign=bottom;fontStyle=0;fontSize=11;align=center;" vertex="1" connectable="0" parent="1"><mxGeometry x="550" y="80" width="160" height="230" as="geometry"/></mxCell>
+<mxCell id="23" value="Private endpoint
+subnet" style="rounded=1;whiteSpace=wrap;html=1;dashed=1;dashPattern=5 5;fillColor=none;strokeColor=#0078D4;verticalAlign=bottom;fontStyle=0;fontSize=11;align=center;" vertex="1" connectable="0" parent="1"><mxGeometry x="730" y="80" width="160" height="230" as="geometry"/></mxCell>
+<mxCell id="5" value="Azure API Management – Secure baseline" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;fontSize=14;fontStyle=1;" vertex="1" parent="1"><mxGeometry x="220" y="10" width="400" height="30" as="geometry"/></mxCell>
+<mxCell id="6" value="Subscription" style="aspect=fixed;html=1;points=[];align=center;image;fontSize=12;image=img/lib/azure2/general/Subscriptions.svg;" vertex="1" parent="1"><mxGeometry x="40" y="55" width="40" height="40" as="geometry"/></mxCell>
+<mxCell id="7" value="Public IP
+addresses" style="aspect=fixed;html=1;points=[];align=center;image;fontSize=12;image=img/lib/azure2/networking/Public_IP_Addresses.svg;" vertex="1" parent="1"><mxGeometry x="40" y="170" width="40" height="40" as="geometry"/></mxCell>
+<mxCell id="8" value="" style="aspect=fixed;html=1;points=[];align=center;image;fontSize=12;image=img/lib/azure2/networking/Virtual_Networks.svg;" vertex="1" parent="2"><mxGeometry x="10" y="10" width="30" height="30" as="geometry"/></mxCell>
+<mxCell id="9" value="" style="aspect=fixed;html=1;points=[];align=center;image;fontSize=12;image=img/lib/azure2/networking/Network_Security_Groups.svg;" vertex="1" parent="2"><mxGeometry x="50" y="10" width="30" height="30" as="geometry"/></mxCell>
+<mxCell id="10" value="Application
+Gateway" style="aspect=fixed;html=1;points=[];align=center;image;fontSize=12;image=img/lib/azure2/networking/Application_Gateways.svg;" vertex="1" parent="2"><mxGeometry x="70" y="70" width="50" height="50" as="geometry"/></mxCell>
+<mxCell id="11" value="Web Application
+Firewall polices
+(WAF)" style="aspect=fixed;html=1;points=[];align=center;image;fontSize=12;image=img/lib/azure2/networking/Web_Application_Firewall_Policies_WAF.svg;" vertex="1" parent="2"><mxGeometry x="75" y="140" width="40" height="40" as="geometry"/></mxCell>
+<mxCell id="12" value="" style="aspect=fixed;html=1;points=[];align=center;image;fontSize=12;image=img/lib/azure2/networking/Virtual_Networks.svg;" vertex="1" parent="3"><mxGeometry x="10" y="10" width="30" height="30" as="geometry"/></mxCell>
+<mxCell id="13" value="" style="aspect=fixed;html=1;points=[];align=center;image;fontSize=12;image=img/lib/azure2/networking/Network_Security_Groups.svg;" vertex="1" parent="3"><mxGeometry x="50" y="10" width="30" height="30" as="geometry"/></mxCell>
+<mxCell id="14" value="API Management
+(Premium)" style="aspect=fixed;html=1;points=[];align=center;image;fontSize=12;image=img/lib/azure2/integration/API_Management_Services.svg;" vertex="1" parent="3"><mxGeometry x="60" y="80" width="50" height="50" as="geometry"/></mxCell>
+<mxCell id="15" value="" style="aspect=fixed;html=1;points=[];align=center;image;fontSize=12;image=img/lib/azure2/networking/Virtual_Networks.svg;" vertex="1" parent="4"><mxGeometry x="10" y="10" width="30" height="30" as="geometry"/></mxCell>
+<mxCell id="16" value="" style="aspect=fixed;html=1;points=[];align=center;image;fontSize=12;image=img/lib/azure2/networking/Network_Security_Groups.svg;" vertex="1" parent="4"><mxGeometry x="50" y="10" width="30" height="30" as="geometry"/></mxCell>
+<mxCell id="17" value="Private
+endpoint" style="aspect=fixed;html=1;points=[];align=center;image;fontSize=12;image=img/lib/azure2/networking/Private_Endpoint.svg;" vertex="1" parent="4"><mxGeometry x="55" y="80" width="50" height="50" as="geometry"/></mxCell>
+<mxCell id="24" value="" style="aspect=fixed;html=1;points=[];align=center;image;fontSize=12;image=img/lib/azure2/networking/Virtual_Networks.svg;" vertex="1" parent="23"><mxGeometry x="10" y="10" width="30" height="30" as="geometry"/></mxCell>
+<mxCell id="25" value="" style="aspect=fixed;html=1;points=[];align=center;image;fontSize=12;image=img/lib/azure2/networking/Network_Security_Groups.svg;" vertex="1" parent="23"><mxGeometry x="50" y="10" width="30" height="30" as="geometry"/></mxCell>
+<mxCell id="18" value="Log Analytics
+workspaces" style="aspect=fixed;html=1;points=[];align=center;image;fontSize=12;image=img/lib/azure2/analytics/Log_Analytics_Workspaces.svg;" vertex="1" parent="1"><mxGeometry x="270" y="380" width="50" height="50" as="geometry"/></mxCell>
+<mxCell id="19" value="Application Insights
+azure-api.net" style="aspect=fixed;html=1;points=[];align=center;image;fontSize=12;image=img/lib/azure2/devops/Application_Insights.svg;" vertex="1" parent="1"><mxGeometry x="390" y="380" width="50" height="50" as="geometry"/></mxCell>
+<mxCell id="20" value="DNS" style="aspect=fixed;html=1;points=[];align=center;image;fontSize=12;image=img/lib/azure2/networking/DNS_Zones.svg;" vertex="1" parent="1"><mxGeometry x="510" y="380" width="50" height="50" as="geometry"/></mxCell>
+<mxCell id="21" value="Key vaults" style="aspect=fixed;html=1;points=[];align=center;image;fontSize=12;image=img/lib/azure2/security/Key_Vaults.svg;" vertex="1" parent="1"><mxGeometry x="640" y="380" width="50" height="50" as="geometry"/></mxCell>
+<mxCell id="30" style="endArrow=classic;html=1;strokeColor=#0078D4;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="7" target="10"><mxGeometry relative="1" as="geometry"/></mxCell>
+<mxCell id="31" style="endArrow=classic;html=1;strokeColor=#0078D4;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="10" target="14"><mxGeometry relative="1" as="geometry"/></mxCell>
+<mxCell id="32" style="endArrow=classic;html=1;strokeColor=#0078D4;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="14" target="17"><mxGeometry relative="1" as="geometry"/></mxCell>
+<mxCell id="33" style="endArrow=classic;html=1;strokeColor=#0078D4;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="17" target="21"><mxGeometry relative="1" as="geometry"/></mxCell></root></mxGraphModel></diagram></mxfile>

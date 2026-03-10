@@ -6,6 +6,20 @@
 import { readFile, writeFile, readdir, mkdir, rm } from 'node:fs/promises';
 import { join } from 'node:path';
 import { existsSync } from 'node:fs';
+const SAFE_NAME_PATTERN = /^[a-zA-Z0-9][a-zA-Z0-9._-]*$/;
+function assertSafeName(value, label) {
+    if (!SAFE_NAME_PATTERN.test(value)) {
+        throw new Error(`Invalid ${label}: must match ${SAFE_NAME_PATTERN.source}`);
+    }
+}
+function safeJsonParse(content, context) {
+    try {
+        return JSON.parse(content);
+    }
+    catch (err) {
+        throw new Error(`Failed to parse ${context}: ${err instanceof Error ? err.message : String(err)}`);
+    }
+}
 export class ProjectManager {
     storageRoot;
     constructor(storageRoot) {
@@ -15,6 +29,7 @@ export class ProjectManager {
         return join(this.storageRoot, 'projects');
     }
     projectDir(name) {
+        assertSafeName(name, 'project name');
         return join(this.projectsDir(), name);
     }
     projectInfoPath(name) {
@@ -47,7 +62,7 @@ export class ProjectManager {
             return null;
         }
         const content = await readFile(infoPath, 'utf-8');
-        return JSON.parse(content);
+        return safeJsonParse(content, `project ${name}`);
     }
     /**
      * Lists all projects.
@@ -90,6 +105,9 @@ export class ProjectManager {
             return existing;
         }
         const created = await this.create(name, description);
+        if (!created) {
+            throw new Error(`Failed to create project "${name}"`);
+        }
         return created;
     }
 }

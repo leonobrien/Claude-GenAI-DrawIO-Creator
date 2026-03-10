@@ -28,6 +28,7 @@ export declare class QdrantClient {
     private readonly config;
     constructor(config?: Partial<QdrantConfig>);
     private headers;
+    private collectionPath;
     private url;
     /**
      * Creates the collection if it does not exist.

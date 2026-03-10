@@ -14,30 +14,21 @@
  * @param xml - The XML string to check
  * @returns true if all mxCell elements are complete
  */
+function countMatches(text, pattern) {
+    return (text.match(pattern) ?? []).length;
+}
+function hasBalancedTags(text, openPattern, selfClosePattern, closePattern) {
+    return countMatches(text, openPattern) === countMatches(text, selfClosePattern) + countMatches(text, closePattern);
+}
 export function isMxCellXmlComplete(xml) {
     const trimmed = xml.trim();
     if (!trimmed) {
         return false;
     }
-    // Check for unclosed mxCell tags
-    const openCount = (trimmed.match(/<mxCell\b/g) ?? []).length;
-    const selfCloseCount = (trimmed.match(/<mxCell[^>]*\/>/g) ?? []).length;
-    const closeCount = (trimmed.match(/<\/mxCell>/g) ?? []).length;
-    // Each mxCell should either self-close or have a matching </mxCell>
-    if (openCount !== selfCloseCount + closeCount) {
+    if (!hasBalancedTags(trimmed, /<mxCell\b/g, /<mxCell[^>]*\/>/g, /<\/mxCell>/g)) {
         return false;
     }
-    // Check for unclosed mxGeometry tags
-    const geoOpen = (trimmed.match(/<mxGeometry\b/g) ?? []).length;
-    const geoSelfClose = (trimmed.match(/<mxGeometry[^>]*\/>/g) ?? []).length;
-    const geoClose = (trimmed.match(/<\/mxGeometry>/g) ?? []).length;
-    if (geoOpen !== geoSelfClose + geoClose) {
-        return false;
-    }
-    // Check for truncation mid-attribute (unclosed quote)
-    const lastChar = trimmed[trimmed.length - 1];
-    if (lastChar !== '>' && lastChar !== '"' && lastChar !== '/') {
-        // Likely truncated mid-tag
+    if (!hasBalancedTags(trimmed, /<mxGeometry\b/g, /<mxGeometry[^>]*\/>/g, /<\/mxGeometry>/g)) {
         return false;
     }
     // Must end with a complete tag

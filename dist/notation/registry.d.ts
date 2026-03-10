@@ -5,10 +5,6 @@
  * read-only and deterministic.
  */
 import type { NotationName, NotationDefinition, NotationShape } from '../types/index.js';
-/**
- * Returns the notation definition for the given name.
- * Defaults to 'generic' if the name is not recognised.
- */
 export declare function getNotation(name?: NotationName): NotationDefinition;
 /**
  * Returns the notation definition if found, or null if not recognised.

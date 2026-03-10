@@ -40,7 +40,17 @@ export class StateManager {
             return this.state;
         }
         const content = await readFile(this.statePath, 'utf-8');
-        this.state = JSON.parse(content);
+        try {
+            this.state = JSON.parse(content);
+        }
+        catch {
+            this.state = {
+                ...INITIAL_STATE,
+                lastUpdated: new Date().toISOString(),
+                completedOperations: [],
+                pendingOperations: [],
+            };
+        }
         return this.state;
     }
     /**

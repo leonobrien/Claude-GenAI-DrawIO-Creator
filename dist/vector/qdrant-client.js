@@ -21,6 +21,9 @@ export class QdrantClient {
         }
         return h;
     }
+    collectionPath() {
+        return `/collections/${encodeURIComponent(this.config.collectionName)}`;
+    }
     url(path) {
         return `${this.config.url}${path}`;
     }
@@ -29,12 +32,12 @@ export class QdrantClient {
      */
     async ensureCollection() {
         // Check if collection exists
-        const checkRes = await fetch(this.url(`/collections/${this.config.collectionName}`), { headers: this.headers() });
+        const checkRes = await fetch(this.url(this.collectionPath()), { headers: this.headers() });
         if (checkRes.ok) {
             return; // Already exists
         }
         // Create collection
-        const createRes = await fetch(this.url(`/collections/${this.config.collectionName}`), {
+        const createRes = await fetch(this.url(this.collectionPath()), {
             method: 'PUT',
             headers: this.headers(),
             body: JSON.stringify({
@@ -53,7 +56,7 @@ export class QdrantClient {
      * Upserts a single point into the collection.
      */
     async upsert(point) {
-        const res = await fetch(this.url(`/collections/${this.config.collectionName}/points`), {
+        const res = await fetch(this.url(`${this.collectionPath()}/points`), {
             method: 'PUT',
             headers: this.headers(),
             body: JSON.stringify({
@@ -79,7 +82,7 @@ export class QdrantClient {
      * @returns Ranked search results with scores and payloads
      */
     async search(vector, limit = 5) {
-        const res = await fetch(this.url(`/collections/${this.config.collectionName}/points/search`), {
+        const res = await fetch(this.url(`${this.collectionPath()}/points/search`), {
             method: 'POST',
             headers: this.headers(),
             body: JSON.stringify({
@@ -99,7 +102,7 @@ export class QdrantClient {
      * Deletes a point by ID.
      */
     async deletePoint(pointId) {
-        const res = await fetch(this.url(`/collections/${this.config.collectionName}/points/delete`), {
+        const res = await fetch(this.url(`${this.collectionPath()}/points/delete`), {
             method: 'POST',
             headers: this.headers(),
             body: JSON.stringify({
