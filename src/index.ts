@@ -20,6 +20,7 @@ export { fixXml } from './parser/xml-fixer.js';
 export { validateAndFixXml } from './parser/index.js';
 export { validateSemantics, validateEdgeReferences, validateExpectedLabels, validateNotationConformance } from './parser/semantic-validator.js';
 export { isMxCellXmlComplete, extractCompleteMxCells } from './parser/completion-checker.js';
+export { validateShapeRenderable, extractStencilRef } from './parser/shape-validator.js';
 
 export { ModelStore } from './storage/model-store.js';
 export { VersionManager } from './storage/version-manager.js';
@@ -78,7 +79,9 @@ export type { EmbeddingProvider } from './vector/embedding-provider.js';
 export type { IndexablePayload } from './vector/diagram-indexer.js';
 export type { QdrantConfig } from './vector/qdrant-client.js';
 export type { LayoutConstraints } from './generator/layout-engine.js';
+export type { MxGraphModelOptions } from './generator/xml-wrapper.js';
 export type { ExportFormat } from './storage/export-manager.js';
 export type { SemanticValidationResult } from './parser/semantic-validator.js';
+export type { ShapeValidationResult, ShapeValidationIssue } from './parser/shape-validator.js';
 export type { ValidateAndFixResult } from './parser/index.js';
 export type { SkillState, OperationRecord } from './state/state-manager.js';

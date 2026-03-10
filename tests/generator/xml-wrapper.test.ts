@@ -5,11 +5,26 @@ describe('XmlWrapper', () => {
   const BARE_CELLS = '<mxCell id="2" value="A" style="rounded=1;" vertex="1" parent="1"><mxGeometry x="100" y="100" width="120" height="60" as="geometry"/></mxCell>';
 
   describe('wrapWithMxFile', () => {
-    it('wraps bare cells in full mxfile structure', () => {
+    it('wraps bare cells in full mxfile structure with default mxGraphModel attributes', () => {
       const wrapped = wrapWithMxFile(BARE_CELLS);
       expect(wrapped).toContain('<mxfile>');
       expect(wrapped).toContain('<diagram name="Page-1"');
-      expect(wrapped).toContain('<mxGraphModel>');
+      expect(wrapped).toContain('<mxGraphModel');
+      expect(wrapped).toContain('dx="1364"');
+      expect(wrapped).toContain('dy="796"');
+      expect(wrapped).toContain('grid="1"');
+      expect(wrapped).toContain('gridSize="10"');
+      expect(wrapped).toContain('guides="1"');
+      expect(wrapped).toContain('tooltips="1"');
+      expect(wrapped).toContain('connect="1"');
+      expect(wrapped).toContain('arrows="1"');
+      expect(wrapped).toContain('fold="1"');
+      expect(wrapped).toContain('page="1"');
+      expect(wrapped).toContain('pageScale="1"');
+      expect(wrapped).toContain('pageWidth="1169"');
+      expect(wrapped).toContain('pageHeight="827"');
+      expect(wrapped).toContain('math="0"');
+      expect(wrapped).toContain('shadow="0"');
       expect(wrapped).toContain('<root>');
       expect(wrapped).toContain('<mxCell id="0"/>');
       expect(wrapped).toContain('<mxCell id="1" parent="0"/>');
@@ -40,6 +55,24 @@ describe('XmlWrapper', () => {
     it('accepts custom page name', () => {
       const wrapped = wrapWithMxFile(BARE_CELLS, 'My Diagram');
       expect(wrapped).toContain('name="My Diagram"');
+    });
+
+    it('accepts custom mxGraphModel options', () => {
+      const wrapped = wrapWithMxFile(BARE_CELLS, 'Page-1', {
+        grid: false,
+        gridSize: 20,
+        pageWidth: 1920,
+        pageHeight: 1080,
+        shadow: true,
+      });
+      expect(wrapped).toContain('grid="0"');
+      expect(wrapped).toContain('gridSize="20"');
+      expect(wrapped).toContain('pageWidth="1920"');
+      expect(wrapped).toContain('pageHeight="1080"');
+      expect(wrapped).toContain('shadow="1"');
+      // Defaults should still be present for unspecified options
+      expect(wrapped).toContain('dx="1364"');
+      expect(wrapped).toContain('guides="1"');
     });
   });
 

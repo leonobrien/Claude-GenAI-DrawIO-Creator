@@ -4,7 +4,7 @@
  * The draw.io format requires:
  *   <mxfile>
  *     <diagram name="Page-1" id="page-1">
- *       <mxGraphModel>
+ *       <mxGraphModel dx="..." dy="..." grid="1" ...>
  *         <root>
  *           <mxCell id="0"/>
  *           <mxCell id="1" parent="0"/>
@@ -15,7 +15,48 @@
  *   </mxfile>
  *
  * Cells id="0" and id="1" are mandatory root cells that must always be present.
+ * The mxGraphModel element carries standard attributes for grid, page size,
+ * and editor behaviour that improve compatibility with draw.io desktop/web.
  */
+const DEFAULT_OPTIONS = {
+    dx: 1364,
+    dy: 796,
+    grid: true,
+    gridSize: 10,
+    guides: true,
+    tooltips: true,
+    connect: true,
+    arrows: true,
+    fold: true,
+    page: true,
+    pageScale: 1,
+    pageWidth: 1169,
+    pageHeight: 827,
+    math: false,
+    shadow: false,
+};
+function buildMxGraphModelTag(options) {
+    const o = { ...DEFAULT_OPTIONS, ...options };
+    return [
+        '<mxGraphModel',
+        ` dx="${o.dx}"`,
+        ` dy="${o.dy}"`,
+        ` grid="${o.grid ? 1 : 0}"`,
+        ` gridSize="${o.gridSize}"`,
+        ` guides="${o.guides ? 1 : 0}"`,
+        ` tooltips="${o.tooltips ? 1 : 0}"`,
+        ` connect="${o.connect ? 1 : 0}"`,
+        ` arrows="${o.arrows ? 1 : 0}"`,
+        ` fold="${o.fold ? 1 : 0}"`,
+        ` page="${o.page ? 1 : 0}"`,
+        ` pageScale="${o.pageScale}"`,
+        ` pageWidth="${o.pageWidth}"`,
+        ` pageHeight="${o.pageHeight}"`,
+        ` math="${o.math ? 1 : 0}"`,
+        ` shadow="${o.shadow ? 1 : 0}"`,
+        '>',
+    ].join('');
+}
 const ROOT_CELLS = '<mxCell id="0"/><mxCell id="1" parent="0"/>';
 /**
  * Strips any wrapper tags that the AI may have erroneously included.
@@ -47,15 +88,16 @@ function removeDuplicateRootCells(xml) {
  *
  * @param bareCells - Raw <mxCell> elements without wrapper tags
  * @param pageName - Name for the diagram page (default: "Page-1")
+ * @param graphModelOptions - Optional mxGraphModel attributes (grid, page size, etc.)
  * @returns Complete draw.io XML string
  */
-export function wrapWithMxFile(bareCells, pageName = 'Page-1') {
+export function wrapWithMxFile(bareCells, pageName = 'Page-1', graphModelOptions) {
     let content = stripWrapperTags(bareCells);
     content = removeDuplicateRootCells(content);
     return [
         '<mxfile>',
         `<diagram name="${pageName}" id="page-1">`,
-        '<mxGraphModel>',
+        buildMxGraphModelTag(graphModelOptions),
         '<root>',
         ROOT_CELLS,
         content,

@@ -167,9 +167,9 @@ export const azureNotation = {
     ],
     styleTemplates: {
         vertex: `${AZURE_ICON_BASE}image=img/lib/azure2/general/Module.svg;`,
-        edge: 'endArrow=classic;html=1;strokeColor=#0078D4;',
+        edge: 'edgeStyle=orthogonalEdgeStyle;rounded=1;endArrow=classic;html=1;strokeColor=#0078D4;',
         container: 'rounded=1;whiteSpace=wrap;html=1;dashed=1;dashPattern=5 5;fillColor=none;strokeColor=#0078D4;verticalAlign=top;fontStyle=1;fontSize=12;',
-        labelEdge: 'endArrow=classic;html=1;strokeColor=#0078D4;fontSize=10;',
+        labelEdge: 'edgeStyle=orthogonalEdgeStyle;rounded=1;endArrow=classic;html=1;strokeColor=#0078D4;fontSize=10;',
     },
     colours: {
         compute: { fillColor: '#0078D4', strokeColor: '#0078D4' },

@@ -83,7 +83,7 @@ export const genericNotation = {
     ],
     styleTemplates: {
         vertex: 'rounded=1;whiteSpace=wrap;html=1;',
-        edge: 'endArrow=classic;html=1;',
+        edge: 'edgeStyle=orthogonalEdgeStyle;rounded=1;endArrow=classic;html=1;',
         container: 'rounded=1;whiteSpace=wrap;html=1;dashed=1;',
     },
     colours: {

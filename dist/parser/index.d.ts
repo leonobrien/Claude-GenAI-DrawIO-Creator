@@ -3,6 +3,8 @@ export { fixXml } from './xml-fixer.js';
 export { validateSemantics, validateEdgeReferences, validateExpectedLabels } from './semantic-validator.js';
 export type { SemanticValidationResult } from './semantic-validator.js';
 export { isMxCellXmlComplete, extractCompleteMxCells } from './completion-checker.js';
+export { validateShapeRenderable, extractStencilRef } from './shape-validator.js';
+export type { ShapeValidationResult, ShapeValidationIssue } from './shape-validator.js';
 import type { ValidationResult, FixResult } from '../types/index.js';
 export interface ValidateAndFixResult {
     validation: ValidationResult;
