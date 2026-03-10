@@ -29,4 +29,5 @@ export { StubEmbeddingProvider } from './vector/embedding-provider.js';
 export { buildIndexPayload, payloadToEmbeddingText } from './vector/diagram-indexer.js';
 export { getNotation, findNotation, listNotations, isValidNotation, resolveNotationFromShapeLibrary, resolveShape, genericNotation, awsNotation, azureNotation, gcpNotation, ciscoNotation, archimateNotation, umlNotation, bpmnNotation, } from './notation/index.js';
 export { StateManager } from './state/state-manager.js';
+export { getTemplate, listTemplates, listTemplatesByNotation, listTemplatesByCategory, searchTemplates, threeTierWebApp, microservices, cicdPipeline, hubSpokeNetwork, bpmnOrderFulfilment, umlClassDiagram, archimateLayered, serverless, } from './templates/index.js';
 //# sourceMappingURL=index.js.map

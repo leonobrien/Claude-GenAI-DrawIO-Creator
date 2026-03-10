@@ -51,6 +51,22 @@ export {
 
 export { StateManager } from './state/state-manager.js';
 
+export {
+  getTemplate,
+  listTemplates,
+  listTemplatesByNotation,
+  listTemplatesByCategory,
+  searchTemplates,
+  threeTierWebApp,
+  microservices,
+  cicdPipeline,
+  hubSpokeNetwork,
+  bpmnOrderFulfilment,
+  umlClassDiagram,
+  archimateLayered,
+  serverless,
+} from './templates/index.js';
+
 export type {
   DiagramModel,
   DiagramNode,
@@ -85,3 +101,4 @@ export type { SemanticValidationResult } from './parser/semantic-validator.js';
 export type { ShapeValidationResult, ShapeValidationIssue } from './parser/shape-validator.js';
 export type { ValidateAndFixResult } from './parser/index.js';
 export type { SkillState, OperationRecord } from './state/state-manager.js';
+export type { DiagramTemplate, TemplateParams, TemplateCategory } from './templates/index.js';
