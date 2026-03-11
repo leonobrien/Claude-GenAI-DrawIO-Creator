@@ -72,6 +72,11 @@ Five modules under `src/`, each with a barrel `index.ts`:
   - `serverless` — API Gateway → Functions → managed services with monitoring (generic, aws, azure, gcp)
 - Each template accepts optional `TemplateParams` to override default labels
 
+### Preview (`src/preview/`)
+- **CharGrid** — 2D character buffer with drawing primitives (boxes, lines, text) using Unicode box-drawing characters (single, rounded, double styles)
+- **DiagramRenderer** — `renderPreview(model, options?)` scales DiagramModel coordinates to terminal dimensions, draws containers (double-line), edges (Manhattan-routed with arrowheads), and nodes (rounded boxes with centred labels). Zero dependencies.
+- **PreviewOptions** — `width` (default 100), `height` (default 35), `showEdgeLabels` (default true), `boxStyle` ('single' | 'rounded' | 'double')
+
 ### VectorBridge (`src/vector/`)
 - **QdrantClient** — Thin REST wrapper (collection CRUD, upsert, search, delete)
 - **DiagramIndexer** — Extracts labels, edge relationships, and metadata from XML for embedding
@@ -92,6 +97,7 @@ Five modules under `src/`, each with a barrel `index.ts`:
 - **mxGraphModel attributes**: `wrapWithMxFile()` emits 15 standard attributes (dx, dy, grid, gridSize, guides, tooltips, connect, arrows, fold, page, pageScale, pageWidth, pageHeight, math, shadow) with A4 landscape defaults. Accepts optional `MxGraphModelOptions` to override.
 - **Shape pre-flight validation**: `validateShapeRenderable(xml)` checks stencil references against all notation catalogues before the user opens the file, catching shapes that would render as plain rectangles.
 - **Template library**: Pre-built `DiagramModel` templates for 8 common patterns, parameterisable via `TemplateParams`. Covers all notation families (generic, aws, azure, gcp, cisco, bpmn, uml, archimate). Templates are read-only definitions that produce valid `DiagramModel` instances via `build(params?)`.
+- **Terminal preview**: `renderPreview(model, options?)` produces a Unicode text rendering of any `DiagramModel`, with boxes, Manhattan-routed edges, arrowheads, and labels. Zero dependencies — custom character grid renderer.
 
 ## draw.io XML Format
 

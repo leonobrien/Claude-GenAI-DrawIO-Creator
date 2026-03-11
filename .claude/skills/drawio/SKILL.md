@@ -18,11 +18,13 @@ This skill uses the `drawio-skill` TypeScript library at `!`pwd``. The library c
 When the user requests a diagram:
 
 1. **Understand the request** — identify diagram type (infrastructure, flowchart, org chart, wireframe, sequence, generic), components, relationships, and notation (aws, azure, gcp, cisco, archimate, uml, bpmn, or generic)
-2. **Select notation** — if the diagram involves cloud infrastructure, use `getNotation('aws')`, `getNotation('azure')`, or `getNotation('gcp')` for official service icons. For network diagrams, use `getNotation('cisco')`. For enterprise architecture, use `getNotation('archimate')`. For software design, use `getNotation('uml')`. For business processes, use `getNotation('bpmn')`. Default to generic for flowcharts and org charts.
-3. **Build a DiagramModel** — create a TypeScript script that uses the library to define nodes, edges, containers, and metadata. Use shapes from the notation catalogue.
-4. **Generate XML** — use `buildDiagramXml()` + `wrapWithMxFile()` to produce the `.drawio` XML
-5. **Validate** — run `validateAndFixXml()` for structural correctness, `validateSemantics()` with notation for semantic + conformance checking
-6. **Store & Export** — use `ProjectManager`, `ModelStore`, `VersionManager`, and `ExportManager` to persist and export the diagram
+2. **Check templates** — use `searchTemplates(query)` or `listTemplatesByNotation(notation)` to see if a pre-built template matches. If so, use `template.build(params)` as the starting point instead of building from scratch.
+3. **Select notation** — if the diagram involves cloud infrastructure, use `getNotation('aws')`, `getNotation('azure')`, or `getNotation('gcp')` for official service icons. For network diagrams, use `getNotation('cisco')`. For enterprise architecture, use `getNotation('archimate')`. For software design, use `getNotation('uml')`. For business processes, use `getNotation('bpmn')`. Default to generic for flowcharts and org charts.
+4. **Build a DiagramModel** — create a TypeScript script that uses the library to define nodes, edges, containers, and metadata. Use shapes from the notation catalogue.
+5. **Generate XML** — use `buildDiagramXml()` + `wrapWithMxFile()` to produce the `.drawio` XML
+6. **Preview in terminal** — use `renderPreview(model)` to display a Unicode text preview of the diagram in the terminal. This gives the user immediate visual feedback on layout, labels, and connections before opening draw.io. Show the preview by default, but **skip it** if the user says "no preview", "skip preview", or similar. Also consider skipping for complex diagrams (20+ nodes) where the ASCII representation becomes hard to read — mention that preview is available if they want it.
+7. **Validate** — run `validateAndFixXml()` for structural correctness, `validateSemantics()` with notation for semantic + conformance checking, and `validateShapeRenderable()` to catch invalid stencil references
+8. **Store & Export** — use `ProjectManager`, `ModelStore`, `VersionManager`, and `ExportManager` to persist and export the diagram
 
 ## Image to Diagram Workflow
 
@@ -54,6 +56,7 @@ When the user pastes an image, provides an image file path, or asks to recreate/
 ```typescript
 import {
   buildDiagramXml, wrapWithMxFile, validateAndFixXml, validateSemantics,
+  validateShapeRenderable, renderPreview,
   buildImageAnalysisPrompt,
   ProjectManager, ModelStore, VersionManager, ExportManager,
   getNotation, resolveShape,
@@ -110,6 +113,10 @@ const model: DiagramModel = {
   },
 };
 
+// --- Terminal preview (set to false to skip, or for complex diagrams 20+ nodes) ---
+const SHOW_PREVIEW = true;
+if (SHOW_PREVIEW) console.log(renderPreview(model));
+
 // --- Standard pipeline from here ---
 const bareCells = buildDiagramXml(model);
 const fullXml = wrapWithMxFile(bareCells);
@@ -118,6 +125,12 @@ const result = validateAndFixXml(fullXml);
 if (!result.validation.valid) {
   console.error('Validation errors:', result.validation.errors);
   process.exit(1);
+}
+
+// --- Shape pre-flight check ---
+const shapeResult = validateShapeRenderable(result.finalXml);
+if (shapeResult.issues.length > 0) {
+  console.warn('Shape warnings:', shapeResult.issues.map(i => i.message));
 }
 
 const semantics = validateSemantics(
@@ -172,6 +185,7 @@ Write and execute a TypeScript script using `npx tsx`:
 ```typescript
 import {
   buildDiagramXml, wrapWithMxFile, validateAndFixXml, validateSemantics,
+  validateShapeRenderable, renderPreview,
   ProjectManager, ModelStore, VersionManager, ExportManager,
   getNotation, resolveShape,
 } from '!`pwd`/src/index.js';
@@ -222,6 +236,10 @@ const model: DiagramModel = {
   },
 };
 
+// --- Terminal preview (set to false to skip, or for complex diagrams 20+ nodes) ---
+const SHOW_PREVIEW = true;
+if (SHOW_PREVIEW) console.log(renderPreview(model));
+
 const bareCells = buildDiagramXml(model);
 const fullXml = wrapWithMxFile(bareCells);
 const result = validateAndFixXml(fullXml);
@@ -229,6 +247,12 @@ const result = validateAndFixXml(fullXml);
 if (!result.validation.valid) {
   console.error('Validation errors:', result.validation.errors);
   process.exit(1);
+}
+
+// --- Shape pre-flight check ---
+const shapeResult = validateShapeRenderable(result.finalXml);
+if (shapeResult.issues.length > 0) {
+  console.warn('Shape warnings:', shapeResult.issues.map(i => i.message));
 }
 
 const semantics = validateSemantics(
