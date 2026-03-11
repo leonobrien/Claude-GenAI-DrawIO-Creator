@@ -51,6 +51,8 @@ export {
 
 export { StateManager } from './state/state-manager.js';
 
+export { CharGrid, BOX, ARROW, renderPreview } from './preview/index.js';
+
 export {
   getTemplate,
   listTemplates,
@@ -102,3 +104,4 @@ export type { ShapeValidationResult, ShapeValidationIssue } from './parser/shape
 export type { ValidateAndFixResult } from './parser/index.js';
 export type { SkillState, OperationRecord } from './state/state-manager.js';
 export type { DiagramTemplate, TemplateParams, TemplateCategory } from './templates/index.js';
+export type { BoxStyle, PreviewOptions } from './preview/index.js';
