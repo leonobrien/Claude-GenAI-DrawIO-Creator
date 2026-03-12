@@ -11,6 +11,9 @@
  * - Pending operations queue
  */
 
+// State file path is set once at construction. JSON parsing is wrapped in try/catch with fallback.
+/* eslint-disable security/detect-non-literal-fs-filename */
+
 import { readFile, writeFile, mkdir } from 'node:fs/promises';
 import { dirname } from 'node:path';
 import { existsSync } from 'node:fs';

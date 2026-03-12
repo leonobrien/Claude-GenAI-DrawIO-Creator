@@ -61,14 +61,14 @@ export class StubEmbeddingProvider implements EmbeddingProvider {
       hash = ((hash << 13) ^ hash) | 0;
       hash = (hash * 0x5bd1e995) | 0;
       hash = (hash ^ (hash >> 15)) | 0;
-      vector[i] = (hash & 0xffff) / 0xffff;
+      vector[i] = (hash & 0xffff) / 0xffff; // eslint-disable-line security/detect-object-injection
     }
 
     // Normalise to unit length
     const magnitude = Math.sqrt(vector.reduce((sum, v) => sum + v * v, 0));
     if (magnitude > 0) {
       for (let i = 0; i < this.dimensions; i++) {
-        vector[i] /= magnitude;
+        vector[i] /= magnitude; // eslint-disable-line security/detect-object-injection
       }
     }
 

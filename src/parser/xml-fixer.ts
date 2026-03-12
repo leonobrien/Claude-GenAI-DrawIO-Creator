@@ -161,7 +161,7 @@ export function fixXml(xml: string): FixResult {
   for (let round = 0; round < MAX_ROUNDS; round++) {
     let anyApplied = false;
 
-    for (const step of FIX_PIPELINE) {
+    for (const step of FIX_PIPELINE) { // eslint-disable-line secure-coding/no-unchecked-loop-condition -- bounded by MAX_ROUNDS=10 outer loop
       const result = step.fix(current);
       if (result.applied) {
         allFixes.push(`${step.name} (round ${round + 1})`);

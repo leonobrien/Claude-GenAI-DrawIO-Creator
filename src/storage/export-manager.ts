@@ -2,6 +2,9 @@
  * ExportManager -- Exports diagram models to .drawio or .xml files.
  */
 
+// Output paths are validated by assertSafeOutputPath (null-byte check) and resolved to absolute paths.
+/* eslint-disable security/detect-non-literal-fs-filename */
+
 import { writeFile } from 'node:fs/promises';
 import { resolve } from 'node:path';
 import { VersionManager } from './version-manager.js';

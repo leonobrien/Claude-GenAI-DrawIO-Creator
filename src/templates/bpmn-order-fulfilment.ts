@@ -8,7 +8,7 @@
 
 import type { DiagramTemplate, TemplateParams } from './types.js';
 import type { DiagramModel } from '../types/index.js';
-import { resolveShape } from '../notation/registry.js';
+import { requireShape } from '../notation/registry.js';
 
 const DEFAULTS: TemplateParams = {
   title: 'Order Fulfilment Process',
@@ -26,12 +26,12 @@ const DEFAULTS: TemplateParams = {
 function build(params?: TemplateParams): DiagramModel {
   const p = { ...DEFAULTS, ...params };
 
-  const startEvent = resolveShape('bpmn', 'Start Event')!;
-  const endEvent = resolveShape('bpmn', 'End Event')!;
-  const task = resolveShape('bpmn', 'User Task')!;
-  const serviceTask = resolveShape('bpmn', 'Service Task')!;
-  const gateway = resolveShape('bpmn', 'Exclusive Gateway')!;
-  const pool = resolveShape('bpmn', 'Pool')!;
+  const startEvent = requireShape('bpmn', 'Start Event');
+  const endEvent = requireShape('bpmn', 'End Event');
+  const task = requireShape('bpmn', 'User Task');
+  const serviceTask = requireShape('bpmn', 'Service Task');
+  const gateway = requireShape('bpmn', 'Exclusive Gateway');
+  const pool = requireShape('bpmn', 'Pool');
 
   const seqFlow = 'edgeStyle=orthogonalEdgeStyle;endArrow=classic;html=1;strokeColor=#000000;';
 

@@ -7,7 +7,7 @@
 
 import type { DiagramTemplate, TemplateParams } from './types.js';
 import type { DiagramModel } from '../types/index.js';
-import { resolveShape } from '../notation/registry.js';
+import { requireShape } from '../notation/registry.js';
 
 const DEFAULTS: TemplateParams = {
   title: 'ArchiMate Layered Viewpoint',
@@ -28,15 +28,15 @@ const DEFAULTS: TemplateParams = {
 function build(params?: TemplateParams): DiagramModel {
   const p = { ...DEFAULTS, ...params };
 
-  const businessProcess = resolveShape('archimate', 'Business Process')!;
-  const businessService = resolveShape('archimate', 'Business Service')!;
-  const businessActor = resolveShape('archimate', 'Business Actor')!;
-  const appComponent = resolveShape('archimate', 'Application Component')!;
-  const appService = resolveShape('archimate', 'Application Service')!;
-  const dataObject = resolveShape('archimate', 'Data Object')!;
-  const node = resolveShape('archimate', 'Node')!;
-  const systemSoftware = resolveShape('archimate', 'System Software')!;
-  const artifact = resolveShape('archimate', 'Artifact')!;
+  const businessProcess = requireShape('archimate', 'Business Process');
+  const businessService = requireShape('archimate', 'Business Service');
+  const businessActor = requireShape('archimate', 'Business Actor');
+  const appComponent = requireShape('archimate', 'Application Component');
+  const appService = requireShape('archimate', 'Application Service');
+  const dataObject = requireShape('archimate', 'Data Object');
+  const node = requireShape('archimate', 'Node');
+  const systemSoftware = requireShape('archimate', 'System Software');
+  const artifact = requireShape('archimate', 'Artifact');
 
   const layerStyle = 'rounded=0;whiteSpace=wrap;html=1;fillColor=none;dashed=1;verticalAlign=top;fontStyle=1;fontSize=12;align=left;spacingLeft=5;';
   const servingEdge = 'edgeStyle=orthogonalEdgeStyle;endArrow=block;endFill=1;html=1;';

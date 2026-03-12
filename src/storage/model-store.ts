@@ -5,6 +5,10 @@
  * The storage root defaults to .drawio-skill/ in the current working directory.
  */
 
+// All filesystem paths are constructed from assertSafeName-validated segments.
+// JSON parsing uses safeJsonParse with schema validation. List operations are capped at MAX_LIST_ITEMS.
+/* eslint-disable security/detect-non-literal-fs-filename, secure-coding/no-unsafe-deserialization, secure-coding/no-unlimited-resource-allocation */
+
 import { readFile, writeFile, readdir, unlink, mkdir } from 'node:fs/promises';
 import { join } from 'node:path';
 import { existsSync } from 'node:fs';

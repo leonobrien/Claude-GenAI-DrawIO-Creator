@@ -13,4 +13,5 @@ export {
   isValidNotation,
   resolveNotationFromShapeLibrary,
   resolveShape,
+  requireShape,
 } from './registry.js';
