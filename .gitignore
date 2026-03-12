@@ -1,15 +1,15 @@
-# Python
-__pycache__/
-*.py[cod]
-*$py.class
-*.so
-.Python
-env/
-venv/
-.venv/
-*.egg-info/
+# Build output
 dist/
 build/
+
+# Dependencies
+node_modules/
+
+# Runtime output
+storage/
+
+# Ad-hoc generation scripts (session artefacts, not part of the library)
+scripts/
 
 # IDE
 .idea/
@@ -22,16 +22,10 @@ build/
 .DS_Store
 Thumbs.db
 
-# Sentence transformers model cache
-.cache/
-
-# Keep project directories tracked (they contain architecture artifacts)
-# If you want to exclude specific projects, add:
-# projects/scratch/
-# projects/test-*/
-# Claude Code local settings (but keep skills/)
+# Claude Code local state (skills are kept)
 .claude/settings.local.json
 .claude/plans/
 .claude/projects/
-storage/
-node_modules/
+
+# Caches
+.cache/
