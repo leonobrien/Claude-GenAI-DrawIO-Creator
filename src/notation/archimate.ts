@@ -1,8 +1,13 @@
 /**
  * ArchiMate notation — ArchiMate 3.x enterprise architecture shapes.
  *
- * Uses the mxgraph.archimate3 stencil library with archiType modifiers
- * for layer-specific elements.
+ * Full coverage of the ArchiMate 3.x specification across all six layers:
+ * Strategy, Business, Application, Technology, Motivation, and
+ * Implementation & Migration. Uses the mxgraph.archimate3 stencil library
+ * with archiType modifiers for layer-specific rendering.
+ *
+ * Stencil identifiers validated against draw.io's mxArchiMate3.js and
+ * Sidebar-ArchiMate3.js source files.
  */
 
 import type { NotationDefinition } from '../types/index.js';
@@ -11,9 +16,43 @@ export const archimateNotation: NotationDefinition = {
   name: 'archimate',
   displayName: 'ArchiMate 3.x',
   stencilPrefix: 'mxgraph.archimate3',
-  description: 'ArchiMate 3.x enterprise architecture diagrams with layered elements (Business, Application, Technology) from the mxgraph.archimate3 stencil library.',
+  description: 'ArchiMate 3.x enterprise architecture diagrams with layered elements (Strategy, Business, Application, Technology, Motivation, Implementation & Migration) from the mxgraph.archimate3 stencil library.',
   shapes: [
+    // -----------------------------------------------------------------------
+    // Strategy Layer
+    // -----------------------------------------------------------------------
+    {
+      name: 'Resource',
+      style: 'shape=mxgraph.archimate3.resource;archiType=strategy;whiteSpace=wrap;html=1;',
+      defaultWidth: 120,
+      defaultHeight: 60,
+      category: 'strategy',
+    },
+    {
+      name: 'Capability',
+      style: 'shape=mxgraph.archimate3.capability;archiType=strategy;whiteSpace=wrap;html=1;',
+      defaultWidth: 120,
+      defaultHeight: 60,
+      category: 'strategy',
+    },
+    {
+      name: 'Value Stream',
+      style: 'shape=mxgraph.archimate3.valueStream;archiType=strategy;whiteSpace=wrap;html=1;',
+      defaultWidth: 120,
+      defaultHeight: 60,
+      category: 'strategy',
+    },
+    {
+      name: 'Course of Action',
+      style: 'shape=mxgraph.archimate3.course;archiType=strategy;whiteSpace=wrap;html=1;',
+      defaultWidth: 120,
+      defaultHeight: 60,
+      category: 'strategy',
+    },
+
+    // -----------------------------------------------------------------------
     // Business Layer
+    // -----------------------------------------------------------------------
     {
       name: 'Business Actor',
       style: 'shape=mxgraph.archimate3.actor;archiType=business;whiteSpace=wrap;html=1;',
@@ -29,8 +68,43 @@ export const archimateNotation: NotationDefinition = {
       category: 'business',
     },
     {
+      name: 'Business Collaboration',
+      style: 'shape=mxgraph.archimate3.collaboration;archiType=business;whiteSpace=wrap;html=1;',
+      defaultWidth: 120,
+      defaultHeight: 60,
+      category: 'business',
+    },
+    {
+      name: 'Business Interface',
+      style: 'shape=mxgraph.archimate3.interface;archiType=business;whiteSpace=wrap;html=1;',
+      defaultWidth: 120,
+      defaultHeight: 60,
+      category: 'business',
+    },
+    {
       name: 'Business Process',
       style: 'shape=mxgraph.archimate3.process;archiType=business;whiteSpace=wrap;html=1;',
+      defaultWidth: 120,
+      defaultHeight: 60,
+      category: 'business',
+    },
+    {
+      name: 'Business Function',
+      style: 'shape=mxgraph.archimate3.function;archiType=business;whiteSpace=wrap;html=1;',
+      defaultWidth: 120,
+      defaultHeight: 60,
+      category: 'business',
+    },
+    {
+      name: 'Business Interaction',
+      style: 'shape=mxgraph.archimate3.interaction;archiType=business;whiteSpace=wrap;html=1;',
+      defaultWidth: 120,
+      defaultHeight: 60,
+      category: 'business',
+    },
+    {
+      name: 'Business Event',
+      style: 'shape=mxgraph.archimate3.event;archiType=business;whiteSpace=wrap;html=1;',
       defaultWidth: 120,
       defaultHeight: 60,
       category: 'business',
@@ -49,7 +123,31 @@ export const archimateNotation: NotationDefinition = {
       defaultHeight: 60,
       category: 'business',
     },
+    {
+      name: 'Contract',
+      style: 'shape=mxgraph.archimate3.contract;archiType=business;whiteSpace=wrap;html=1;',
+      defaultWidth: 120,
+      defaultHeight: 60,
+      category: 'business',
+    },
+    {
+      name: 'Representation',
+      style: 'shape=mxgraph.archimate3.representation;archiType=business;whiteSpace=wrap;html=1;',
+      defaultWidth: 120,
+      defaultHeight: 60,
+      category: 'business',
+    },
+    {
+      name: 'Product',
+      style: 'shape=mxgraph.archimate3.product;archiType=business;whiteSpace=wrap;html=1;',
+      defaultWidth: 120,
+      defaultHeight: 60,
+      category: 'business',
+    },
+
+    // -----------------------------------------------------------------------
     // Application Layer
+    // -----------------------------------------------------------------------
     {
       name: 'Application Component',
       style: 'shape=mxgraph.archimate3.component;archiType=application;whiteSpace=wrap;html=1;',
@@ -58,8 +156,8 @@ export const archimateNotation: NotationDefinition = {
       category: 'application',
     },
     {
-      name: 'Application Service',
-      style: 'shape=mxgraph.archimate3.service;archiType=application;whiteSpace=wrap;html=1;',
+      name: 'Application Collaboration',
+      style: 'shape=mxgraph.archimate3.collaboration;archiType=application;whiteSpace=wrap;html=1;',
       defaultWidth: 120,
       defaultHeight: 60,
       category: 'application',
@@ -72,13 +170,51 @@ export const archimateNotation: NotationDefinition = {
       category: 'application',
     },
     {
+      name: 'Application Function',
+      style: 'shape=mxgraph.archimate3.function;archiType=application;whiteSpace=wrap;html=1;',
+      defaultWidth: 120,
+      defaultHeight: 60,
+      category: 'application',
+    },
+    {
+      name: 'Application Interaction',
+      style: 'shape=mxgraph.archimate3.interaction;archiType=application;whiteSpace=wrap;html=1;',
+      defaultWidth: 120,
+      defaultHeight: 60,
+      category: 'application',
+    },
+    {
+      name: 'Application Process',
+      style: 'shape=mxgraph.archimate3.process;archiType=application;whiteSpace=wrap;html=1;',
+      defaultWidth: 120,
+      defaultHeight: 60,
+      category: 'application',
+    },
+    {
+      name: 'Application Event',
+      style: 'shape=mxgraph.archimate3.event;archiType=application;whiteSpace=wrap;html=1;',
+      defaultWidth: 120,
+      defaultHeight: 60,
+      category: 'application',
+    },
+    {
+      name: 'Application Service',
+      style: 'shape=mxgraph.archimate3.service;archiType=application;whiteSpace=wrap;html=1;',
+      defaultWidth: 120,
+      defaultHeight: 60,
+      category: 'application',
+    },
+    {
       name: 'Data Object',
       style: 'shape=mxgraph.archimate3.businessObject;archiType=application;whiteSpace=wrap;html=1;',
       defaultWidth: 120,
       defaultHeight: 60,
       category: 'application',
     },
+
+    // -----------------------------------------------------------------------
     // Technology Layer
+    // -----------------------------------------------------------------------
     {
       name: 'Node',
       style: 'shape=mxgraph.archimate3.node;archiType=technology;whiteSpace=wrap;html=1;',
@@ -96,6 +232,48 @@ export const archimateNotation: NotationDefinition = {
     {
       name: 'System Software',
       style: 'shape=mxgraph.archimate3.sysSw;archiType=technology;whiteSpace=wrap;html=1;',
+      defaultWidth: 120,
+      defaultHeight: 60,
+      category: 'technology',
+    },
+    {
+      name: 'Technology Collaboration',
+      style: 'shape=mxgraph.archimate3.collaboration;archiType=technology;whiteSpace=wrap;html=1;',
+      defaultWidth: 120,
+      defaultHeight: 60,
+      category: 'technology',
+    },
+    {
+      name: 'Technology Interface',
+      style: 'shape=mxgraph.archimate3.interface;archiType=technology;whiteSpace=wrap;html=1;',
+      defaultWidth: 120,
+      defaultHeight: 60,
+      category: 'technology',
+    },
+    {
+      name: 'Technology Function',
+      style: 'shape=mxgraph.archimate3.function;archiType=technology;whiteSpace=wrap;html=1;',
+      defaultWidth: 120,
+      defaultHeight: 60,
+      category: 'technology',
+    },
+    {
+      name: 'Technology Interaction',
+      style: 'shape=mxgraph.archimate3.interaction;archiType=technology;whiteSpace=wrap;html=1;',
+      defaultWidth: 120,
+      defaultHeight: 60,
+      category: 'technology',
+    },
+    {
+      name: 'Technology Process',
+      style: 'shape=mxgraph.archimate3.process;archiType=technology;whiteSpace=wrap;html=1;',
+      defaultWidth: 120,
+      defaultHeight: 60,
+      category: 'technology',
+    },
+    {
+      name: 'Technology Event',
+      style: 'shape=mxgraph.archimate3.event;archiType=technology;whiteSpace=wrap;html=1;',
       defaultWidth: 120,
       defaultHeight: 60,
       category: 'technology',
@@ -121,6 +299,172 @@ export const archimateNotation: NotationDefinition = {
       defaultHeight: 60,
       category: 'technology',
     },
+    {
+      name: 'Path',
+      style: 'shape=mxgraph.archimate3.path;archiType=technology;whiteSpace=wrap;html=1;',
+      defaultWidth: 120,
+      defaultHeight: 60,
+      category: 'technology',
+    },
+    {
+      name: 'Distribution Network',
+      style: 'shape=mxgraph.archimate3.distribution;archiType=technology;whiteSpace=wrap;html=1;',
+      defaultWidth: 120,
+      defaultHeight: 60,
+      category: 'technology',
+    },
+    {
+      name: 'Equipment',
+      style: 'shape=mxgraph.archimate3.equipment;archiType=technology;whiteSpace=wrap;html=1;',
+      defaultWidth: 120,
+      defaultHeight: 60,
+      category: 'technology',
+    },
+    {
+      name: 'Facility',
+      style: 'shape=mxgraph.archimate3.facility;archiType=technology;whiteSpace=wrap;html=1;',
+      defaultWidth: 120,
+      defaultHeight: 60,
+      category: 'technology',
+    },
+    {
+      name: 'Material',
+      style: 'shape=mxgraph.archimate3.material;archiType=technology;whiteSpace=wrap;html=1;',
+      defaultWidth: 120,
+      defaultHeight: 60,
+      category: 'technology',
+    },
+
+    // -----------------------------------------------------------------------
+    // Motivation Layer
+    // -----------------------------------------------------------------------
+    {
+      name: 'Stakeholder',
+      style: 'shape=mxgraph.archimate3.actor;archiType=motivation;whiteSpace=wrap;html=1;',
+      defaultWidth: 120,
+      defaultHeight: 60,
+      category: 'motivation',
+    },
+    {
+      name: 'Driver',
+      style: 'shape=mxgraph.archimate3.driver;archiType=motivation;whiteSpace=wrap;html=1;',
+      defaultWidth: 120,
+      defaultHeight: 60,
+      category: 'motivation',
+    },
+    {
+      name: 'Assessment',
+      style: 'shape=mxgraph.archimate3.assess;archiType=motivation;whiteSpace=wrap;html=1;',
+      defaultWidth: 120,
+      defaultHeight: 60,
+      category: 'motivation',
+    },
+    {
+      name: 'Goal',
+      style: 'shape=mxgraph.archimate3.goal;archiType=motivation;whiteSpace=wrap;html=1;',
+      defaultWidth: 120,
+      defaultHeight: 60,
+      category: 'motivation',
+    },
+    {
+      name: 'Outcome',
+      style: 'shape=mxgraph.archimate3.outcome;archiType=motivation;whiteSpace=wrap;html=1;',
+      defaultWidth: 120,
+      defaultHeight: 60,
+      category: 'motivation',
+    },
+    {
+      name: 'Principle',
+      style: 'shape=mxgraph.archimate3.principle;archiType=motivation;whiteSpace=wrap;html=1;',
+      defaultWidth: 120,
+      defaultHeight: 60,
+      category: 'motivation',
+    },
+    {
+      name: 'Requirement',
+      style: 'shape=mxgraph.archimate3.requirement;archiType=motivation;whiteSpace=wrap;html=1;',
+      defaultWidth: 120,
+      defaultHeight: 60,
+      category: 'motivation',
+    },
+    {
+      name: 'Constraint',
+      style: 'shape=mxgraph.archimate3.constraint;archiType=motivation;whiteSpace=wrap;html=1;',
+      defaultWidth: 120,
+      defaultHeight: 60,
+      category: 'motivation',
+    },
+    {
+      name: 'Meaning',
+      style: 'shape=mxgraph.archimate3.passive;archiType=motivation;whiteSpace=wrap;html=1;',
+      defaultWidth: 120,
+      defaultHeight: 60,
+      category: 'motivation',
+    },
+    {
+      name: 'Value',
+      style: 'shape=mxgraph.archimate3.passive;archiType=motivation;whiteSpace=wrap;html=1;fontStyle=2;',
+      defaultWidth: 120,
+      defaultHeight: 60,
+      category: 'motivation',
+    },
+
+    // -----------------------------------------------------------------------
+    // Implementation & Migration Layer
+    // -----------------------------------------------------------------------
+    {
+      name: 'Work Package',
+      style: 'shape=mxgraph.archimate3.workPackage;archiType=impl;whiteSpace=wrap;html=1;',
+      defaultWidth: 120,
+      defaultHeight: 60,
+      category: 'implementation',
+    },
+    {
+      name: 'Deliverable',
+      style: 'shape=mxgraph.archimate3.deliverable;archiType=impl;whiteSpace=wrap;html=1;',
+      defaultWidth: 120,
+      defaultHeight: 60,
+      category: 'implementation',
+    },
+    {
+      name: 'Implementation Event',
+      style: 'shape=mxgraph.archimate3.event;archiType=impl;whiteSpace=wrap;html=1;',
+      defaultWidth: 120,
+      defaultHeight: 60,
+      category: 'implementation',
+    },
+    {
+      name: 'Plateau',
+      style: 'shape=mxgraph.archimate3.plateau;archiType=impl;whiteSpace=wrap;html=1;',
+      defaultWidth: 120,
+      defaultHeight: 60,
+      category: 'implementation',
+    },
+    {
+      name: 'Gap',
+      style: 'shape=mxgraph.archimate3.gap;archiType=impl;whiteSpace=wrap;html=1;',
+      defaultWidth: 120,
+      defaultHeight: 60,
+      category: 'implementation',
+    },
+
+    // -----------------------------------------------------------------------
+    // Composite & Other
+    // -----------------------------------------------------------------------
+    {
+      name: 'Location',
+      style: 'shape=mxgraph.archimate3.location;whiteSpace=wrap;html=1;',
+      defaultWidth: 120,
+      defaultHeight: 60,
+      category: 'other',
+    },
+    {
+      name: 'Grouping',
+      style: 'shape=mxgraph.archimate3.grouping;whiteSpace=wrap;html=1;',
+      defaultWidth: 200,
+      defaultHeight: 150,
+      category: 'other',
+    },
   ],
   styleTemplates: {
     vertex: 'shape=mxgraph.archimate3.component;archiType=application;whiteSpace=wrap;html=1;',
@@ -134,17 +478,20 @@ export const archimateNotation: NotationDefinition = {
     technology: { fillColor: '#C9E7B7', strokeColor: '#6AA329' },
     motivation: { fillColor: '#CCCCFF', strokeColor: '#8888DD' },
     strategy: { fillColor: '#F5DEAA', strokeColor: '#C49A00' },
+    implementation: { fillColor: '#FFE0E0', strokeColor: '#CC6666' },
   },
   layout: {
     preferredFlow: 'layered',
     usesContainers: true,
     suggestedGap: 50,
     hints: [
-      'Arrange in horizontal layers: Business (top) → Application (middle) → Technology (bottom)',
-      'Use consistent colours per layer: yellow for Business, cyan for Application, green for Technology',
+      'Arrange in horizontal layers: Strategy/Motivation (top) → Business → Application → Technology → Implementation (bottom)',
+      'Use consistent colours per layer: tan for Strategy, yellow for Business, cyan for Application, green for Technology, purple for Motivation, pink for Implementation',
       'Show serving relationships flowing upward (Technology serves Application serves Business)',
       'Use containers to group elements within each layer',
       'Place motivation and strategy elements above the Business layer when included',
+      'Use composition relationships (filled diamond) for whole-part structures',
+      'Use aggregation relationships (open diamond) for grouping within layers',
     ],
   },
   fewShotExample: [
@@ -175,10 +522,12 @@ export const archimateNotation: NotationDefinition = {
   ].join('\n'),
   promptRules: [
     'Use shape=mxgraph.archimate3.<element>;archiType=<layer>; for all ArchiMate elements',
-    'Arrange elements in horizontal layers: Business (top), Application (middle), Technology (bottom)',
-    'Apply layer-specific colours: yellow (#FFFFB5) for Business, cyan (#B5FFFF) for Application, green (#C9E7B7) for Technology',
+    'Valid archiType values: business, application, technology, strategy, motivation, impl',
+    'Arrange elements in horizontal layers: Strategy/Motivation (top) → Business → Application → Technology → Implementation (bottom)',
+    'Apply layer-specific colours: tan (#F5DEAA) for Strategy, yellow (#FFFFB5) for Business, cyan (#B5FFFF) for Application, green (#C9E7B7) for Technology, purple (#CCCCFF) for Motivation, pink (#FFE0E0) for Implementation',
     'Use block arrows (endArrow=block;endFill=1) for serving and composition relationships',
     'Show serving relationships flowing upward through the layers',
     'Group elements within layer containers for visual clarity',
+    'For capability models, use the Capability shape (strategy layer) with composition relationships',
   ],
 };

@@ -54,7 +54,7 @@ Five modules under `src/`, each with a barrel `index.ts`:
 - **Azure** — 20 Azure service shapes using `image=img/lib/azure2/<category>/<Service>.svg` SVG references
 - **GCP** — 32 Google Cloud shapes using `shape=mxgraph.gcp2.<service>` stencils
 - **Cisco** — 20 Cisco network shapes using `shape=mxgraph.cisco19.rect;prIcon=<icon>;` composite pattern (prIcon uses bare icon name, NOT full stencil path)
-- **ArchiMate** — 15 ArchiMate 3.x shapes per layer using `shape=mxgraph.archimate3.<element>;archiType=<type>;`
+- **ArchiMate** — 59 ArchiMate 3.x shapes across all six layers (Strategy, Business, Application, Technology, Motivation, Implementation & Migration) using `shape=mxgraph.archimate3.<element>;archiType=<type>;`
 - **UML** — 23 UML 2.x shapes for class, sequence, component, use case, and activity diagrams using native draw.io shapes
 - **BPMN** — 30 BPMN 2.0 shapes for events, tasks, gateways, pools, and data objects using `mxgraph.bpmn` stencils
 - **Registry** — `getNotation()`, `findNotation()`, `listNotations()`, `isValidNotation()`, `resolveNotationFromShapeLibrary()` for lookup and resolution
