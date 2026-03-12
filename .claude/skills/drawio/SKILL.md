@@ -323,7 +323,7 @@ The skill supports eight diagram notations with pre-defined shape catalogues:
 | `azure` | Azure architecture diagrams (20 shapes) | `img/lib/azure2` |
 | `gcp` | Google Cloud architecture diagrams (32 shapes) | `mxgraph.gcp2` |
 | `cisco` | Cisco network infrastructure diagrams (20 shapes) | `mxgraph.cisco19` |
-| `archimate` | Enterprise architecture (ArchiMate 3.x) | `mxgraph.archimate3` |
+| `archimate` | Enterprise architecture (ArchiMate 3.x, 59 shapes) | `mxgraph.archimate3` |
 | `uml` | UML 2.x class, sequence, component, use case, activity diagrams (23 shapes) | `shape=uml` |
 | `bpmn` | BPMN 2.0 business process diagrams (30 shapes) | `mxgraph.bpmn` |
 
