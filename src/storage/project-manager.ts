@@ -4,6 +4,10 @@
  * Projects are directories under the storage root that group related diagrams.
  */
 
+// All filesystem paths are constructed from assertSafeName-validated segments.
+// JSON parsing uses safeJsonParse with schema validation.
+/* eslint-disable security/detect-non-literal-fs-filename, secure-coding/no-unsafe-deserialization */
+
 import { readFile, writeFile, readdir, mkdir, rm } from 'node:fs/promises';
 import { join } from 'node:path';
 import { existsSync } from 'node:fs';

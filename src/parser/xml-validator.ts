@@ -156,8 +156,9 @@ function checkMismatchedTags(xml: string): string[] {
     if (isClosing) {
       if (stack.length === 0) {
         errors.push(`Unexpected closing tag </${tagName}>`);
-      } else if (stack[stack.length - 1] !== tagName) {
-        errors.push(`Mismatched tags: expected </${stack[stack.length - 1]}>, found </${tagName}>`);
+      } else if (stack[stack.length - 1] !== tagName) { // eslint-disable-line secure-coding/detect-object-injection
+        const expected = stack[stack.length - 1]; // eslint-disable-line secure-coding/detect-object-injection
+        errors.push(`Mismatched tags: expected </${expected}>, found </${tagName}>`);
         stack.pop();
       } else {
         stack.pop();

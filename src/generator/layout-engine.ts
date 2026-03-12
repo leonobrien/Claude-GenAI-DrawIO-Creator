@@ -101,10 +101,12 @@ export function validateLayout(
   const topLevel = allElements.filter((e) => !e.parent || e.parent === '1');
   for (let i = 0; i < topLevel.length; i++) {
     for (let j = i + 1; j < topLevel.length; j++) {
-      const a = getBoundingBox(topLevel[i]);
-      const b = getBoundingBox(topLevel[j]);
+      const elemA = topLevel[i]; // eslint-disable-line security/detect-object-injection
+      const elemB = topLevel[j]; // eslint-disable-line security/detect-object-injection
+      const a = getBoundingBox(elemA);
+      const b = getBoundingBox(elemB);
       if (boxesOverlap(a, b, 0)) {
-        violations.push(`Elements "${topLevel[i].id}" and "${topLevel[j].id}" overlap`);
+        violations.push(`Elements "${elemA.id}" and "${elemB.id}" overlap`);
       }
     }
   }

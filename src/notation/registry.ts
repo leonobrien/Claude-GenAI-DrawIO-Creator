@@ -152,3 +152,19 @@ export function resolveShape(
   // Shortest name wins (most specific match)
   return partials.reduce((a, b) => a.name.length <= b.name.length ? a : b);
 }
+
+/**
+ * Resolves a shape from a notation catalogue, throwing if not found.
+ *
+ * Use in templates and scripts where the shape is known to exist in the
+ * catalogue and a missing shape indicates a programming error.
+ *
+ * @throws Error if the shape cannot be resolved
+ */
+export function requireShape(notationName: NotationName, shapeName: string): NotationShape {
+  const shape = resolveShape(notationName, shapeName);
+  if (!shape) {
+    throw new Error(`Shape "${shapeName}" not found in notation "${notationName}"`);
+  }
+  return shape;
+}

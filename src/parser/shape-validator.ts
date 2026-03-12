@@ -87,16 +87,20 @@ function extractVertexStyles(xml: string): Array<{ id: string; style: string }> 
   // Also match when vertex appears before id/style
   const pattern2 = /<mxCell[^>]*\svertex="1"[^>]*\sid="([^"]+)"[^>]*\sstyle="([^"]*)"/g;
   while ((match = pattern2.exec(xml)) !== null) {
-    if (!results.some(r => r.id === match![1])) {
-      results.push({ id: match[1], style: match[2] });
+    const id = match[1];
+    const style = match[2];
+    if (!results.some(r => r.id === id)) {
+      results.push({ id, style });
     }
   }
 
   // Match style before id
   const pattern3 = /<mxCell[^>]*\sstyle="([^"]*)"[^>]*\sid="([^"]+)"[^>]*\svertex="1"/g;
   while ((match = pattern3.exec(xml)) !== null) {
-    if (!results.some(r => r.id === match![2])) {
-      results.push({ id: match[2], style: match[1] });
+    const id = match[2];
+    const style = match[1];
+    if (!results.some(r => r.id === id)) {
+      results.push({ id, style });
     }
   }
 

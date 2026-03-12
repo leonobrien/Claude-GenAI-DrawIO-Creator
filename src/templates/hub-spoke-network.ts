@@ -7,7 +7,7 @@
 
 import type { DiagramTemplate, TemplateParams } from './types.js';
 import type { DiagramModel } from '../types/index.js';
-import { resolveShape } from '../notation/registry.js';
+import { requireShape } from '../notation/registry.js';
 
 const DEFAULTS: TemplateParams = {
   title: 'Hub-and-Spoke Network',
@@ -26,13 +26,13 @@ const DEFAULTS: TemplateParams = {
 function build(params?: TemplateParams): DiagramModel {
   const p = { ...DEFAULTS, ...params };
 
-  const cloud = resolveShape('cisco', 'Cloud')!;
-  const fw = resolveShape('cisco', 'Firewall')!;
-  const router = resolveShape('cisco', 'Router')!;
-  const sw = resolveShape('cisco', 'Switch')!;
-  const server = resolveShape('cisco', 'Server')!;
-  const desktop = resolveShape('cisco', 'Desktop')!;
-  const ap = resolveShape('cisco', 'Access Point')!;
+  const cloud = requireShape('cisco', 'Cloud');
+  const fw = requireShape('cisco', 'Firewall');
+  const router = requireShape('cisco', 'Router');
+  const sw = requireShape('cisco', 'Switch');
+  const server = requireShape('cisco', 'Server');
+  const desktop = requireShape('cisco', 'Desktop');
+  const ap = requireShape('cisco', 'Access Point');
 
   const edgeStyle = 'endArrow=classic;html=1;strokeColor=#005073;';
   const trunkEdge = `${edgeStyle}strokeWidth=2;`;

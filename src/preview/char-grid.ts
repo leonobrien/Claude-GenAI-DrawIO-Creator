@@ -5,6 +5,9 @@
  * Uses Unicode box-drawing characters.
  */
 
+// All array access in this module is bounds-checked via row/col validation.
+/* eslint-disable security/detect-object-injection, secure-coding/detect-object-injection */
+
 /** Box-drawing character sets. */
 export const BOX = {
   single: { tl: '┌', tr: '┐', bl: '└', br: '┘', h: '─', v: '│' },
@@ -62,7 +65,7 @@ export class CharGrid {
   }
 
   /** Draw a box using the specified style. */
-  drawBox(row: number, col: number, width: number, height: number, style: BoxStyle = 'single'): void {
+  drawBox(row: number, col: number, width: number, height: number, style: BoxStyle = 'single'): void { // eslint-disable-line max-params
     const b = BOX[style];
     if (width < 2 || height < 2) return;
 

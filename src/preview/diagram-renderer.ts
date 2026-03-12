@@ -7,7 +7,7 @@
 
 import { CharGrid, ARROW } from './char-grid.js';
 import type { BoxStyle } from './char-grid.js';
-import type { DiagramModel, DiagramNode, DiagramEdge, DiagramContainer } from '../types/index.js';
+import type { DiagramModel, DiagramEdge, DiagramContainer } from '../types/index.js';
 
 export interface PreviewOptions {
   /** Terminal width in columns. Default: 100. */
@@ -27,6 +27,18 @@ interface ScaledRect {
   height: number;
 }
 
+interface ResolvedOpts {
+  width: number;
+  height: number;
+  showEdgeLabels: boolean;
+  boxStyle: BoxStyle;
+}
+
+interface EdgeEndpoint {
+  row: number;
+  col: number;
+}
+
 /**
  * Renders a DiagramModel as a Unicode text preview.
  *
@@ -35,69 +47,95 @@ interface ScaledRect {
  * @returns Multi-line string suitable for terminal display
  */
 export function renderPreview(model: DiagramModel, options?: PreviewOptions): string {
-  const opts = {
-    width: options?.width ?? 100,
-    height: options?.height ?? 35,
-    showEdgeLabels: options?.showEdgeLabels ?? true,
-    boxStyle: (options?.boxStyle ?? 'rounded') as BoxStyle,
-  };
-
+  const opts = resolveOptions(options);
   const grid = new CharGrid(opts.height, opts.width);
 
-  // Calculate canvas bounds from all elements
   const bounds = calculateBounds(model);
   const scaleX = (opts.width - 2) / Math.max(bounds.maxX - bounds.minX, 1);
   const scaleY = (opts.height - 2) / Math.max(bounds.maxY - bounds.minY, 1);
-  const offsetX = bounds.minX;
-  const offsetY = bounds.minY;
 
-  function scaleRect(x: number, y: number, w: number, h: number): ScaledRect {
-    return {
-      col: Math.round((x - offsetX) * scaleX) + 1,
-      row: Math.round((y - offsetY) * scaleY) + 1,
-      width: Math.max(Math.round(w * scaleX), 3),
-      height: Math.max(Math.round(h * scaleY), 3),
-    };
-  }
+  const scale = (x: number, y: number, w: number, h: number): ScaledRect => ({
+    col: Math.round((x - bounds.minX) * scaleX) + 1,
+    row: Math.round((y - bounds.minY) * scaleY) + 1,
+    width: Math.max(Math.round(w * scaleX), 3),
+    height: Math.max(Math.round(h * scaleY), 3),
+  });
 
-  // Resolve absolute position for nodes that have a parent container
-  function resolveAbsolute(node: { x: number; y: number; parent?: string }, containers: DiagramContainer[]): { x: number; y: number } {
-    if (!node.parent) return { x: node.x, y: node.y };
-    const parent = containers.find(c => c.id === node.parent);
-    if (!parent) return { x: node.x, y: node.y };
-    return { x: parent.x + node.x, y: parent.y + node.y };
-  }
-
-  // Build a map of element centres for edge routing (pre-compute all positions)
-  const centreMap = new Map<string, { row: number; col: number }>();
+  // Pre-compute scaled rects and centre positions
+  const centreMap = new Map<string, EdgeEndpoint>();
   const containerRects = new Map<string, ScaledRect>();
   const nodeRects = new Map<string, ScaledRect>();
 
   for (const container of model.containers) {
     const abs = resolveAbsolute(container, model.containers);
-    const rect = scaleRect(abs.x, abs.y, container.width, container.height);
+    const rect = scale(abs.x, abs.y, container.width, container.height);
     containerRects.set(container.id, rect);
-    centreMap.set(container.id, {
-      row: rect.row + Math.round(rect.height / 2),
-      col: rect.col + Math.round(rect.width / 2),
-    });
+    centreMap.set(container.id, centreOf(rect));
   }
 
   for (const node of model.nodes) {
     const abs = resolveAbsolute(node, model.containers);
-    const rect = scaleRect(abs.x, abs.y, node.width, node.height);
+    const rect = scale(abs.x, abs.y, node.width, node.height);
     nodeRects.set(node.id, rect);
-    centreMap.set(node.id, {
-      row: rect.row + Math.round(rect.height / 2),
-      col: rect.col + Math.round(rect.width / 2),
-    });
+    centreMap.set(node.id, centreOf(rect));
   }
 
-  // 1. Draw containers (back layer — double-line boxes)
-  for (const container of model.containers) {
-    const rect = containerRects.get(container.id)!;
-    grid.drawBox(rect.row, rect.col, rect.width, rect.height, 'double');
+  drawContainers(grid, model.containers, containerRects);
+  drawNodes(grid, model.nodes, nodeRects, opts.boxStyle);
 
+  const allRects = new Map([...containerRects, ...nodeRects]);
+  for (const edge of model.edges) {
+    drawEdge(grid, edge, centreMap, allRects, opts.showEdgeLabels);
+  }
+
+  if (model.metadata.title) {
+    const title = model.metadata.title;
+    const titleCol = Math.max(0, Math.round((opts.width - title.length) / 2));
+    grid.writeText(0, titleCol, title, opts.width);
+  }
+
+  return grid.toString();
+}
+
+// ---------------------------------------------------------------------------
+// Internal helpers
+// ---------------------------------------------------------------------------
+
+function resolveOptions(options?: PreviewOptions): ResolvedOpts {
+  return {
+    width: options?.width ?? 100,
+    height: options?.height ?? 35,
+    showEdgeLabels: options?.showEdgeLabels ?? true,
+    boxStyle: (options?.boxStyle ?? 'rounded') as BoxStyle,
+  };
+}
+
+function centreOf(rect: ScaledRect): EdgeEndpoint {
+  return {
+    row: rect.row + Math.round(rect.height / 2),
+    col: rect.col + Math.round(rect.width / 2),
+  };
+}
+
+function resolveAbsolute(
+  node: { x: number; y: number; parent?: string },
+  containers: DiagramContainer[],
+): { x: number; y: number } {
+  if (!node.parent) return { x: node.x, y: node.y };
+  const parent = containers.find(c => c.id === node.parent);
+  if (!parent) return { x: node.x, y: node.y };
+  return { x: parent.x + node.x, y: parent.y + node.y };
+}
+
+function drawContainers(
+  grid: CharGrid,
+  containers: DiagramContainer[],
+  rects: Map<string, ScaledRect>,
+): void {
+  for (const container of containers) {
+    const rect = rects.get(container.id);
+    if (!rect) continue;
+    grid.drawBox(rect.row, rect.col, rect.width, rect.height, 'double');
     if (container.label) {
       const maxLabelWidth = rect.width - 4;
       if (maxLabelWidth > 0) {
@@ -105,12 +143,18 @@ export function renderPreview(model: DiagramModel, options?: PreviewOptions): st
       }
     }
   }
+}
 
-  // 2. Draw nodes (before edges so arrowheads overwrite box borders)
-  for (const node of model.nodes) {
-    const rect = nodeRects.get(node.id)!;
-    grid.drawBox(rect.row, rect.col, rect.width, rect.height, opts.boxStyle);
-
+function drawNodes(
+  grid: CharGrid,
+  nodes: Array<{ id: string; label: string; x: number; y: number; width: number; height: number; style: string; parent?: string }>,
+  rects: Map<string, ScaledRect>,
+  boxStyle: BoxStyle,
+): void {
+  for (const node of nodes) {
+    const rect = rects.get(node.id);
+    if (!rect) continue;
+    grid.drawBox(rect.row, rect.col, rect.width, rect.height, boxStyle);
     if (node.label) {
       const maxLabelWidth = rect.width - 2;
       if (maxLabelWidth > 0) {
@@ -121,107 +165,108 @@ export function renderPreview(model: DiagramModel, options?: PreviewOptions): st
       }
     }
   }
-
-  // 3. Draw edges (after nodes so arrowheads overwrite box borders)
-  const allRects = new Map([...containerRects, ...nodeRects]);
-  for (const edge of model.edges) {
-    drawEdge(grid, edge, model, centreMap, allRects, opts);
-  }
-
-  // 4. Add title if present
-  if (model.metadata.title) {
-    const title = model.metadata.title;
-    const titleCol = Math.max(0, Math.round((opts.width - title.length) / 2));
-    grid.writeText(0, titleCol, title, opts.width);
-  }
-
-  return grid.toString();
 }
 
 /**
- * Draws a Manhattan-routed edge between source and target nodes.
- * Places arrowheads at the target box boundary, not the centre.
+ * Resolves arrow direction and target-boundary point for an edge.
  */
-function drawEdge(
-  grid: CharGrid,
-  edge: DiagramEdge,
-  _model: DiagramModel,
-  centreMap: Map<string, { row: number; col: number }>,
-  rectMap: Map<string, ScaledRect>,
-  opts: { showEdgeLabels: boolean },
-): void {
-  const src = centreMap.get(edge.source);
-  const tgt = centreMap.get(edge.target);
-  if (!src || !tgt) return;
-
-  const tgtRect = rectMap.get(edge.target);
-
+function resolveArrow(
+  src: EdgeEndpoint,
+  tgt: EdgeEndpoint,
+  tgtRect: ScaledRect | undefined,
+): { row: number; col: number; char: string } {
   const dr = tgt.row - src.row;
   const dc = tgt.col - src.col;
 
-  // Determine arrow direction and target edge point
   let arrowRow = tgt.row;
   let arrowCol = tgt.col;
   let arrowChar: string;
 
   if (Math.abs(dc) >= Math.abs(dr)) {
-    // Predominantly horizontal
     arrowChar = dc > 0 ? ARROW.right : ARROW.left;
     if (tgtRect) {
       arrowCol = dc > 0 ? tgtRect.col - 1 : tgtRect.col + tgtRect.width;
     }
   } else {
-    // Predominantly vertical
     arrowChar = dr > 0 ? ARROW.down : ARROW.up;
     if (tgtRect) {
       arrowRow = dr > 0 ? tgtRect.row - 1 : tgtRect.row + tgtRect.height;
     }
   }
 
-  // Manhattan routing: horizontal then vertical
+  return { row: arrowRow, col: arrowCol, char: arrowChar };
+}
+
+/**
+ * Draws Manhattan-routed line segments (horizontal-vertical-horizontal)
+ * between source centre and arrow endpoint.
+ */
+function drawManhattanRoute(
+  grid: CharGrid,
+  src: EdgeEndpoint,
+  arrow: { row: number; col: number },
+): void {
+  const dr = arrow.row - src.row;
+  const dc = arrow.col - src.col;
   const midCol = src.col + Math.round(dc / 2);
-  const endRow = (Math.abs(dc) >= Math.abs(dr)) ? src.row : arrowRow;
+  const endRow = (Math.abs(dc) >= Math.abs(dr)) ? src.row : arrow.row;
 
   if (Math.abs(dc) > 1) {
-    // Horizontal segment from source
-    const startC = Math.min(src.col, midCol);
-    const endC = Math.max(src.col, midCol);
-    for (let c = startC; c <= endC; c++) {
-      if (grid.getChar(src.row, c) === ' ') {
-        grid.setChar(src.row, c, '─');
-      }
-    }
+    drawHSegment(grid, src.row, src.col, midCol);
   }
 
   if (Math.abs(dr) > 0) {
-    // Vertical segment
-    const startR = Math.min(src.row, endRow);
-    const endR = Math.max(src.row, endRow);
-    for (let r = startR; r <= endR; r++) {
-      if (grid.getChar(r, midCol) === ' ') {
-        grid.setChar(r, midCol, '│');
-      }
-    }
+    drawVSegment(grid, midCol, src.row, endRow);
   }
 
-  if (Math.abs(dc) > 1 && midCol !== arrowCol) {
-    // Horizontal segment to target
-    const startC = Math.min(midCol, arrowCol);
-    const endC = Math.max(midCol, arrowCol);
-    for (let c = startC; c <= endC; c++) {
-      if (grid.getChar(endRow, c) === ' ') {
-        grid.setChar(endRow, c, '─');
-      }
+  if (Math.abs(dc) > 1 && midCol !== arrow.col) {
+    drawHSegment(grid, endRow, midCol, arrow.col);
+  }
+}
+
+function drawHSegment(grid: CharGrid, row: number, fromCol: number, toCol: number): void {
+  const startC = Math.min(fromCol, toCol);
+  const endC = Math.max(fromCol, toCol);
+  for (let c = startC; c <= endC; c++) {
+    if (grid.getChar(row, c) === ' ') {
+      grid.setChar(row, c, '─');
     }
   }
+}
 
-  // Arrowhead at target boundary (always overwrite)
-  grid.setChar(arrowRow, arrowCol, arrowChar);
+function drawVSegment(grid: CharGrid, col: number, fromRow: number, toRow: number): void {
+  const startR = Math.min(fromRow, toRow);
+  const endR = Math.max(fromRow, toRow);
+  for (let r = startR; r <= endR; r++) {
+    if (grid.getChar(r, col) === ' ') {
+      grid.setChar(r, col, '│');
+    }
+  }
+}
 
-  // Edge label at midpoint
-  if (opts.showEdgeLabels && edge.label) {
-    const labelRow = Math.round((src.row + arrowRow) / 2);
-    const labelCol = Math.round((src.col + arrowCol) / 2) + 1;
+/**
+ * Draws a Manhattan-routed edge between source and target nodes.
+ */
+function drawEdge( // eslint-disable-line max-params
+  grid: CharGrid,
+  edge: DiagramEdge,
+  centreMap: Map<string, EdgeEndpoint>,
+  rectMap: Map<string, ScaledRect>,
+  showLabels: boolean,
+): void {
+  const src = centreMap.get(edge.source);
+  const tgt = centreMap.get(edge.target);
+  if (!src || !tgt) return;
+
+  const tgtRect = rectMap.get(edge.target);
+  const arrow = resolveArrow(src, tgt, tgtRect);
+
+  drawManhattanRoute(grid, src, arrow);
+  grid.setChar(arrow.row, arrow.col, arrow.char);
+
+  if (showLabels && edge.label) {
+    const labelRow = Math.round((src.row + arrow.row) / 2);
+    const labelCol = Math.round((src.col + arrow.col) / 2) + 1;
     grid.writeText(labelRow, labelCol, edge.label, 15);
   }
 }
@@ -232,7 +277,7 @@ function drawEdge(
 function calculateBounds(model: DiagramModel): { minX: number; minY: number; maxX: number; maxY: number } {
   let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
 
-  function expandAbs(x: number, y: number, w: number, h: number, parentId?: string): void {
+  function expand(x: number, y: number, w: number, h: number, parentId?: string): void { // eslint-disable-line max-params
     let absX = x, absY = y;
     if (parentId) {
       const parent = model.containers.find(c => c.id === parentId);
@@ -244,10 +289,9 @@ function calculateBounds(model: DiagramModel): { minX: number; minY: number; max
     maxY = Math.max(maxY, absY + h);
   }
 
-  for (const c of model.containers) expandAbs(c.x, c.y, c.width, c.height, c.parent);
-  for (const n of model.nodes) expandAbs(n.x, n.y, n.width, n.height, n.parent);
+  for (const c of model.containers) expand(c.x, c.y, c.width, c.height, c.parent);
+  for (const n of model.nodes) expand(n.x, n.y, n.width, n.height, n.parent);
 
-  // Fallback if no elements
   if (minX === Infinity) { minX = 0; minY = 0; maxX = 800; maxY = 600; }
 
   return { minX, minY, maxX, maxY };
