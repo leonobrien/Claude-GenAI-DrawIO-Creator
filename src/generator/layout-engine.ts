@@ -140,3 +140,141 @@ export function getCentre(element: { x: number; y: number; width: number; height
     y: element.y + element.height / 2,
   };
 }
+
+/** Maximum iterations for overlap resolution to prevent infinite loops. */
+const MAX_RESOLVE_ITERATIONS = 50;
+
+interface Positionable {
+  id: string;
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+  parent?: string;
+}
+
+/**
+ * Computes the minimum displacement to separate two overlapping boxes.
+ * Pushes the second box (b) away from the first (a) along the axis
+ * with the smallest overlap, preserving the required gap.
+ */
+function computeDisplacement(
+  a: BoundingBox,
+  b: BoundingBox,
+  gap: number,
+): { dx: number; dy: number } {
+  const overlapX = Math.min(a.x + a.width + gap, b.x + b.width + gap) - Math.max(a.x, b.x);
+  const overlapY = Math.min(a.y + a.height + gap, b.y + b.height + gap) - Math.max(a.y, b.y);
+
+  if (overlapX <= 0 || overlapY <= 0) return { dx: 0, dy: 0 };
+
+  // Push along the axis with smaller overlap (less disruption)
+  if (overlapX < overlapY) {
+    const sign = getCentre(b).x >= getCentre(a).x ? 1 : -1;
+    return { dx: sign * overlapX, dy: 0 };
+  }
+  const sign = getCentre(b).y >= getCentre(a).y ? 1 : -1;
+  return { dx: 0, dy: sign * overlapY };
+}
+
+/**
+ * Groups elements by their parent ID.
+ * Elements with no parent or parent="1" are grouped under '1' (root).
+ */
+function groupByParent<T extends Positionable>(elements: T[]): Map<string, T[]> {
+  const groups = new Map<string, T[]>();
+  for (const el of elements) {
+    const key = el.parent ?? '1';
+    const group = groups.get(key);
+    if (group) {
+      group.push(el);
+    } else {
+      groups.set(key, [el]);
+    }
+  }
+  return groups;
+}
+
+/**
+ * Resolves overlapping elements within a sibling group by iteratively
+ * displacing them apart. Only compares elements that share the same parent.
+ *
+ * Returns the number of displacements applied (0 = no overlaps found).
+ */
+function resolveGroupOverlaps<T extends Positionable>(elements: T[], gap: number): number {
+  let totalDisplacements = 0;
+
+  for (let iteration = 0; iteration < MAX_RESOLVE_ITERATIONS; iteration++) {
+    let anyOverlap = false;
+
+    for (let i = 0; i < elements.length; i++) {
+      for (let j = i + 1; j < elements.length; j++) {
+        const a = elements[i]; // eslint-disable-line security/detect-object-injection
+        const b = elements[j]; // eslint-disable-line security/detect-object-injection
+        const boxA = getBoundingBox(a);
+        const boxB = getBoundingBox(b);
+
+        if (boxesOverlap(boxA, boxB, gap)) {
+          const { dx, dy } = computeDisplacement(boxA, boxB, gap);
+          b.x += dx;
+          b.y += dy;
+          anyOverlap = true;
+          totalDisplacements++;
+        }
+      }
+    }
+
+    if (!anyOverlap) break;
+  }
+
+  return totalDisplacements;
+}
+
+/**
+ * Resolves overlapping elements in a DiagramModel by displacing siblings apart.
+ *
+ * Elements are grouped by parent — only siblings (same parent) are compared.
+ * Each group is processed independently, so children within different
+ * containers don't interfere with each other.
+ *
+ * Returns a new DiagramModel with adjusted coordinates (input is not mutated).
+ *
+ * @param model - The diagram model to process
+ * @param gap - Minimum gap between sibling elements (default: 10)
+ */
+export function resolveOverlaps(
+  model: DiagramModel,
+  gap = 10,
+): { model: DiagramModel; displacements: number } {
+  // Deep-copy mutable position data
+  const containers = model.containers.map(c => ({ ...c }));
+  const nodes = model.nodes.map(n => ({ ...n }));
+
+  // Combine all positionable elements for grouping
+  const all: Positionable[] = [...containers, ...nodes];
+  const groups = groupByParent(all);
+
+  let totalDisplacements = 0;
+  for (const siblings of groups.values()) {
+    if (siblings.length < 2) continue;
+    totalDisplacements += resolveGroupOverlaps(siblings, gap);
+  }
+
+  // Map updated coordinates back to containers and nodes by id
+  const posMap = new Map(all.map(el => [el.id, { x: el.x, y: el.y }]));
+
+  return {
+    model: {
+      ...model,
+      containers: model.containers.map(c => {
+        const pos = posMap.get(c.id);
+        return pos ? { ...c, x: pos.x, y: pos.y } : c;
+      }),
+      nodes: model.nodes.map(n => {
+        const pos = posMap.get(n.id);
+        return pos ? { ...n, x: pos.x, y: pos.y } : n;
+      }),
+    },
+    displacements: totalDisplacements,
+  };
+}

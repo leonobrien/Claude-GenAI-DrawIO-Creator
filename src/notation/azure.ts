@@ -167,6 +167,70 @@ export const azureNotation: NotationDefinition = {
       defaultHeight: 50,
       category: 'security',
     },
+    {
+      name: 'Microsoft Sentinel',
+      style: azureIcon('img/lib/azure2/security/Azure_Sentinel.svg'),
+      defaultWidth: 50,
+      defaultHeight: 50,
+      category: 'security',
+    },
+    {
+      name: 'Defender for Cloud',
+      style: azureIcon('img/lib/azure2/security/Security_Center.svg'),
+      defaultWidth: 50,
+      defaultHeight: 50,
+      category: 'security',
+    },
+
+    // Identity
+    {
+      name: 'Entra ID',
+      style: azureIcon('img/lib/azure2/identity/Azure_Active_Directory.svg'),
+      defaultWidth: 50,
+      defaultHeight: 50,
+      category: 'identity',
+    },
+    {
+      name: 'AD Domain Services',
+      style: azureIcon('img/lib/azure2/identity/Azure_AD_Domain_Services.svg'),
+      defaultWidth: 50,
+      defaultHeight: 50,
+      category: 'identity',
+    },
+
+    // General / Management
+    {
+      name: 'Management Groups',
+      style: azureIcon('img/lib/azure2/general/Management_Groups.svg'),
+      defaultWidth: 50,
+      defaultHeight: 50,
+      category: 'general',
+    },
+    {
+      name: 'Subscriptions',
+      style: azureIcon('img/lib/azure2/general/Subscriptions.svg'),
+      defaultWidth: 50,
+      defaultHeight: 50,
+      category: 'general',
+    },
+
+    // Management & Governance
+    {
+      name: 'Azure Policy',
+      style: azureIcon('img/lib/azure2/management_governance/Policy.svg'),
+      defaultWidth: 50,
+      defaultHeight: 50,
+      category: 'management_governance',
+    },
+
+    // Analytics
+    {
+      name: 'Log Analytics Workspaces',
+      style: azureIcon('img/lib/azure2/analytics/Log_Analytics_Workspaces.svg'),
+      defaultWidth: 50,
+      defaultHeight: 50,
+      category: 'analytics',
+    },
 
     // Monitor
     {
@@ -175,6 +239,93 @@ export const azureNotation: NotationDefinition = {
       defaultWidth: 50,
       defaultHeight: 50,
       category: 'monitor',
+    },
+
+    // Additional Networking
+    {
+      name: 'Azure Firewall',
+      style: azureIcon('img/lib/azure2/networking/Firewalls.svg'),
+      defaultWidth: 50,
+      defaultHeight: 50,
+      category: 'networking',
+    },
+    {
+      name: 'ExpressRoute',
+      style: azureIcon('img/lib/azure2/networking/ExpressRoute_Circuits.svg'),
+      defaultWidth: 50,
+      defaultHeight: 50,
+      category: 'networking',
+    },
+    {
+      name: 'VPN Gateway',
+      style: azureIcon('img/lib/azure2/networking/Virtual_Network_Gateways.svg'),
+      defaultWidth: 50,
+      defaultHeight: 50,
+      category: 'networking',
+    },
+    {
+      name: 'Azure DNS',
+      style: azureIcon('img/lib/azure2/networking/DNS_Zones.svg'),
+      defaultWidth: 50,
+      defaultHeight: 50,
+      category: 'networking',
+    },
+    {
+      name: 'Network Security Groups',
+      style: azureIcon('img/lib/azure2/networking/Network_Security_Groups.svg'),
+      defaultWidth: 50,
+      defaultHeight: 50,
+      category: 'networking',
+    },
+    {
+      name: 'DDoS Protection',
+      style: azureIcon('img/lib/azure2/networking/DDoS_Protection_Plans.svg'),
+      defaultWidth: 50,
+      defaultHeight: 50,
+      category: 'networking',
+    },
+    {
+      name: 'Azure Bastion',
+      style: azureIcon('img/lib/azure2/networking/Bastions.svg'),
+      defaultWidth: 50,
+      defaultHeight: 50,
+      category: 'networking',
+    },
+
+    // Containers
+    {
+      name: 'Container Registry',
+      style: azureIcon('img/lib/azure2/containers/Container_Registries.svg'),
+      defaultWidth: 50,
+      defaultHeight: 50,
+      category: 'containers',
+    },
+
+    // Databases
+    {
+      name: 'Redis Cache',
+      style: azureIcon('img/lib/azure2/databases/Cache_Redis.svg'),
+      defaultWidth: 50,
+      defaultHeight: 50,
+      category: 'databases',
+    },
+
+    // DevOps
+    {
+      name: 'Azure DevOps',
+      style: azureIcon('img/lib/azure2/devops/Azure_DevOps.svg'),
+      defaultWidth: 50,
+      defaultHeight: 50,
+      category: 'devops',
+    },
+
+    // App Services
+    {
+      name: 'Notification Hubs',
+      style: azureIcon('img/lib/azure2/app_services/Notification_Hubs.svg'),
+      defaultWidth: 50,
+      defaultHeight: 50,
+      category: 'app_services',
     },
   ],
   styleTemplates: {
@@ -192,6 +343,11 @@ export const azureNotation: NotationDefinition = {
     security: { fillColor: '#E3008C', strokeColor: '#E3008C' },
     monitor: { fillColor: '#50E6FF', strokeColor: '#50E6FF' },
     analytics: { fillColor: '#A4262C', strokeColor: '#A4262C' },
+    identity: { fillColor: '#0078D4', strokeColor: '#0078D4' },
+    general: { fillColor: '#0078D4', strokeColor: '#0078D4' },
+    management_governance: { fillColor: '#0078D4', strokeColor: '#0078D4' },
+    devops: { fillColor: '#0078D4', strokeColor: '#0078D4' },
+    app_services: { fillColor: '#0078D4', strokeColor: '#0078D4' },
   },
   layout: {
     preferredFlow: 'left-right',
