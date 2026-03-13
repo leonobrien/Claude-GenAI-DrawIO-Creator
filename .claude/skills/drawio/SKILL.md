@@ -1,13 +1,13 @@
 ---
 name: drawio
-description: Generate, revise, and manage draw.io diagrams programmatically. Use when the user asks to create architecture diagrams, flowcharts, org charts, wireframes, or any draw.io/diagrams.net diagram. Also use when the user pastes or references an image and wants it recreated as a draw.io diagram.
+description: Generate, revise, and manage draw.io diagrams programmatically. Use when the user asks to create architecture diagrams, flowcharts, org charts, wireframes, or any draw.io/diagrams.net diagram. Also use when the user pastes or references an image and wants it recreated as a draw.io diagram. Also use when the user references a markdown file and wants diagrams generated from its content.
 allowed-tools: Read, Write, Edit, Bash, Glob, Grep
-argument-hint: "<prompt describing the diagram to generate, or reference an image to recreate>"
+argument-hint: "<prompt describing the diagram to generate, reference an image to recreate, or point to a markdown file for batch generation>"
 ---
 
 # draw.io Diagram Skill
 
-You are an expert diagramming assistant that generates draw.io diagrams from natural language descriptions and reference images.
+You are an expert diagramming assistant that generates draw.io diagrams from natural language descriptions, reference images, and architecture documentation files.
 
 ## How It Works
 
@@ -152,6 +152,139 @@ const { model: stored, version, isNew } = await ctx.saveModel({
 const exportPath = await ctx.exportModel(DIAGRAM_NAME);
 console.log(`${isNew ? 'Created' : 'Updated'} model "${stored.name}" (v${version}): ${exportPath}`);
 ```
+
+## Batch from Markdown Workflow
+
+When the user references a markdown file (`.md` or `.markdown`) and asks for diagrams to be generated from it, follow this workflow. The markdown file is a **human-written architecture document** — not a structured manifest. Your job is to read it, understand the architecture it describes, and generate multiple diagrams based on the user's intent.
+
+### Detection
+
+Use this workflow when:
+- The user's argument contains a file path ending in `.md` or `.markdown` (e.g. `./docs/architecture.md`, `~/projects/design.md`)
+- The user says "from this file", "from this doc", "based on this document", "generate diagrams from"
+- The user references a markdown file they've already pasted or discussed in the conversation
+
+### Steps
+
+1. **Read the file** — use the `Read` tool to load the markdown content. For very large documents (500+ lines), focus on the sections most relevant to the user's request rather than processing everything at once.
+
+2. **Analyse and plan** — based on the user's prompt and the file content, produce a **diagram plan**. Each entry should have:
+   - **Name** (kebab-case, used as the model name for storage and export filename)
+   - **Notation** (auto-detected from content or user-specified)
+   - **Diagram type** (infrastructure, flowchart, org_chart, sequence, generic)
+   - **Description** (what the diagram will show)
+   - **Key components** (the main nodes, edges, and containers to include)
+
+   **Deriving diagrams from document content:**
+   - **Section-based**: when the user asks for "a diagram per section", map each H1/H2 heading to a separate diagram
+   - **Concern-based**: when the user asks for "all infrastructure diagrams", identify distinct architectural concerns (networking, compute, data, security, CI/CD) and create one diagram per concern
+   - **Notation inference**: if the document mentions AWS services (EC2, S3, Lambda), auto-select `aws` notation. Same for Azure, GCP, Cisco keywords. If multiple cloud providers are mentioned, create separate notation-specific diagrams.
+   - **Relationship extraction**: look for "connects to", "depends on", "sends to", "reads from", "calls", arrows (→, ->), and list hierarchies to derive edges
+   - **Component identification**: service names, database names, queue names, API names, system names become nodes
+
+3. **Present the plan** — show the plan to the user as a numbered markdown table before generating anything. Include diagram name, notation, type, and description. Ask for confirmation. The user may add, remove, or modify entries. **Limit to 10 diagrams per batch** by default — if the document suggests more, ask the user to prioritise.
+
+4. **Execute sequentially** — for each diagram in the confirmed plan, write and run a TypeScript script using the batch script template below. All diagrams go into the same `ProjectContext` with a single project ID (derived from the markdown filename, e.g. `architecture.md` → `architecture`). Generate **one script per diagram** to keep script size manageable and isolate failures.
+
+5. **Summarise** — after all diagrams are generated, show a summary table:
+
+   | # | Diagram | Notation | Version | Export Path | Warnings |
+   |---|---------|----------|---------|-------------|----------|
+   | 1 | network-topology | cisco | v1 | storage/.../network-topology.drawio | — |
+   | 2 | api-services | aws | v1 | storage/.../api-services.drawio | 1 shape warning |
+
+### Batch Script Template
+
+Each diagram in the batch uses this template. Run with `cd !`pwd` && npx tsx script.ts`:
+
+```typescript
+import {
+  buildDiagramXml, wrapWithMxFile, validateAndFixXml, validateSemantics,
+  validateShapeRenderable, renderPreview,
+  ProjectContext,
+  getNotation, resolveShape,
+} from '!`pwd`/src/index.js';
+import type { DiagramModel } from '!`pwd`/src/types/index.js';
+
+// --- Configuration (shared across all diagrams in this batch) ---
+const PROJECT_ID = 'architecture';             // derived from markdown filename
+const STORAGE_ROOT = '!`pwd`/storage';
+
+const ctx = await ProjectContext.open({
+  storageRoot: STORAGE_ROOT,
+  projectId: PROJECT_ID,
+  description: 'Diagrams generated from architecture.md',
+  defaultTags: ['batch', 'from-markdown'],
+});
+
+// --- Diagram definition (one per script) ---
+const DIAGRAM_NAME = 'network-topology';       // from the plan
+const NOTATION = 'cisco';                       // from the plan
+
+// Resolve shapes from the notation catalogue
+// const router = resolveShape(NOTATION, 'Router');
+// ...
+
+const model: DiagramModel = {
+  containers: [
+    // Groups identified from the document's architecture
+  ],
+  nodes: [
+    // Components extracted from the document content
+  ],
+  edges: [
+    // Relationships described in the document
+  ],
+  metadata: {
+    title: 'Network Topology',
+    diagramType: 'infrastructure',
+    notation: NOTATION,
+  },
+};
+
+// --- Preview (skip for batches of 6+ diagrams to reduce noise) ---
+console.log(renderPreview(model));
+
+// --- Validate ---
+const bareCells = buildDiagramXml(model);
+const fullXml = wrapWithMxFile(bareCells);
+const result = validateAndFixXml(fullXml);
+
+if (!result.validation.valid) {
+  console.error(`Validation failed for ${DIAGRAM_NAME}:`, result.validation.errors);
+  process.exit(1);
+}
+
+const shapeResult = validateShapeRenderable(result.finalXml);
+if (shapeResult.issues.length > 0) {
+  console.warn('Shape warnings:', shapeResult.issues.map(i => i.message));
+}
+
+const semantics = validateSemantics(
+  result.finalXml,
+  model.nodes.map(n => n.label),
+  model.metadata.notation,
+);
+if (semantics.issues.length > 0) {
+  console.warn('Semantic warnings:', semantics.issues.map(i => `${i.severity}: ${i.message}`));
+}
+
+// --- Save & export (upsert) ---
+const { model: stored, version, isNew } = await ctx.saveModel({
+  name: DIAGRAM_NAME,
+  xml: result.finalXml,
+  description: model.metadata.title ?? DIAGRAM_NAME,
+  prompt: 'Batch generated from architecture.md',
+  notation: model.metadata.notation,
+});
+
+const exportPath = await ctx.exportModel(DIAGRAM_NAME);
+console.log(`${isNew ? 'Created' : 'Updated'} "${stored.name}" (v${version}): ${exportPath}`);
+```
+
+### Re-running a Batch
+
+If the user asks to regenerate or update diagrams from the same markdown file (e.g. after the document has been updated), the upsert semantics of `ProjectContext.saveModel()` handle this automatically — existing models are versioned up rather than duplicated. Simply re-run the same scripts with the same project ID and diagram names.
 
 ## Shape Validation
 
