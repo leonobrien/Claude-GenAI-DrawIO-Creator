@@ -27,5 +27,9 @@ Thumbs.db
 .claude/plans/
 .claude/projects/
 
+# Resource artefacts
+resources/*.drawio
+resources/*.txt
+
 # Caches
 .cache/
