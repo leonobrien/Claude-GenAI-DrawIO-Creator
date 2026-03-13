@@ -14,6 +14,7 @@
  */
 
 import type { ValidationResult } from '../types/index.js';
+import { assertXmlSize } from './limits.js';
 
 /**
  * Checks for duplicate mxCell IDs.
@@ -108,10 +109,12 @@ function checkNestedMxCells(xml: string): string[] {
       }
     }
 
-    // Handle self-closing tags
-    const preceding = xml.substring(Math.max(0, match.index - 1), match.index + match[0].length + 200);
-    if (match[1] !== '/' && preceding.includes('/>')) {
-      depth--;
+    // Handle self-closing tags — look only at the tag itself, not surrounding context
+    if (match[1] !== '/') {
+      const tagEnd = xml.indexOf('>', match.index + match[0].length - 1);
+      if (tagEnd > 0 && xml.charAt(tagEnd - 1) === '/') {
+        depth--;
+      }
     }
   }
 
@@ -156,12 +159,11 @@ function checkMismatchedTags(xml: string): string[] {
     if (isClosing) {
       if (stack.length === 0) {
         errors.push(`Unexpected closing tag </${tagName}>`);
-      } else if (stack[stack.length - 1] !== tagName) { // eslint-disable-line secure-coding/detect-object-injection
-        const expected = stack[stack.length - 1]; // eslint-disable-line secure-coding/detect-object-injection
-        errors.push(`Mismatched tags: expected </${expected}>, found </${tagName}>`);
-        stack.pop();
       } else {
-        stack.pop();
+        const expected = stack.pop();
+        if (expected !== tagName) {
+          errors.push(`Mismatched tags: expected </${expected ?? '?'}>, found </${tagName}>`);
+        }
       }
     } else {
       stack.push(tagName);
@@ -187,6 +189,12 @@ export function validateXml(xml: string): ValidationResult {
 
   if (!xml.trim()) {
     return { valid: false, errors: ['Empty XML input'], warnings: [] };
+  }
+
+  try {
+    assertXmlSize(xml);
+  } catch (err) {
+    return { valid: false, errors: [err instanceof Error ? err.message : String(err)], warnings: [] };
   }
 
   errors.push(...checkDuplicateIds(xml));

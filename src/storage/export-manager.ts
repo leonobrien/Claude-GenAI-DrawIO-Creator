@@ -20,9 +20,16 @@ export interface ExportVersionOptions {
 }
 
 function assertSafeOutputPath(outputPath: string): void {
-  const resolved = resolve(outputPath);
-  if (resolved.includes('\0')) {
+  if (outputPath.includes('\0')) {
     throw new Error('Invalid output path: contains null bytes');
+  }
+  // Block writing to sensitive system directories
+  const resolved = resolve(outputPath);
+  const blocked = ['/etc', '/usr', '/bin', '/sbin', '/boot', '/proc', '/sys', '/dev'];
+  for (const dir of blocked) {
+    if (resolved.startsWith(dir + '/') || resolved === dir) {
+      throw new Error(`Invalid output path: cannot write to system directory ${dir}`);
+    }
   }
 }
 

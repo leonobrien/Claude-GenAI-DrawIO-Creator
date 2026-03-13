@@ -10,6 +10,7 @@
  */
 
 import { listNotations } from '../notation/registry.js';
+import { MAX_STYLE_LENGTH, assertXmlSize } from './limits.js';
 
 export interface ShapeValidationIssue {
   cellId: string;
@@ -51,6 +52,8 @@ function buildKnownStyleIndex(): Set<string> {
  * Returns null for generic styles that don't use notation stencils.
  */
 export function extractStencilRef(style: string): string | null {
+  if (style.length > MAX_STYLE_LENGTH) return null;
+
   // prIcon= (Cisco)
   const prIconMatch = style.match(/prIcon=([^;]+)/);
   if (prIconMatch) return `prIcon=${prIconMatch[1]}`;
@@ -118,6 +121,12 @@ function extractVertexStyles(xml: string): Array<{ id: string; style: string }> 
  * @returns Validation result with issues for unrecognised stencil references
  */
 export function validateShapeRenderable(xml: string): ShapeValidationResult {
+  try {
+    assertXmlSize(xml, 'Shape validation input');
+  } catch {
+    return { valid: false, issues: [{ cellId: '', style: '', stencilRef: '', severity: 'error', message: 'XML input too large for shape validation' }], checkedCount: 0 };
+  }
+
   const knownStyles = buildKnownStyleIndex();
   const vertices = extractVertexStyles(xml);
   const issues: ShapeValidationIssue[] = [];

@@ -14,7 +14,7 @@
 // State file path is set once at construction. JSON parsing is wrapped in try/catch with fallback.
 /* eslint-disable security/detect-non-literal-fs-filename */
 
-import { readFile, writeFile, mkdir } from 'node:fs/promises';
+import { readFile, writeFile, mkdir, stat } from 'node:fs/promises';
 import { dirname } from 'node:path';
 import { existsSync } from 'node:fs';
 
@@ -37,6 +37,8 @@ export interface SkillState {
   pendingOperations: OperationRecord[];
 }
 
+const MAX_STATE_FILE_SIZE = 1 * 1024 * 1024; // 1 MB
+
 const INITIAL_STATE: SkillState = {
   version: 1,
   lastUpdated: new Date().toISOString(),
@@ -58,6 +60,18 @@ export class StateManager {
    */
   async load(): Promise<SkillState> {
     if (!existsSync(this.statePath)) {
+      this.state = {
+        ...INITIAL_STATE,
+        lastUpdated: new Date().toISOString(),
+        completedOperations: [],
+        pendingOperations: [],
+      };
+      return this.state;
+    }
+
+    const fileInfo = await stat(this.statePath);
+    if (fileInfo.size > MAX_STATE_FILE_SIZE) {
+      console.warn(`State file exceeds ${MAX_STATE_FILE_SIZE} bytes — resetting to initial state`);
       this.state = {
         ...INITIAL_STATE,
         lastUpdated: new Date().toISOString(),

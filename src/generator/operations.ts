@@ -127,8 +127,8 @@ function applyAdd(
   current: string,
   op: DiagramOperation,
 ): { xml: string; message?: string; error?: string } {
-  if (!op.new_xml) {
-    return { xml: current, error: `Add operation for "${op.cell_id}" missing new_xml` };
+  if (!op.cell_id || !op.new_xml) {
+    return { xml: current, error: 'Add operation missing cell_id or new_xml' };
   }
   const rootCloseIndex = current.lastIndexOf('</root>');
   const xml = rootCloseIndex !== -1
@@ -148,9 +148,10 @@ function applyDelete(
   }
 
   let xml = current;
-  const freshIndex = buildCellIndex(xml);
+  // Build cell index once; replace by fullMatch string (order-independent)
+  const deleteIndex = buildCellIndex(xml);
   for (const id of toDelete) {
-    const cell = freshIndex.get(id);
+    const cell = deleteIndex.get(id);
     if (cell) {
       xml = xml.replace(cell.fullMatch, '');
     }

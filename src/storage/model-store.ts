@@ -97,8 +97,8 @@ export class ModelStore {
       try {
         const content = await readFile(join(dir, file), 'utf-8');
         models.push(safeJsonParse<StoredModel>(content, `model file ${file}`));
-      } catch {
-        // Skip malformed model files
+      } catch (err) {
+        console.warn(`Skipping malformed model file ${file}: ${err instanceof Error ? err.message : String(err)}`);
       }
     }
 

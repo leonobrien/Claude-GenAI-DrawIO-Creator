@@ -22,6 +22,9 @@ const DEFAULT_CONFIG: QdrantConfig = {
   vectorSize: 1024,
 };
 
+/** Default request timeout in milliseconds (10 seconds). */
+const REQUEST_TIMEOUT_MS = 10_000;
+
 interface QdrantPoint {
   id: string;
   vector: number[];
@@ -57,12 +60,16 @@ export class QdrantClient {
     return `${this.config.url}${path}`;
   }
 
+  private fetchWithTimeout(url: string, init: RequestInit = {}): Promise<Response> {
+    return fetch(url, { ...init, signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS) });
+  }
+
   /**
    * Creates the collection if it does not exist.
    */
   async ensureCollection(): Promise<void> {
     // Check if collection exists
-    const checkRes = await fetch(
+    const checkRes = await this.fetchWithTimeout(
       this.url(this.collectionPath()),
       { headers: this.headers() },
     );
@@ -72,7 +79,7 @@ export class QdrantClient {
     }
 
     // Create collection
-    const createRes = await fetch(
+    const createRes = await this.fetchWithTimeout(
       this.url(this.collectionPath()),
       {
         method: 'PUT',
@@ -96,7 +103,7 @@ export class QdrantClient {
    * Upserts a single point into the collection.
    */
   async upsert(point: QdrantPoint): Promise<void> {
-    const res = await fetch(
+    const res = await this.fetchWithTimeout(
       this.url(`${this.collectionPath()}/points`),
       {
         method: 'PUT',
@@ -127,7 +134,7 @@ export class QdrantClient {
    * @returns Ranked search results with scores and payloads
    */
   async search(vector: number[], limit = 5): Promise<QdrantSearchResult[]> {
-    const res = await fetch(
+    const res = await this.fetchWithTimeout(
       this.url(`${this.collectionPath()}/points/search`),
       {
         method: 'POST',
@@ -153,7 +160,7 @@ export class QdrantClient {
    * Deletes a point by ID.
    */
   async deletePoint(pointId: string): Promise<void> {
-    const res = await fetch(
+    const res = await this.fetchWithTimeout(
       this.url(`${this.collectionPath()}/points/delete`),
       {
         method: 'POST',
@@ -175,7 +182,7 @@ export class QdrantClient {
    */
   async healthCheck(): Promise<boolean> {
     try {
-      const res = await fetch(this.url('/healthz'), { headers: this.headers() });
+      const res = await this.fetchWithTimeout(this.url('/healthz'), { headers: this.headers() });
       return res.ok;
     } catch {
       return false;
