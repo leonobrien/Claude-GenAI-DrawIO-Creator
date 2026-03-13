@@ -123,6 +123,21 @@ export class ProjectManager {
   }
 
   /**
+   * Updates an existing project's metadata.
+   * Returns the updated ProjectInfo, or null if the project does not exist.
+   */
+  async update(name: string, patch: Partial<Omit<ProjectInfo, 'name' | 'createdAt'>>): Promise<ProjectInfo | null> {
+    const existing = await this.get(name);
+    if (!existing) {
+      return null;
+    }
+
+    const updated: ProjectInfo = { ...existing, ...patch };
+    await writeFile(this.projectInfoPath(name), JSON.stringify(updated, null, 2), 'utf-8');
+    return updated;
+  }
+
+  /**
    * Ensures a project exists, creating it if necessary.
    */
   async ensureExists(name: string, description = ''): Promise<ProjectInfo> {

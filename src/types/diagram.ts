@@ -131,6 +131,7 @@ export interface StoredModel {
   tags: string[];
   prompt: string;
   description: string;
+  notation?: NotationName;
 }
 
 export interface VersionEntry {
@@ -144,6 +145,9 @@ export interface ProjectInfo {
   name: string;
   createdAt: string;
   description: string;
+  updatedAt?: string;
+  notation?: NotationName;
+  defaultTags?: string[];
 }
 
 export interface ValidationResult {

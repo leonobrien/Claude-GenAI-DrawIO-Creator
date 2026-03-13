@@ -76,12 +76,9 @@ import {
   buildDiagramXml,
   wrapWithMxFile,
   validateAndFixXml,
-  ModelStore,
-  VersionManager,
-  ProjectManager,
-  ExportManager,
+  ProjectContext,
 } from 'drawio-skill';
-import type { DiagramModel, StoredModel } from 'drawio-skill';
+import type { DiagramModel } from 'drawio-skill';
 
 // 1. Define your diagram
 const model: DiagramModel = {
@@ -104,22 +101,23 @@ const result = validateAndFixXml(fullXml);
 console.log(result.validation.valid); // true
 console.log(result.finalXml);         // Complete .drawio XML
 
-// 3. Store and export
-const root = '.drawio-skill';
-const projects = new ProjectManager(root);
-const models = new ModelStore(root);
-const versions = new VersionManager(root);
-const exporter = new ExportManager(versions);
-
-await projects.ensureExists('my-project');
-await models.save({
-  id: 'diagram-001', name: 'My Diagram', project: 'my-project',
-  currentVersion: 1, createdAt: new Date().toISOString(),
-  updatedAt: new Date().toISOString(), tags: ['example'],
-  prompt: 'A simple start-to-end flow', description: 'Two-node flowchart',
+// 3. Store and export (ProjectContext handles all storage boilerplate)
+const ctx = await ProjectContext.open({
+  storageRoot: '.drawio-skill',
+  projectId: 'my-project',
+  description: 'My project',
 });
-await versions.saveVersion('my-project', 'diagram-001', result.finalXml, 'Initial');
-await exporter.exportToFile('my-project', 'diagram-001', './output.drawio');
+
+const { model: stored, version, isNew } = await ctx.saveModel({
+  name: 'My Diagram',
+  xml: result.finalXml,
+  description: 'Two-node flowchart',
+  prompt: 'A simple start-to-end flow',
+  tags: ['example'],
+});
+
+const exportPath = await ctx.exportModel('My Diagram', './output.drawio');
+console.log(`${isNew ? 'Created' : 'Updated'} v${version}: ${exportPath}`);
 ```
 
 Open `output.drawio` in [draw.io](https://app.diagrams.net/) or any compatible editor.
@@ -364,68 +362,70 @@ console.log(deleteResult.xml.includes('id="3"'));    // true  — other nodes pr
 
 ### Example 5: Storage, Versioning, and Export
 
-Full lifecycle: create a project, store a model, save multiple versions, roll back, and export.
+Full lifecycle using `ProjectContext`: create a project, store models with upsert, iterate versions, and export.
 
 ```typescript
-import { ModelStore, VersionManager, ProjectManager, ExportManager } from 'drawio-skill';
-import type { StoredModel } from 'drawio-skill';
+import { ProjectContext } from 'drawio-skill';
 
-const root = '.drawio-skill';
-const projects = new ProjectManager(root);
-const models = new ModelStore(root);
-const versions = new VersionManager(root);
-const exporter = new ExportManager(versions);
+// Open (or create) a project — handles all storage setup
+const ctx = await ProjectContext.open({
+  storageRoot: '.drawio-skill',
+  projectId: 'web-app',
+  description: 'Web application diagrams',
+  defaultTags: ['architecture'],
+});
 
-// Create a project
-await projects.ensureExists('web-app', 'Web application diagrams');
-
-// Save model metadata
-const model: StoredModel = {
-  id: crypto.randomUUID(),
-  name: 'System Architecture',
-  project: 'web-app',
-  currentVersion: 0,
-  createdAt: new Date().toISOString(),
-  updatedAt: new Date().toISOString(),
-  tags: ['architecture', 'system-design'],
-  prompt: 'Draw a system architecture diagram',
-  description: 'High-level system architecture',
-};
-await models.save(model);
-
-// Save version 1
+// Save version 1 (creates the model automatically)
 const v1Xml = '<mxfile>...</mxfile>'; // Your generated XML
-const v1 = await versions.saveVersion('web-app', model.id, v1Xml, 'Initial generation');
+const { model, version: v1 } = await ctx.saveModel({
+  name: 'System Architecture',
+  xml: v1Xml,
+  description: 'High-level system architecture',
+  prompt: 'Draw a system architecture diagram',
+});
 console.log(v1); // 1
 
-// Save version 2 (after revision)
+// Save version 2 (upsert — same name updates the existing model)
 const v2Xml = '<mxfile>...revised...</mxfile>';
-const v2 = await versions.saveVersion('web-app', model.id, v2Xml, 'Added caching layer');
-console.log(v2); // 2
+const { version: v2, isNew } = await ctx.saveModel({
+  name: 'System Architecture',
+  xml: v2Xml,
+  description: 'Added caching layer',
+});
+console.log(v2, isNew); // 2, false
 
-// List versions
-const history = await versions.listVersions('web-app', model.id);
+// List models, find by name, load latest XML
+const allModels = await ctx.listModels();
+const found = await ctx.findModel('System Architecture');
+const latestXml = await ctx.loadLatestXml('System Architecture');
+
+// Export to .drawio file
+const exportPath = await ctx.exportModel('System Architecture', './architecture.drawio');
+```
+
+**Advanced: direct manager access for rollback and version history:**
+
+```typescript
+// The underlying managers are exposed as public readonly properties
+const history = await ctx.versions.listVersions('web-app', model.id);
 console.log(history);
 // [
-//   { version: 1, timestamp: '...', description: 'Initial generation' },
+//   { version: 1, timestamp: '...', description: 'High-level system architecture' },
 //   { version: 2, timestamp: '...', description: 'Added caching layer' },
 // ]
 
 // Roll back to version 1
-const v1Entry = await versions.loadVersion('web-app', model.id, 1);
+const v1Entry = await ctx.versions.loadVersion('web-app', model.id, 1);
 console.log(v1Entry!.xml); // Original XML
 
-// Export latest to .drawio file
-await exporter.exportToFile('web-app', model.id, './architecture.drawio');
-
-// Export specific version
-await exporter.exportVersionToFile('web-app', model.id, 1, './architecture-v1.drawio');
-
-// List all models in a project
-const allModels = await models.listByProject('web-app');
+// Export a specific version
+await ctx.exporter.exportVersionToFile({
+  project: 'web-app', modelId: model.id,
+  versionNumber: 1, outputPath: './architecture-v1.drawio',
+});
 
 // Find a model by ID across all projects
-const found = await models.findById(model.id);
+const foundById = await ctx.models.findById(model.id);
 ```
 
 ### Example 6: Semantic Search with Qdrant
@@ -604,8 +604,9 @@ const revisionPrompt = buildRevisionPrompt(existingXml);
 
 | Class | Key Methods |
 |---|---|
-| `ProjectManager` | `create()`, `get()`, `list()`, `delete()`, `ensureExists()` |
-| `ModelStore` | `save()`, `load()`, `listByProject()`, `delete()`, `findById()` |
+| `ProjectContext` | `open()`, `saveModel()`, `findModel()`, `listModels()`, `loadLatestXml()`, `exportModel()` |
+| `ProjectManager` | `create()`, `get()`, `list()`, `delete()`, `ensureExists()`, `update()` |
+| `ModelStore` | `save()`, `load()`, `listByProject()`, `delete()`, `findById()`, `findByName()` |
 | `VersionManager` | `saveVersion()`, `loadVersion()`, `loadLatest()`, `listVersions()`, `getLatestVersion()` |
 | `ExportManager` | `exportToFile()`, `exportVersionToFile()`, `getXml()` |
 
@@ -673,7 +674,7 @@ const revisionPrompt = buildRevisionPrompt(existingXml);
 ## Testing
 
 ```bash
-npm test                              # Run all 87 tests
+npm test                              # Run all tests
 npm run test:watch                    # Watch mode
 npx vitest run tests/parser/          # Run tests in a specific directory
 npx vitest run -t "validates layout"  # Run tests matching a pattern
@@ -687,7 +688,7 @@ npx vitest run -t "validates layout"  # Run tests matching a pattern
 .drawio-skill/
   projects/
     <project-name>/
-      project.json                    # { name, createdAt, description }
+      project.json                    # { name, createdAt, description, updatedAt?, notation?, defaultTags? }
       models/
         <uuid>.json                   # StoredModel metadata
         <uuid>.versions/
