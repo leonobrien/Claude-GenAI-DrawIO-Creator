@@ -195,7 +195,7 @@ Use this workflow when:
 
 ### Batch Script Template
 
-Each diagram in the batch uses this template. Run with `cd !`pwd` && npx tsx script.ts`:
+Each diagram in the batch uses this template. Run with `cd !`pwd` && npx tsx scripts/script.ts`:
 
 ```typescript
 import {
@@ -397,7 +397,9 @@ const exportPath = await ctx.exportModel(DIAGRAM_NAME);
 console.log(`${isNew ? 'Created' : 'Updated'} model "${stored.name}" (v${version}): ${exportPath}`);
 ```
 
-Run with: `cd !`pwd` && npx tsx script.ts`
+Run with: `cd !`pwd` && npx tsx scripts/script.ts`
+
+**Important:** Always write generation scripts to the `scripts/` directory (e.g. `scripts/generate-diagram.ts`), never to the repo root. The `scripts/` directory is gitignored as a session artefact folder.
 
 ### Continuing an Existing Project
 
