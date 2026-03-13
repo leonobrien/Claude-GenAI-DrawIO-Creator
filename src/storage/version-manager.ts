@@ -154,8 +154,8 @@ export class VersionManager {
       try {
         const content = await readFile(join(dir, file), 'utf-8');
         entries.push(safeJsonParse<Omit<VersionEntry, 'xml'>>(content, `version metadata ${file}`));
-      } catch {
-        // Skip malformed metadata files
+      } catch (err) {
+        console.warn(`Skipping malformed version metadata ${file}: ${err instanceof Error ? err.message : String(err)}`);
       }
     }
 

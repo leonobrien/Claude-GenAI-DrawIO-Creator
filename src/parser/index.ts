@@ -1,3 +1,4 @@
+export { assertXmlSize, MAX_XML_SIZE, MAX_STYLE_LENGTH, MAX_LABEL_LENGTH, MAX_CELLS, MAX_STATE_FILE_SIZE } from './limits.js';
 export { validateXml } from './xml-validator.js';
 export { fixXml } from './xml-fixer.js';
 export { validateSemantics, validateEdgeReferences, validateExpectedLabels } from './semantic-validator.js';
