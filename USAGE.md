@@ -1,11 +1,13 @@
 # Using the `/drawio` Skill
 
-The `/drawio` skill generates draw.io diagrams from natural language prompts. It supports multiple notation libraries (AWS, BPMN, Cisco, UML, and more) and produces `.drawio` files you can open directly in draw.io or diagrams.net.
+The `/drawio` skill generates draw.io diagrams from natural language prompts, reference images, and architecture documentation files. It supports multiple notation libraries (AWS, BPMN, Cisco, UML, and more) and produces `.drawio` files you can open directly in draw.io or diagrams.net.
 
 **How to invoke:** Type `/drawio` followed by a description of the diagram you want.
 
 ```
 /drawio <your diagram description>
+/drawio <point to an image to recreate>
+/drawio <point to a markdown file for batch generation>
 ```
 
 The skill will:
@@ -13,6 +15,8 @@ The skill will:
 2. Generate a structured diagram model with nodes, edges, and containers
 3. Validate the XML output
 4. Export a `.drawio` file you can open and edit
+
+Diagrams are stored in **projects** with full version history, so you can revisit, update, and extend your diagrams across sessions.
 
 ---
 
@@ -127,6 +131,82 @@ A UML 2.x class diagram with five classes arranged in an inheritance hierarchy. 
 - **Notation:** `uml` — native draw.io UML shapes (swimlane classes, text compartments)
 - **Diagram type:** `generic`
 - **Features shown:** Interface realisation (dashed block arrows), composition (filled diamond), class compartments with fields/methods
+
+---
+
+## Example 6: Batch Generation from a Markdown Document
+
+The skill can read a markdown architecture document and generate multiple diagrams from it in a single session. Point `/drawio` at a `.md` file and tell it what you want.
+
+**What to ask:**
+```
+/drawio using @docs/architecture.md generate UML use case diagrams
+for each scenario described in the document
+```
+
+Or with more specific instructions:
+```
+/drawio generate all infrastructure diagrams from ./docs/cloud-design.md
+using Azure notation
+```
+
+```
+/drawio from @docs/platform-spec.md create a diagram per section — use
+Cisco notation for the networking sections and AWS for the compute sections
+```
+
+**What happens:**
+
+1. The skill reads the markdown file
+2. It analyses the content and produces a **diagram plan** — a table listing each diagram it will generate (name, notation, type, description)
+3. It presents the plan for your confirmation — you can add, remove, or modify entries before proceeding
+4. It generates each diagram sequentially, all stored in the same project
+5. It shows a summary table with export paths and any warnings
+
+**Key details:**
+- **Limit:** Up to 10 diagrams per batch by default — the skill will ask you to prioritise if the document suggests more
+- **Notation inference:** The skill auto-detects notation from document content (e.g. mentions of EC2/S3 → `aws`, Hyper-V/Azure Arc → `azure`), or you can specify it explicitly
+- **Project grouping:** All diagrams from the same file are stored in a shared project (named after the file), making them easy to find and update later
+- **Re-running:** If you update the document and re-run the same batch, existing diagrams are versioned up rather than duplicated
+
+---
+
+## Working with Existing Projects
+
+Diagrams are stored in projects. You can list, update, and revise diagrams from previous sessions.
+
+### Listing existing diagrams
+
+```
+/drawio list all diagrams in the cloud-design project
+```
+
+### Revising an existing diagram
+
+```
+/drawio update the "api-gateway" diagram in cloud-design project —
+add a Lambda authoriser between the API Gateway and the backend services
+```
+
+The skill will load the latest version, apply the changes, and save a new version (v2, v3, etc.). The original versions are preserved for rollback.
+
+### Continuing work on a project
+
+```
+/drawio add a new "monitoring-stack" diagram to the cloud-design project
+showing CloudWatch, SNS notifications, and a PagerDuty integration
+```
+
+New diagrams are added to the existing project alongside previous ones.
+
+### Re-generating from an updated document
+
+```
+/drawio regenerate diagrams from @docs/architecture.md — the document
+has been updated with a new "Disaster Recovery" section
+```
+
+The skill detects that the project already exists and uses upsert: unchanged diagrams are versioned up, and new sections produce new diagram models.
 
 ---
 
