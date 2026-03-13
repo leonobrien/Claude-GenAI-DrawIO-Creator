@@ -7,6 +7,7 @@ import {
   resolveNotationFromShapeLibrary,
   resolveShape,
 } from '../../src/notation/registry.js';
+import type { NotationName } from '../../src/types/index.js';
 
 describe('NotationRegistry', () => {
   describe('getNotation', () => {
@@ -216,7 +217,7 @@ describe('NotationRegistry', () => {
     });
 
     it('returns null for invalid notation', () => {
-      expect(resolveShape('terraform' as any, 'Lambda')).toBeNull();
+      expect(resolveShape('terraform' as unknown as NotationName, 'Lambda')).toBeNull();
     });
 
     it('resolves generic shapes', () => {

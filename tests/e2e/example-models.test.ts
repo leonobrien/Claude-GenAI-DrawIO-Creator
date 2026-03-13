@@ -16,7 +16,7 @@ import { tmpdir } from 'node:os';
 
 import { buildDiagramXml } from '../../src/generator/xml-builder.js';
 import { wrapWithMxFile } from '../../src/generator/xml-wrapper.js';
-import { validateLayout, applyConstraints } from '../../src/generator/layout-engine.js';
+import { validateLayout } from '../../src/generator/layout-engine.js';
 import { applyOperations } from '../../src/generator/operations.js';
 import { validateXml } from '../../src/parser/xml-validator.js';
 import { validateAndFixXml } from '../../src/parser/index.js';
