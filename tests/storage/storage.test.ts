@@ -57,6 +57,28 @@ describe('Storage', () => {
       expect(retrieved).toBeNull();
     });
 
+    it('updates project metadata', async () => {
+      await projectManager.create('test-project', 'Original');
+      const updated = await projectManager.update('test-project', {
+        description: 'Updated',
+        updatedAt: '2026-01-01T00:00:00.000Z',
+        notation: 'aws',
+        defaultTags: ['infra'],
+      });
+      expect(updated).not.toBeNull();
+      expect(updated!.description).toBe('Updated');
+      expect(updated!.updatedAt).toBe('2026-01-01T00:00:00.000Z');
+      expect(updated!.notation).toBe('aws');
+      expect(updated!.defaultTags).toEqual(['infra']);
+      // Verify original fields preserved
+      expect(updated!.name).toBe('test-project');
+    });
+
+    it('update returns null for non-existent project', async () => {
+      const result = await projectManager.update('non-existent', { description: 'test' });
+      expect(result).toBeNull();
+    });
+
     it('ensureExists creates if missing', async () => {
       const info = await projectManager.ensureExists('auto-created');
       expect(info.name).toBe('auto-created');
@@ -109,6 +131,21 @@ describe('Storage', () => {
       expect(deleted).toBe(true);
       const loaded = await modelStore.load('test-project', 'test-uuid-1');
       expect(loaded).toBeNull();
+    });
+
+    it('finds model by name (case-insensitive)', async () => {
+      await projectManager.create('test-project');
+      await modelStore.save(testModel);
+
+      const found = await modelStore.findByName('test-project', 'test diagram');
+      expect(found).not.toBeNull();
+      expect(found!.id).toBe('test-uuid-1');
+    });
+
+    it('findByName returns null when not found', async () => {
+      await projectManager.create('test-project');
+      const found = await modelStore.findByName('test-project', 'non-existent');
+      expect(found).toBeNull();
     });
 
     it('finds model by ID across projects', async () => {

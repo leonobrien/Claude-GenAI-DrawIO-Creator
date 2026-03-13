@@ -43,10 +43,11 @@ Five modules under `src/`, each with a barrel `index.ts`:
 - **`validateAndFixXml()`** — Combined pipeline: validate → fix → re-validate
 
 ### Storage (`src/storage/`)
-- **ModelStore** — CRUD for `StoredModel` JSON files, keyed by UUID within project namespaces
+- **ModelStore** — CRUD for `StoredModel` JSON files, keyed by UUID within project namespaces. `findByName(project, name)` provides case-insensitive name lookup.
 - **VersionManager** — Ordered XML snapshots (`v1.xml`, `v2.xml`, ...) with metadata, supports rollback
-- **ProjectManager** — Project directory management under `.drawio-skill/projects/`
+- **ProjectManager** — Project directory management under `.drawio-skill/projects/`. `update(name, patch)` merges metadata patches into `project.json`.
 - **ExportManager** — Writes `.drawio` or `.xml` files from stored versions
+- **ProjectContext** — Facade for multi-model project workflows. `ProjectContext.open(opts)` creates/opens a project; `saveModel(opts)` provides upsert semantics (creates on first call, adds versions on subsequent calls with the same name). Exposes `findModel()`, `listModels()`, `loadLatestXml()`, and `exportModel()`. Underlying managers are `public readonly` for advanced use.
 
 ### Notation (`src/notation/`)
 - **Generic** — Default notation with standard draw.io shapes (rectangle, diamond, cylinder, ellipse, cloud)

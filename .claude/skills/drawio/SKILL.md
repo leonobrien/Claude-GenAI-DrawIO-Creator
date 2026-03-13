@@ -58,12 +58,10 @@ import {
   buildDiagramXml, wrapWithMxFile, validateAndFixXml, validateSemantics,
   validateShapeRenderable, renderPreview,
   buildImageAnalysisPrompt,
-  ProjectManager, ModelStore, VersionManager, ExportManager,
+  ProjectContext,
   getNotation, resolveShape,
 } from '!`pwd`/src/index.js';
-import { randomUUID } from 'node:crypto';
-import { mkdirSync } from 'node:fs';
-import type { DiagramModel, StoredModel } from '!`pwd`/src/types/index.js';
+import type { DiagramModel } from '!`pwd`/src/types/index.js';
 
 // --- Configuration ---
 const PROJECT_ID = 'my-project';
@@ -80,13 +78,13 @@ const analysisPrompt = buildImageAnalysisPrompt({
 console.log('Analysis prompt length:', analysisPrompt.length, 'chars');
 
 // --- Storage setup ---
-mkdirSync(STORAGE_ROOT, { recursive: true });
-const projects = new ProjectManager(STORAGE_ROOT);
-const models = new ModelStore(STORAGE_ROOT);
-const versions = new VersionManager(STORAGE_ROOT);
-const exporter = new ExportManager(versions);
-
-await projects.ensureExists(PROJECT_ID, 'Image recreation project');
+const ctx = await ProjectContext.open({
+  storageRoot: STORAGE_ROOT,
+  projectId: PROJECT_ID,
+  description: 'Image recreation project',
+  notation: NOTATION,
+  defaultTags: ['image-recreation'],
+});
 
 // --- Build DiagramModel from image analysis ---
 // Map each visual element to notation shapes using resolveShape()
@@ -142,28 +140,17 @@ if (!semantics.valid) {
   console.warn('Semantic issues:', semantics.issues);
 }
 
-const modelId = randomUUID();
-const storedModel: StoredModel = {
-  id: modelId,
+// --- Save & export (upsert) ---
+const { model: stored, version, isNew } = await ctx.saveModel({
   name: DIAGRAM_NAME,
-  project: PROJECT_ID,
-  currentVersion: 1,
-  createdAt: new Date().toISOString(),
-  updatedAt: new Date().toISOString(),
-  tags: ['image-recreation'],
-  prompt: 'Recreated from reference image',
+  xml: result.finalXml,
   description: model.metadata.title ?? DIAGRAM_NAME,
-};
+  prompt: 'Recreated from reference image',
+  notation: NOTATION,
+});
 
-await models.save(storedModel);
-await versions.saveVersion(PROJECT_ID, modelId, result.finalXml, 'Image recreation');
-
-const exportDir = `${STORAGE_ROOT}/projects/${PROJECT_ID}/exports`;
-mkdirSync(exportDir, { recursive: true });
-const exportPath = `${exportDir}/${DIAGRAM_NAME}.drawio`;
-await exporter.exportToFile(PROJECT_ID, modelId, exportPath);
-
-console.log(`Exported to: ${exportPath}`);
+const exportPath = await ctx.exportModel(DIAGRAM_NAME);
+console.log(`${isNew ? 'Created' : 'Updated'} model "${stored.name}" (v${version}): ${exportPath}`);
 ```
 
 ## Shape Validation
@@ -186,26 +173,24 @@ Write and execute a TypeScript script using `npx tsx`:
 import {
   buildDiagramXml, wrapWithMxFile, validateAndFixXml, validateSemantics,
   validateShapeRenderable, renderPreview,
-  ProjectManager, ModelStore, VersionManager, ExportManager,
+  ProjectContext,
   getNotation, resolveShape,
 } from '!`pwd`/src/index.js';
-import { randomUUID } from 'node:crypto';
-import { mkdirSync } from 'node:fs';
-import type { DiagramModel, StoredModel } from '!`pwd`/src/types/index.js';
+import type { DiagramModel } from '!`pwd`/src/types/index.js';
 
 // --- Configuration ---
 const PROJECT_ID = 'my-project';           // kebab-case project identifier
-const DIAGRAM_NAME = 'my-diagram';         // diagram name for the export file
+const DIAGRAM_NAME = 'my-diagram';         // diagram name (used for upsert)
 const STORAGE_ROOT = '!`pwd`/storage';     // output root directory
 
-// --- Storage setup ---
-mkdirSync(STORAGE_ROOT, { recursive: true });
-const projects = new ProjectManager(STORAGE_ROOT);
-const models = new ModelStore(STORAGE_ROOT);
-const versions = new VersionManager(STORAGE_ROOT);
-const exporter = new ExportManager(versions);
-
-await projects.ensureExists(PROJECT_ID, 'Project description');
+// --- Storage setup (replaces ~30 lines of boilerplate) ---
+const ctx = await ProjectContext.open({
+  storageRoot: STORAGE_ROOT,
+  projectId: PROJECT_ID,
+  description: 'Project description',
+  // notation: 'aws',              // optional: sets default notation for all models
+  // defaultTags: ['infra'],       // optional: auto-applied to new models
+});
 
 // --- Optional: select a notation for cloud/enterprise diagrams ---
 // const notation = getNotation('aws');  // or 'azure', 'gcp', 'cisco', 'archimate', 'uml', 'bpmn', 'generic'
@@ -267,34 +252,53 @@ if (semantics.issues.length > 0) {
   console.warn('Semantic warnings:', semantics.issues.filter(i => i.severity === 'warning'));
 }
 
-// --- Persist to storage ---
-const modelId = randomUUID();
-const storedModel: StoredModel = {
-  id: modelId,
+// --- Save & export (upsert: creates on first run, adds version on re-run) ---
+const { model: stored, version, isNew } = await ctx.saveModel({
   name: DIAGRAM_NAME,
-  project: PROJECT_ID,
-  currentVersion: 1,
-  createdAt: new Date().toISOString(),
-  updatedAt: new Date().toISOString(),
-  tags: [],
-  prompt: '/* user prompt here */',
+  xml: result.finalXml,
   description: model.metadata.title ?? DIAGRAM_NAME,
-};
+  prompt: '/* user prompt here */',
+});
 
-await models.save(storedModel);
-await versions.saveVersion(PROJECT_ID, modelId, result.finalXml, 'Initial generation');
-
-// --- Export .drawio file ---
-const exportDir = `${STORAGE_ROOT}/projects/${PROJECT_ID}/exports`;
-mkdirSync(exportDir, { recursive: true });
-const exportPath = `${exportDir}/${DIAGRAM_NAME}.drawio`;
-await exporter.exportToFile(PROJECT_ID, modelId, exportPath);
-
-console.log(`Diagram stored: ${STORAGE_ROOT}/projects/${PROJECT_ID}/models/${modelId}.json`);
-console.log(`Exported to: ${exportPath}`);
+const exportPath = await ctx.exportModel(DIAGRAM_NAME);
+console.log(`${isNew ? 'Created' : 'Updated'} model "${stored.name}" (v${version}): ${exportPath}`);
 ```
 
 Run with: `cd !`pwd` && npx tsx script.ts`
+
+### Continuing an Existing Project
+
+```typescript
+import {
+  buildDiagramXml, wrapWithMxFile, validateAndFixXml,
+  applyOperations, ProjectContext,
+} from '!`pwd`/src/index.js';
+
+const ctx = await ProjectContext.open({
+  storageRoot: '!`pwd`/storage',
+  projectId: 'my-project',
+});
+
+// List existing models
+const models = await ctx.listModels();
+console.log('Models:', models.map(m => `${m.name} (v${m.currentVersion})`));
+
+// Load and revise an existing model
+const existingXml = await ctx.loadLatestXml('my-diagram');
+if (existingXml) {
+  const revised = applyOperations(existingXml, [
+    { operation: 'update', cell_id: '3', new_xml: '<mxCell id="3" value="New Label" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1"><mxGeometry x="100" y="100" width="120" height="60" as="geometry"/></mxCell>' },
+  ]);
+
+  const result = validateAndFixXml(revised);
+  const { version } = await ctx.saveModel({
+    name: 'my-diagram',
+    xml: result.finalXml,
+    description: 'Updated labels',
+  });
+  console.log(`Updated to v${version}`);
+}
+```
 
 ### Storage Output Structure
 

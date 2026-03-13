@@ -121,6 +121,16 @@ export class ModelStore {
   }
 
   /**
+   * Finds a model by name within a project (case-insensitive).
+   * Returns the first match, or null if not found.
+   */
+  async findByName(project: string, name: string): Promise<StoredModel | null> {
+    const models = await this.listByProject(project);
+    const lower = name.toLowerCase();
+    return models.find((m) => m.name.toLowerCase() === lower) ?? null;
+  }
+
+  /**
    * Finds a model by ID across all projects.
    * Slower than load() — use when the project is unknown.
    */

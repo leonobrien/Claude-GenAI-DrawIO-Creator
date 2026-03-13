@@ -26,6 +26,7 @@ export { ModelStore } from './storage/model-store.js';
 export { VersionManager } from './storage/version-manager.js';
 export { ProjectManager } from './storage/project-manager.js';
 export { ExportManager } from './storage/export-manager.js';
+export { ProjectContext } from './storage/project-context.js';
 
 export { QdrantClient } from './vector/qdrant-client.js';
 export { RecallEngine } from './vector/recall-engine.js';
@@ -100,6 +101,7 @@ export type { QdrantConfig } from './vector/qdrant-client.js';
 export type { LayoutConstraints } from './generator/layout-engine.js';
 export type { MxGraphModelOptions } from './generator/xml-wrapper.js';
 export type { ExportFormat } from './storage/export-manager.js';
+export type { ProjectContextOptions, SaveModelOptions, SaveModelResult } from './storage/project-context.js';
 export type { SemanticValidationResult } from './parser/semantic-validator.js';
 export type { ShapeValidationResult, ShapeValidationIssue } from './parser/shape-validator.js';
 export type { ValidateAndFixResult } from './parser/index.js';
