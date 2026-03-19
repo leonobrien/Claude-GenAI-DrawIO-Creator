@@ -14,6 +14,7 @@ import { ciscoNotation } from './cisco.js';
 import { archimateNotation } from './archimate.js';
 import { umlNotation } from './uml.js';
 import { bpmnNotation } from './bpmn.js';
+import { fortinetNotation } from './fortinet.js';
 
 const NOTATIONS: ReadonlyMap<NotationName, NotationDefinition> = new Map([
   ['generic', genericNotation],
@@ -24,6 +25,7 @@ const NOTATIONS: ReadonlyMap<NotationName, NotationDefinition> = new Map([
   ['archimate', archimateNotation],
   ['uml', umlNotation],
   ['bpmn', bpmnNotation],
+  ['fortinet', fortinetNotation],
 ]);
 
 /**
@@ -49,6 +51,9 @@ const SHAPE_LIBRARY_MAP: ReadonlyMap<string, NotationName> = new Map([
   ['uml', 'uml'],
   ['bpmn', 'bpmn'],
   ['mxgraph.bpmn', 'bpmn'],
+  ['fortinet', 'fortinet'],
+  ['fortigate', 'fortinet'],
+  ['fortios', 'fortinet'],
   ['generic', 'generic'],
   ['default', 'generic'],
 ]);

@@ -291,6 +291,62 @@ export const azureNotation: NotationDefinition = {
       defaultHeight: 50,
       category: 'networking',
     },
+    {
+      name: 'Route Table',
+      style: azureIcon('img/lib/azure2/networking/Route_Tables.svg'),
+      defaultWidth: 64,
+      defaultHeight: 62,
+      category: 'networking',
+    },
+    {
+      name: 'Network Interface',
+      style: azureIcon('img/lib/azure2/networking/Network_Interfaces.svg'),
+      defaultWidth: 68,
+      defaultHeight: 60,
+      category: 'networking',
+    },
+    {
+      name: 'Public IP Address',
+      style: azureIcon('img/lib/azure2/networking/Public_IP_Addresses.svg'),
+      defaultWidth: 50,
+      defaultHeight: 50,
+      category: 'networking',
+    },
+    {
+      name: 'Traffic Manager',
+      style: azureIcon('img/lib/azure2/networking/Traffic_Manager_Profiles.svg'),
+      defaultWidth: 50,
+      defaultHeight: 50,
+      category: 'networking',
+    },
+    {
+      name: 'Private Link Service',
+      style: azureIcon('img/lib/azure2/networking/Private_Link_Service.svg'),
+      defaultWidth: 50,
+      defaultHeight: 50,
+      category: 'networking',
+    },
+    {
+      name: 'Private Endpoint',
+      style: azureIcon('img/lib/azure2/networking/Private_Endpoint.svg'),
+      defaultWidth: 50,
+      defaultHeight: 50,
+      category: 'networking',
+    },
+    {
+      name: 'Connection',
+      style: azureIcon('img/lib/azure2/networking/Connections.svg'),
+      defaultWidth: 50,
+      defaultHeight: 50,
+      category: 'networking',
+    },
+    {
+      name: 'Local Network Gateway',
+      style: azureIcon('img/lib/azure2/networking/Local_Network_Gateways.svg'),
+      defaultWidth: 50,
+      defaultHeight: 50,
+      category: 'networking',
+    },
 
     // Containers
     {
