@@ -58,6 +58,7 @@ Five modules under `src/`, each with a barrel `index.ts`:
 - **ArchiMate** — 59 ArchiMate 3.x shapes across all six layers (Strategy, Business, Application, Technology, Motivation, Implementation & Migration) using `shape=mxgraph.archimate3.<element>;archiType=<type>;`
 - **UML** — 23 UML 2.x shapes for class, sequence, component, use case, and activity diagrams using native draw.io shapes
 - **BPMN** — 30 BPMN 2.0 shapes for events, tasks, gateways, pools, and data objects using `mxgraph.bpmn` stencils
+- **Fortinet** — 14 Fortinet Security Fabric shapes (FortiGate VM, FortiGate On-Premise, FortiManager, FortiAnalyzer, FortiWeb, FortiADC, FortiProxy, SD-WAN, Branch Office, Factory, Virtual WAN, Virtual WAN Hub, Private Link, Workstation) using embedded SVG/PNG data URIs from the [40net-cloud/fortinet-drawio-library](https://github.com/40net-cloud/fortinet-drawio-library)
 - **Registry** — `getNotation()`, `findNotation()`, `listNotations()`, `isValidNotation()`, `resolveNotationFromShapeLibrary()` for lookup and resolution
 
 ### Templates (`src/templates/`)

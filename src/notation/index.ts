@@ -6,6 +6,7 @@ export { ciscoNotation } from './cisco.js';
 export { archimateNotation } from './archimate.js';
 export { umlNotation } from './uml.js';
 export { bpmnNotation } from './bpmn.js';
+export { fortinetNotation } from './fortinet.js';
 export {
   getNotation,
   findNotation,

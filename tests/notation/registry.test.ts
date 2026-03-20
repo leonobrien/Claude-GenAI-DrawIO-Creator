@@ -78,9 +78,9 @@ describe('NotationRegistry', () => {
   });
 
   describe('listNotations', () => {
-    it('returns all eight notations', () => {
+    it('returns all nine notations', () => {
       const notations = listNotations();
-      expect(notations).toHaveLength(8);
+      expect(notations).toHaveLength(9);
       const names = notations.map((n) => n.name);
       expect(names).toContain('generic');
       expect(names).toContain('aws');
@@ -90,6 +90,7 @@ describe('NotationRegistry', () => {
       expect(names).toContain('archimate');
       expect(names).toContain('uml');
       expect(names).toContain('bpmn');
+      expect(names).toContain('fortinet');
     });
   });
 
