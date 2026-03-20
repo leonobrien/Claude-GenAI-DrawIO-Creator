@@ -20,6 +20,26 @@ https://github.com/DayuanJiang/next-ai-draw-io
 
 A Next.js web application that integrates Claude 3.7 (via Amazon Bedrock) with an embedded draw.io editor. This project adapts the core XML generation, validation, and revision logic from this reference implementation into a standalone Claude Code skill, removing the dependency on a web application and MCP server infrastructure.
 
+## Shape Libraries
+
+### draw.io Built-in Stencils
+
+The AWS, Azure, GCP, Cisco, ArchiMate, UML, and BPMN notation modules reference
+draw.io's built-in stencil libraries by name. No icon data is embedded — the draw.io
+renderer resolves shapes at runtime. draw.io is licensed under Apache-2.0 by JGraph Ltd.
+
+### Fortinet Icons — jgraph/drawio-libs
+
+**Source:** https://github.com/jgraph/drawio-libs/tree/master/libs/fortinet
+**Licence:** Apache License 2.0
+
+The Fortinet notation embeds SVG icons from the jgraph/drawio-libs extra libraries
+repository. These are Inkscape-sourced vector icons covering FortiGate, FortiManager,
+FortiAnalyzer, FortiWeb, FortiADC, FortiProxy, and environment shapes (Branch Office,
+Data Center, FortiGuard, Cloud Firewall, Generic Cloud).
+
+See [THIRD-PARTY-NOTICES.md](THIRD-PARTY-NOTICES.md) for full licence text and details.
+
 ## Licence Compliance
 
 The reference implementation is publicly available on GitHub. This project is an independent reimplementation of the techniques described in the paper and does not copy source code directly. Where architectural patterns have been adopted, they have been re-engineered for the Claude Code skill context.

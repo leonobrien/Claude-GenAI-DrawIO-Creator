@@ -4,6 +4,12 @@
  *
  * Shape icons sourced from the jgraph/drawio-libs Fortinet library.
  * https://github.com/jgraph/drawio-libs/tree/master/libs/fortinet
+ *
+ * Licence: Apache License 2.0 (JGraph Ltd)
+ * See THIRD-PARTY-NOTICES.md for full licence text and details.
+ *
+ * Fortinet product names and icons are trademarks of Fortinet, Inc.
+ * Use of these icons does not imply endorsement by Fortinet.
  */
 
 import type { NotationDefinition } from '../types/index.js';
