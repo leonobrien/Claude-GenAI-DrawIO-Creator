@@ -30,7 +30,7 @@ Five modules under `src/`, each with a barrel `index.ts`:
 ### Generator (`src/generator/`)
 - **XmlBuilder** — Converts `DiagramModel` (typed intermediate DSL) into bare `<mxCell>` elements
 - **XmlWrapper** — Wraps bare cells in the `<mxfile><diagram><mxGraphModel><root>` hierarchy with mandatory root cells (id="0", id="1"). The AI generates ONLY bare cells; wrapping is deterministic.
-- **PromptBuilder** — Constructs system prompts with role definition, format rules, 7 edge routing rules, layout constraints, and few-shot examples. Accepts optional `NotationName` to inject notation-specific shapes, rules, and examples. Separate builder for revision prompts that inject current diagram XML.
+- **PromptBuilder** — Constructs system prompts with role definition, format rules, 7 edge routing rules, layout constraints, and few-shot examples. Accepts optional `NotationName` to inject notation-specific shapes, rules, and examples. Separate builder for revision prompts that inject current diagram XML. `buildScopedPrompt(scope, notation?)` appends a Concern Scope section that constrains generation to Primary elements (full detail), Context elements (simplified boundaries), and omits Adjacent elements.
 - **LayoutEngine** — Validates/applies spatial constraints (800x600 canvas, 50px min gaps, 40px margins)
 - **Operations** — Applies `update`/`add`/`delete` operations to XML by cell ID. Delete cascades to children and referencing edges.
 
@@ -47,7 +47,7 @@ Five modules under `src/`, each with a barrel `index.ts`:
 - **VersionManager** — Ordered XML snapshots (`v1.xml`, `v2.xml`, ...) with metadata, supports rollback
 - **ProjectManager** — Project directory management under `.drawio-skill/projects/`. `update(name, patch)` merges metadata patches into `project.json`.
 - **ExportManager** — Writes `.drawio` or `.xml` files from stored versions
-- **ProjectContext** — Facade for multi-model project workflows. `ProjectContext.open(opts)` creates/opens a project; `saveModel(opts)` provides upsert semantics (creates on first call, adds versions on subsequent calls with the same name). Exposes `findModel()`, `listModels()`, `loadLatestXml()`, and `exportModel()`. Underlying managers are `public readonly` for advanced use.
+- **ProjectContext** — Facade for multi-model project workflows. `ProjectContext.open(opts)` creates/opens a project; `saveModel(opts)` provides upsert semantics (creates on first call, adds versions on subsequent calls with the same name). Exposes `findModel()`, `listModels()`, `loadLatestXml()`, and `exportModel()`. `linkViews(nameA, nameB)` creates bidirectional related-view links between models; `getRelatedViews(name)` returns linked models (filtering stale references). Underlying managers are `public readonly` for advanced use.
 
 ### Notation (`src/notation/`)
 - **Generic** — Default notation with standard draw.io shapes (rectangle, diamond, cylinder, ellipse, cloud)
@@ -100,6 +100,7 @@ Five modules under `src/`, each with a barrel `index.ts`:
 - **Shape pre-flight validation**: `validateShapeRenderable(xml)` checks stencil references against all notation catalogues before the user opens the file, catching shapes that would render as plain rectangles.
 - **Template library**: Pre-built `DiagramModel` templates for 8 common patterns, parameterisable via `TemplateParams`. Covers all notation families (generic, aws, azure, gcp, cisco, bpmn, uml, archimate). Templates are read-only definitions that produce valid `DiagramModel` instances via `build(params?)`.
 - **Terminal preview**: `renderPreview(model, options?)` produces a Unicode text rendering of any `DiagramModel`, with boxes, Manhattan-routed edges, arrowheads, and labels. Zero dependencies — custom character grid renderer.
+- **Concern Lens**: A viewpoint-scoping mechanism that classifies diagram elements as Primary (full detail), Context (simplified boundary), or Adjacent (omitted). `ConcernScope` type captures the core concern phrase, element classifications, and adjacent concerns. `buildScopedPrompt()` injects scoping constraints into the generation prompt. `StoredModel.concern` and `StoredModel.relatedViews` enable multi-view discovery. The lens is framework-agnostic — derived from the user's words each time, not tied to TOGAF/FEAF/etc.
 
 ## draw.io XML Format
 

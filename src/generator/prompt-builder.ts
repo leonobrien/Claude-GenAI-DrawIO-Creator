@@ -11,7 +11,7 @@
  * 7. Current diagram context (for revision)
  */
 
-import type { NotationName, NotationDefinition } from '../types/index.js';
+import type { NotationName, NotationDefinition, ConcernScope } from '../types/index.js';
 import { getNotation } from '../notation/registry.js';
 
 const ROLE_DEFINITION = [
@@ -183,6 +183,59 @@ export function buildSystemPrompt(notation?: NotationName): string {
   }
 
   return sections.join('\n');
+}
+
+/**
+ * Builds a system prompt scoped to a specific concern.
+ *
+ * Appends a Concern Scope section to the base system prompt, instructing the AI
+ * to focus on Primary elements, simplify Context elements, and omit Adjacent ones.
+ *
+ * @param scope - The concern scope with classifications and adjacent concerns
+ * @param notation - Optional notation name for notation-aware generation
+ */
+export function buildScopedPrompt(scope: ConcernScope, notation?: NotationName): string {
+  const base = buildSystemPrompt(notation);
+
+  const lines: string[] = [
+    '',
+    '## Concern Scope',
+    '',
+    `Core concern: ${scope.coreConcern}`,
+  ];
+
+  if (scope.classifications && Object.keys(scope.classifications).length > 0) {
+    const primary: string[] = [];
+    const context: string[] = [];
+
+    for (const [label, classification] of Object.entries(scope.classifications)) {
+      if (classification === 'primary') {
+        primary.push(label);
+      } else if (classification === 'context') {
+        context.push(label);
+      }
+    }
+
+    if (primary.length > 0) {
+      lines.push('');
+      lines.push(`**Primary elements** (full notation detail): ${primary.join(', ')}`);
+    }
+
+    if (context.length > 0) {
+      lines.push('');
+      lines.push(`**Context elements** (single labelled container or rounded rectangle, no internal detail): ${context.join(', ')}`);
+    }
+  }
+
+  lines.push('');
+  lines.push('Do NOT include any Adjacent/omitted elements in the output.');
+
+  if (scope.adjacentConcerns && scope.adjacentConcerns.length > 0) {
+    lines.push('');
+    lines.push(`Adjacent concerns (omitted, potential separate views): ${scope.adjacentConcerns.join('; ')}`);
+  }
+
+  return base + lines.join('\n');
 }
 
 /**
