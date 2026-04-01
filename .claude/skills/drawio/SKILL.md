@@ -37,11 +37,12 @@ When the user requests a diagram:
 2. **Check templates** — use `searchTemplates(query)` or `listTemplatesByNotation(notation)` to see if a pre-built template matches. If so, use `template.build(params)` as the starting point instead of building from scratch.
 3. **Select notation** — if the diagram involves cloud infrastructure, use `getNotation('aws')`, `getNotation('azure')`, or `getNotation('gcp')` for official service icons. For network diagrams, use `getNotation('cisco')`. For enterprise architecture, use `getNotation('archimate')`. For software design, use `getNotation('uml')`. For business processes, use `getNotation('bpmn')`. Default to generic for flowcharts and org charts.
 4. **Build a DiagramModel** — create a TypeScript script that uses the library to define nodes, edges, containers, and metadata. Use shapes from the notation catalogue.
-5. **Generate XML** — use `buildDiagramXml()` + `wrapWithMxFile()` to produce the `.drawio` XML
-6. **Preview in terminal** — use `renderPreview(model)` to display a Unicode text preview of the diagram in the terminal. This gives the user immediate visual feedback on layout, labels, and connections before opening draw.io. Show the preview by default, but **skip it** if the user says "no preview", "skip preview", or similar. Also consider skipping for complex diagrams (20+ nodes) where the ASCII representation becomes hard to read — mention that preview is available if they want it.
-7. **Validate** — run `validateAndFixXml()` for structural correctness, `validateSemantics()` with notation for semantic + conformance checking, and `validateShapeRenderable()` to catch invalid stencil references
-8. **Store & Export** — use `ProjectManager`, `ModelStore`, `VersionManager`, and `ExportManager` to persist and export the diagram. When saving a scoped diagram, include the `concern` field in `saveModel()` options.
-8.5. **Surface adjacent concerns** — if adjacent concerns were identified during scoping:
+5. **Resolve layout** — run `resolveOverlaps(model)` to automatically fix any overlapping sibling elements, then `validateLayout(model)` to check for remaining violations (negative coords, canvas bounds, overlaps). Log any displacements or violations so layout issues are caught before export.
+6. **Generate XML** — use `buildDiagramXml()` + `wrapWithMxFile()` to produce the `.drawio` XML
+7. **Preview in terminal** — use `renderPreview(model)` to display a Unicode text preview of the diagram in the terminal. This gives the user immediate visual feedback on layout, labels, and connections before opening draw.io. Show the preview by default, but **skip it** if the user says "no preview", "skip preview", or similar. Also consider skipping for complex diagrams (20+ nodes) where the ASCII representation becomes hard to read — mention that preview is available if they want it.
+8. **Validate** — run `validateAndFixXml()` for structural correctness, `validateSemantics()` with notation for semantic + conformance checking, and `validateShapeRenderable()` to catch invalid stencil references
+9. **Store & Export** — use `ProjectManager`, `ModelStore`, `VersionManager`, and `ExportManager` to persist and export the diagram. When saving a scoped diagram, include the `concern` field in `saveModel()` options.
+9.5. **Surface adjacent concerns** — if adjacent concerns were identified during scoping:
    - Briefly mention them: "I omitted [X] and [Y] — would you like separate views for any of these?"
    - If user says yes, loop back to Step 1.5 with the new concern, reusing the same `ProjectContext`
    - Link the new model to the original via `ctx.linkViews(originalName, newName)`
@@ -68,9 +69,10 @@ When the user pastes an image, provides an image file path, or asks to recreate/
    - Preserve the spatial layout, flow direction, and groupings
    - Include all visible labels and text
 5. **CRITICAL: Container child positioning** — children of containers use coordinates **RELATIVE to the container**, not absolute canvas coordinates. A child at `(10, 20)` inside a container at `(200, 100)` renders at absolute `(210, 120)`. Forgetting this causes children to appear far to the right/below their containers.
-6. **Generate XML** — use `buildDiagramXml()` + `wrapWithMxFile()` (same as text-based workflow)
-7. **Validate** — run `validateAndFixXml()` and `validateSemantics()` (same as text-based workflow)
-8. **Store & Export** — persist and export the `.drawio` file (same as text-based workflow)
+6. **Resolve layout** — run `resolveOverlaps(model)` then `validateLayout(model)` (same as text-based workflow)
+7. **Generate XML** — use `buildDiagramXml()` + `wrapWithMxFile()` (same as text-based workflow)
+8. **Validate** — run `validateAndFixXml()` and `validateSemantics()` (same as text-based workflow)
+9. **Store & Export** — persist and export the `.drawio` file (same as text-based workflow)
 
 ### Image Analysis Script Template
 
@@ -78,6 +80,7 @@ When the user pastes an image, provides an image file path, or asks to recreate/
 import {
   buildDiagramXml, wrapWithMxFile, validateAndFixXml, validateSemantics,
   validateShapeRenderable, renderPreview,
+  resolveOverlaps, validateLayout,
   buildImageAnalysisPrompt,
   ProjectContext,
   getNotation, resolveShape,
@@ -132,12 +135,22 @@ const model: DiagramModel = {
   },
 };
 
+// --- Resolve layout overlaps ---
+const { model: layoutModel, displacements } = resolveOverlaps(model, 50);
+if (displacements > 0) {
+  console.log(`Layout: resolved ${displacements} overlap(s)`);
+}
+const layoutIssues = validateLayout(layoutModel);
+if (layoutIssues.length > 0) {
+  console.warn('Layout warnings:', layoutIssues);
+}
+
 // --- Terminal preview (set to false to skip, or for complex diagrams 20+ nodes) ---
 const SHOW_PREVIEW = true;
-if (SHOW_PREVIEW) console.log(renderPreview(model));
+if (SHOW_PREVIEW) console.log(renderPreview(layoutModel));
 
 // --- Standard pipeline from here ---
-const bareCells = buildDiagramXml(model);
+const bareCells = buildDiagramXml(layoutModel);
 const fullXml = wrapWithMxFile(bareCells);
 const result = validateAndFixXml(fullXml);
 
@@ -154,8 +167,8 @@ if (shapeResult.issues.length > 0) {
 
 const semantics = validateSemantics(
   result.finalXml,
-  model.nodes.map(n => n.label),  // Verify all labels from image appear in output
-  model.metadata.notation,
+  layoutModel.nodes.map(n => n.label),  // Verify all labels from image appear in output
+  layoutModel.metadata.notation,
 );
 if (!semantics.valid) {
   console.warn('Semantic issues:', semantics.issues);
@@ -165,7 +178,7 @@ if (!semantics.valid) {
 const { model: stored, version, isNew } = await ctx.saveModel({
   name: DIAGRAM_NAME,
   xml: result.finalXml,
-  description: model.metadata.title ?? DIAGRAM_NAME,
+  description: layoutModel.metadata.title ?? DIAGRAM_NAME,
   prompt: 'Recreated from reference image',
   notation: NOTATION,
 });
@@ -223,6 +236,7 @@ Each diagram in the batch uses this template. Run with `cd !`pwd` && npx tsx scr
 import {
   buildDiagramXml, wrapWithMxFile, validateAndFixXml, validateSemantics,
   validateShapeRenderable, renderPreview,
+  resolveOverlaps, validateLayout,
   ProjectContext,
   getNotation, resolveShape,
 } from '!`pwd`/src/index.js';
@@ -264,11 +278,21 @@ const model: DiagramModel = {
   },
 };
 
+// --- Resolve layout overlaps ---
+const { model: layoutModel, displacements } = resolveOverlaps(model, 50);
+if (displacements > 0) {
+  console.log(`Layout: resolved ${displacements} overlap(s)`);
+}
+const layoutIssues = validateLayout(layoutModel);
+if (layoutIssues.length > 0) {
+  console.warn('Layout warnings:', layoutIssues);
+}
+
 // --- Preview (skip for batches of 6+ diagrams to reduce noise) ---
-console.log(renderPreview(model));
+console.log(renderPreview(layoutModel));
 
 // --- Validate ---
-const bareCells = buildDiagramXml(model);
+const bareCells = buildDiagramXml(layoutModel);
 const fullXml = wrapWithMxFile(bareCells);
 const result = validateAndFixXml(fullXml);
 
@@ -284,8 +308,8 @@ if (shapeResult.issues.length > 0) {
 
 const semantics = validateSemantics(
   result.finalXml,
-  model.nodes.map(n => n.label),
-  model.metadata.notation,
+  layoutModel.nodes.map(n => n.label),
+  layoutModel.metadata.notation,
 );
 if (semantics.issues.length > 0) {
   console.warn('Semantic warnings:', semantics.issues.map(i => `${i.severity}: ${i.message}`));
@@ -295,9 +319,9 @@ if (semantics.issues.length > 0) {
 const { model: stored, version, isNew } = await ctx.saveModel({
   name: DIAGRAM_NAME,
   xml: result.finalXml,
-  description: model.metadata.title ?? DIAGRAM_NAME,
+  description: layoutModel.metadata.title ?? DIAGRAM_NAME,
   prompt: 'Batch generated from architecture.md',
-  notation: model.metadata.notation,
+  notation: layoutModel.metadata.notation,
 });
 
 const exportPath = await ctx.exportModel(DIAGRAM_NAME);
@@ -328,6 +352,7 @@ Write and execute a TypeScript script using `npx tsx`:
 import {
   buildDiagramXml, wrapWithMxFile, validateAndFixXml, validateSemantics,
   validateShapeRenderable, renderPreview,
+  resolveOverlaps, validateLayout,
   ProjectContext,
   getNotation, resolveShape,
 } from '!`pwd`/src/index.js';
@@ -376,11 +401,21 @@ const model: DiagramModel = {
   },
 };
 
+// --- Resolve layout overlaps ---
+const { model: layoutModel, displacements } = resolveOverlaps(model, 50);
+if (displacements > 0) {
+  console.log(`Layout: resolved ${displacements} overlap(s)`);
+}
+const layoutIssues = validateLayout(layoutModel);
+if (layoutIssues.length > 0) {
+  console.warn('Layout warnings:', layoutIssues);
+}
+
 // --- Terminal preview (set to false to skip, or for complex diagrams 20+ nodes) ---
 const SHOW_PREVIEW = true;
-if (SHOW_PREVIEW) console.log(renderPreview(model));
+if (SHOW_PREVIEW) console.log(renderPreview(layoutModel));
 
-const bareCells = buildDiagramXml(model);
+const bareCells = buildDiagramXml(layoutModel);
 const fullXml = wrapWithMxFile(bareCells);
 const result = validateAndFixXml(fullXml);
 
@@ -398,7 +433,7 @@ if (shapeResult.issues.length > 0) {
 const semantics = validateSemantics(
   result.finalXml,
   [/* expected labels */],
-  model.metadata.notation,  // optional: enables notation conformance warnings
+  layoutModel.metadata.notation,  // optional: enables notation conformance warnings
 );
 if (!semantics.valid) {
   console.warn('Semantic issues:', semantics.issues);
@@ -411,7 +446,7 @@ if (semantics.issues.length > 0) {
 const { model: stored, version, isNew } = await ctx.saveModel({
   name: DIAGRAM_NAME,
   xml: result.finalXml,
-  description: model.metadata.title ?? DIAGRAM_NAME,
+  description: layoutModel.metadata.title ?? DIAGRAM_NAME,
   prompt: '/* user prompt here */',
 });
 
