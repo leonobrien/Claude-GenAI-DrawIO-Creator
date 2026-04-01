@@ -18,13 +18,34 @@ This skill uses the `drawio-skill` TypeScript library at `!`pwd``. The library c
 When the user requests a diagram:
 
 1. **Understand the request** — identify diagram type (infrastructure, flowchart, org chart, wireframe, sequence, generic), components, relationships, and notation (aws, azure, gcp, cisco, archimate, uml, bpmn, or generic)
+1.5. **Scope the concern** — extract the core concern from the user's request and classify potential elements:
+   - Apply the **newspaper test** internally: "If I removed this element, would the core message change?"
+   - Classify elements into three tiers:
+     - **Primary** — directly implements the concern → full notation detail
+     - **Context** — anchors Primary elements spatially → simplified labelled boundary
+     - **Adjacent** — tangentially related → omit, track for separate views
+   - Present a lightweight scope proposal:
+     ```
+     Scope: [core concern phrase]
+     Primary: [elements modelled in detail]
+     Context: [elements shown as boundaries]
+     Omitted: [excluded elements, with reason]
+     ```
+   - Wait for user confirmation; accept adjustments or "skip scope" / "include everything"
+   - **Auto-skip** for: simple requests (≤5 elements), explicit template requests, revision requests
+   - When scope is confirmed, pass it to `buildScopedPrompt(scope, notation)` instead of `buildSystemPrompt(notation)` to include scoping instructions in the generation prompt
 2. **Check templates** — use `searchTemplates(query)` or `listTemplatesByNotation(notation)` to see if a pre-built template matches. If so, use `template.build(params)` as the starting point instead of building from scratch.
 3. **Select notation** — if the diagram involves cloud infrastructure, use `getNotation('aws')`, `getNotation('azure')`, or `getNotation('gcp')` for official service icons. For network diagrams, use `getNotation('cisco')`. For enterprise architecture, use `getNotation('archimate')`. For software design, use `getNotation('uml')`. For business processes, use `getNotation('bpmn')`. Default to generic for flowcharts and org charts.
 4. **Build a DiagramModel** — create a TypeScript script that uses the library to define nodes, edges, containers, and metadata. Use shapes from the notation catalogue.
 5. **Generate XML** — use `buildDiagramXml()` + `wrapWithMxFile()` to produce the `.drawio` XML
 6. **Preview in terminal** — use `renderPreview(model)` to display a Unicode text preview of the diagram in the terminal. This gives the user immediate visual feedback on layout, labels, and connections before opening draw.io. Show the preview by default, but **skip it** if the user says "no preview", "skip preview", or similar. Also consider skipping for complex diagrams (20+ nodes) where the ASCII representation becomes hard to read — mention that preview is available if they want it.
 7. **Validate** — run `validateAndFixXml()` for structural correctness, `validateSemantics()` with notation for semantic + conformance checking, and `validateShapeRenderable()` to catch invalid stencil references
-8. **Store & Export** — use `ProjectManager`, `ModelStore`, `VersionManager`, and `ExportManager` to persist and export the diagram
+8. **Store & Export** — use `ProjectManager`, `ModelStore`, `VersionManager`, and `ExportManager` to persist and export the diagram. When saving a scoped diagram, include the `concern` field in `saveModel()` options.
+8.5. **Surface adjacent concerns** — if adjacent concerns were identified during scoping:
+   - Briefly mention them: "I omitted [X] and [Y] — would you like separate views for any of these?"
+   - If user says yes, loop back to Step 1.5 with the new concern, reusing the same `ProjectContext`
+   - Link the new model to the original via `ctx.linkViews(originalName, newName)`
+   - Use `ctx.getRelatedViews(name)` to query related views later
 
 ## Image to Diagram Workflow
 
@@ -170,6 +191,7 @@ Use this workflow when:
 
 2. **Analyse and plan** — based on the user's prompt and the file content, produce a **diagram plan**. Each entry should have:
    - **Name** (kebab-case, used as the model name for storage and export filename)
+   - **Concern** (core concern phrase — what this diagram is focused on)
    - **Notation** (auto-detected from content or user-specified)
    - **Diagram type** (infrastructure, flowchart, org_chart, sequence, generic)
    - **Description** (what the diagram will show)
@@ -182,7 +204,7 @@ Use this workflow when:
    - **Relationship extraction**: look for "connects to", "depends on", "sends to", "reads from", "calls", arrows (→, ->), and list hierarchies to derive edges
    - **Component identification**: service names, database names, queue names, API names, system names become nodes
 
-3. **Present the plan** — show the plan to the user as a numbered markdown table before generating anything. Include diagram name, notation, type, and description. Ask for confirmation. The user may add, remove, or modify entries. **Limit to 10 diagrams per batch** by default — if the document suggests more, ask the user to prioritise.
+3. **Present the plan** — show the plan to the user as a numbered markdown table before generating anything. Include diagram name, concern, notation, type, and description. Ask for confirmation. The user may add, remove, or modify entries. **Limit to 10 diagrams per batch** by default — if the document suggests more, ask the user to prioritise. After batch completes, group remaining adjacent concerns and surface them as potential additional views.
 
 4. **Execute sequentially** — for each diagram in the confirmed plan, write and run a TypeScript script using the batch script template below. All diagrams go into the same `ProjectContext` with a single project ID (derived from the markdown filename, e.g. `architecture.md` → `architecture`). Generate **one script per diagram** to keep script size manageable and isolate failures.
 
@@ -495,6 +517,10 @@ listNotations().forEach(n => console.log(`${n.name}: ${n.displayName}`));
 ```
 
 Each notation provides: shapes with default dimensions, style templates (vertex/edge/container), colour palettes, layout conventions, and prompt rules.
+
+## Label Rules
+
+- **Never use `\n` (escaped newlines) in labels.** Use plain spaces instead. draw.io handles text wrapping automatically via `whiteSpace=wrap` in the style. Escaped newlines render as literal `\n` text in some contexts and break semantic label matching.
 
 ## Layout Rules
 

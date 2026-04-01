@@ -65,6 +65,7 @@ export interface DiagramMetadata {
   shapeLibrary?: string;
   notation?: NotationName;
   sourceImage?: string;
+  concern?: ConcernScope;
 }
 
 export interface ImageAnalysisOptions {
@@ -132,6 +133,8 @@ export interface StoredModel {
   prompt: string;
   description: string;
   notation?: NotationName;
+  concern?: string;
+  relatedViews?: string[];
 }
 
 export interface VersionEntry {
@@ -160,6 +163,14 @@ export interface FixResult {
   xml: string;
   fixesApplied: string[];
   remainingErrors: string[];
+}
+
+export type ScopeClassification = 'primary' | 'context' | 'adjacent';
+
+export interface ConcernScope {
+  coreConcern: string;
+  classifications?: Record<string, ScopeClassification>;
+  adjacentConcerns?: string[];
 }
 
 export interface RecallResult {
