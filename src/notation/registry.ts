@@ -15,6 +15,7 @@ import { archimateNotation } from './archimate.js';
 import { umlNotation } from './uml.js';
 import { bpmnNotation } from './bpmn.js';
 import { fortinetNotation } from './fortinet.js';
+import { infographicNotation } from './infographic.js';
 
 const NOTATIONS: ReadonlyMap<NotationName, NotationDefinition> = new Map([
   ['generic', genericNotation],
@@ -26,6 +27,7 @@ const NOTATIONS: ReadonlyMap<NotationName, NotationDefinition> = new Map([
   ['uml', umlNotation],
   ['bpmn', bpmnNotation],
   ['fortinet', fortinetNotation],
+  ['infographic', infographicNotation],
 ]);
 
 /**
@@ -54,6 +56,8 @@ const SHAPE_LIBRARY_MAP: ReadonlyMap<string, NotationName> = new Map([
   ['fortinet', 'fortinet'],
   ['fortigate', 'fortinet'],
   ['fortios', 'fortinet'],
+  ['infographic', 'infographic'],
+  ['mxgraph.infographic', 'infographic'],
   ['generic', 'generic'],
   ['default', 'generic'],
 ]);
