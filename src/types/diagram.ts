@@ -17,7 +17,7 @@ export type DiagramType =
   | 'sequence'
   | 'generic';
 
-export type NotationName = 'aws' | 'azure' | 'gcp' | 'cisco' | 'archimate' | 'uml' | 'bpmn' | 'fortinet' | 'generic';
+export type NotationName = 'aws' | 'azure' | 'gcp' | 'cisco' | 'archimate' | 'uml' | 'bpmn' | 'fortinet' | 'infographic' | 'generic';
 
 export interface NotationShape {
   name: string;
