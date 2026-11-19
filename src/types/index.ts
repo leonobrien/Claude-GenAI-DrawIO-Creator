@@ -20,6 +20,7 @@ export type {
   NotationLayoutConventions,
   NotationDefinition,
   ImageAnalysisOptions,
+  ModelStandardRef,
   ScopeClassification,
   ConcernScope,
 } from './diagram.js';
