@@ -6,10 +6,10 @@ build/
 node_modules/
 
 # Runtime output
-storage/
+/storage/
 
 # Ad-hoc generation scripts (session artefacts, not part of the library)
-scripts/
+/scripts/
 
 # IDE
 .idea/
