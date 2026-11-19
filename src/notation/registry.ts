@@ -16,6 +16,7 @@ import { umlNotation } from './uml.js';
 import { bpmnNotation } from './bpmn.js';
 import { fortinetNotation } from './fortinet.js';
 import { infographicNotation } from './infographic.js';
+import { matchByName } from './matcher.js';
 
 const NOTATIONS: ReadonlyMap<NotationName, NotationDefinition> = new Map([
   ['generic', genericNotation],
@@ -128,38 +129,7 @@ export function resolveShape(
   const notation = NOTATIONS.get(notationName);
   if (!notation) return null;
 
-  const { shapes } = notation;
-
-  // 1. Exact name match
-  const exact = shapes.find(s => s.name === shapeName);
-  if (exact) return exact;
-
-  // 2. Case-insensitive match
-  const lower = shapeName.toLowerCase();
-  const caseInsensitive = shapes.find(s => s.name.toLowerCase() === lower);
-  if (caseInsensitive) return caseInsensitive;
-
-  // 3. Partial/substring match
-  const partials = shapes.filter(s => {
-    const sLower = s.name.toLowerCase();
-    return sLower.includes(lower) || lower.includes(sLower);
-  });
-
-  if (partials.length === 0) return null;
-
-  // Prefer category-scoped match
-  if (category) {
-    const categoryLower = category.toLowerCase();
-    const categoryMatches = partials.filter(
-      s => s.category?.toLowerCase() === categoryLower,
-    );
-    if (categoryMatches.length > 0) {
-      return categoryMatches.reduce((a, b) => a.name.length <= b.name.length ? a : b);
-    }
-  }
-
-  // Shortest name wins (most specific match)
-  return partials.reduce((a, b) => a.name.length <= b.name.length ? a : b);
+  return matchByName(notation.shapes, shapeName, category);
 }
 
 /**

@@ -51,6 +51,53 @@ export {
   bpmnNotation,
 } from './notation/index.js';
 
+export {
+  StandardStore,
+  getClientsDir,
+  summariseStandard,
+  readDrawio,
+  readDrawioFile,
+  decompressDiagram,
+  extractStandard,
+  extractStandardFromFiles,
+  validateStandardDefinition,
+  normaliseStandard,
+  resolveStandardShape,
+  resolveStandardConnector,
+  requireStandardShape,
+  requireStandardConnector,
+  checkStandardCoverage,
+  validateStandardConformance,
+  formatConformanceReport,
+  buildStandardPrompt,
+  parseStyle,
+  serializeStyle,
+  vertexIdentity,
+  edgeIdentity,
+} from './standards/index.js';
+export type {
+  ClientDefinition,
+  ModellingStandard,
+  StandardElement,
+  StandardElementKind,
+  StandardEnforcement,
+  StandardPalette,
+  StandardRules,
+  StandardRef,
+  StandardSummary,
+  StandardSource,
+  StandardShape,
+  CoverageResult,
+  ConformanceResult,
+  ConformanceIssue,
+  ExtractStandardOptions,
+  ExtractionReport,
+  DefinitionValidationResult,
+  DrawioCell,
+  DrawioPage,
+  DrawioDocument,
+} from './standards/index.js';
+
 export { StateManager } from './state/state-manager.js';
 
 export { CharGrid, BOX, ARROW, renderPreview } from './preview/index.js';
@@ -95,6 +142,7 @@ export type {
   ImageAnalysisOptions,
   ScopeClassification,
   ConcernScope,
+  ModelStandardRef,
 } from './types/index.js';
 
 export type { EmbeddingProvider } from './vector/embedding-provider.js';

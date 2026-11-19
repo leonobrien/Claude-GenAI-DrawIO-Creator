@@ -58,6 +58,12 @@ export interface NotationDefinition {
   promptRules: string[];
 }
 
+export interface ModelStandardRef {
+  clientId: string;
+  standardId: string;
+  version: number;
+}
+
 export interface DiagramMetadata {
   title?: string;
   description?: string;
@@ -66,6 +72,8 @@ export interface DiagramMetadata {
   notation?: NotationName;
   sourceImage?: string;
   concern?: ConcernScope;
+  /** Client modelling standard this diagram conforms to. */
+  standard?: ModelStandardRef;
 }
 
 export interface ImageAnalysisOptions {
@@ -135,6 +143,8 @@ export interface StoredModel {
   notation?: NotationName;
   concern?: string;
   relatedViews?: string[];
+  /** Client modelling standard the model was generated against. */
+  standard?: ModelStandardRef;
 }
 
 export interface VersionEntry {
@@ -151,6 +161,8 @@ export interface ProjectInfo {
   updatedAt?: string;
   notation?: NotationName;
   defaultTags?: string[];
+  /** Client this project belongs to (enables client modelling standards). */
+  client?: string;
 }
 
 export interface ValidationResult {
